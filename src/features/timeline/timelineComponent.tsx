@@ -1,0 +1,113 @@
+import { MinusIcon, PlusIcon } from '@heroicons/react/24/solid';
+import type { Entity, Event } from '@intavia/api-client';
+import { IconButton } from '@intavia/ui';
+import { useState } from 'react';
+
+import type { ComponentProperty } from '@/features/common/component-property';
+import { VisualizationLegend } from '@/features/common/visualization-legend';
+import { Timeline } from '@/features/timeline/timeline';
+
+interface TimelineProps {
+  events: Record<Event['id'], Event>;
+  entities: Record<Entity['id'], Entity>;
+  width?: number;
+  height?: number;
+  properties?: Record<string, ComponentProperty>;
+  onToggleHighlight?: (
+    entities: Array<Entity['id'] | null>,
+    events: Array<Event['id'] | null>,
+  ) => void;
+  highlightedByVis: never | { entities: Array<Entity['id']>; events: Array<Event['id']> };
+  entitySorting?: Array<Entity['id']>;
+}
+
+export function TimelineComponent(props: TimelineProps): JSX.Element {
+  const {
+    events,
+    entities,
+    properties = {},
+    width = 0,
+    height = 0,
+    onToggleHighlight,
+    highlightedByVis,
+    entitySorting: i_entitySorting,
+  } = props;
+
+  const [zoom, setZoom] = useState<number>(0);
+
+  const sortEntities = properties['sort']?.value ?? false;
+  const clusterMode = properties['clusterMode']?.value.value ?? 'pie';
+  const cluster = properties['cluster']?.value ?? false;
+  const stackEntities = properties['stackEntities']?.value ?? false;
+  const showLabels = properties['showLabels']?.value.value ?? undefined;
+  const thickness = properties['thickness']?.value ?? 1;
+  const vertical = properties['vertical']?.value.value ?? undefined;
+  const diameter = properties['diameter']?.value ?? 14;
+  const fontSize = properties['fontSize']?.value ?? 10;
+  const colorBy = properties['colorBy']?.value.value ?? 'event-kind';
+
+  const entitySorting = i_entitySorting != null ? i_entitySorting : Object.keys(entities).sort();
+
+  const filteredEntities = Object.fromEntries(
+    Object.entries(entities).filter(([key, val]) => {
+      return val.kind !== 'place';
+    }),
+  );
+
+  return (
+    <div className="relative size-full">
+      <div className="overflow-hidden overflow-x-scroll size-full">
+        <Timeline
+          events={events}
+          entities={filteredEntities}
+          width={width}
+          height={height}
+          vertical={vertical}
+          thickness={thickness}
+          showLabels={showLabels}
+          overlap={false}
+          cluster={cluster}
+          stackEntities={stackEntities}
+          sortEntities={sortEntities}
+          clusterMode={clusterMode}
+          diameter={diameter}
+          fontSize={fontSize}
+          colorBy={colorBy}
+          zoom={zoom}
+          setZoom={setZoom}
+          onToggleHighlight={onToggleHighlight}
+          highlightedByVis={highlightedByVis}
+          entitySorting={entitySorting}
+        />
+      </div>
+      <div className="absolute right-1 top-1 flex gap-1">
+        <IconButton
+          size="xs"
+          label="Zoom in"
+          onClick={() => {
+            setZoom(Math.min(zoom + 1, 20));
+          }}
+        >
+          <PlusIcon className="size-4" />
+        </IconButton>
+        <IconButton
+          size="xs"
+          label="Zoom out"
+          onClick={() => {
+            setZoom(Math.max(zoom - 1, 0));
+          }}
+        >
+          <MinusIcon className="size-4" />
+        </IconButton>
+      </div>
+      <div className="absolute bottom-0 right-0">
+        <VisualizationLegend
+          events={events}
+          entities={{}}
+          colorBy={colorBy}
+          entitySorting={entitySorting}
+        />
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Jacques+Francois&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-synthesis: none;
+}
+
+:root {
+  font-family: theme(fontFamily.sans);
+  color: theme(colors.neutral.900);
+  background-color: theme(colors.neutral.50);
+}
+
+html,
+body,
+#__next {
+  block-size: 100%;
+}
+
+body,
+main {
+  height: 100%;
+  scrollbar-color: #8888889d transparent;
+  scrollbar-width: thin;
+}
+
+.overview-table-row > * {
+  padding: 2px;
+}
+
+.overview-table-row:hover > * {
+  background-color: theme(colors.apb-blue.100);
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #8888889d;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #888888;
+}
+
+/* If the user prefers dark mode, 
+we of course apply color-scheme: dark, as usual */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+
+  .maplibregl-ctrl > button {
+    background-color: theme(colors.apb-gold.100) !important;
+  }
+}
+
+/* If the user prefers light mode, 
+we still enforce color-scheme: dark, despite the user preference */
+@media (prefers-color-scheme: light) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+.maplibregl-ctrl-bottom-right {
+  display: none;
+}
