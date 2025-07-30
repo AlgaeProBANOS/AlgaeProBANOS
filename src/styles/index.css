@@ -80,7 +80,7 @@ we of course apply color-scheme: dark, as usual */
 we still enforce color-scheme: dark, despite the user preference */
 @media (prefers-color-scheme: light) {
   html {
-    color-scheme: dark;
+    /* color-scheme: dark; */
   }
 }
 

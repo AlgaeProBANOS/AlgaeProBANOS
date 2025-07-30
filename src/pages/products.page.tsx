@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 
 import { withDictionaries } from '@/app/i18n/with-dictionaries';
+import ProductFilter from '@/features/products/ProductFilter';
 import ProductMap from '@/features/products/ProductMap';
 
 export const getStaticProps = withDictionaries(['common']);
@@ -10,8 +11,9 @@ export default function MapTest(): JSX.Element {
 
   return (
     <Fragment>
-      <div className="grid h-full grid-cols-[1fr] grid-rows-1">
+      <div className="grid h-full grid-cols-[2fr_1fr] grid-rows-1">
         <ProductMap />
+        <ProductFilter />
       </div>
     </Fragment>
   );

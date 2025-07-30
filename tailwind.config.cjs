@@ -4,7 +4,7 @@ const preset = require('@intavia/ui/dist/tailwind-preset.config.cjs');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.@(css|ts|tsx)', './node_modules/@intavia/ui/dist/**/*.js'],
-  darkMode: 'media',
+  // darkMode: 'media',
   preset: [preset],
   theme: {
     extend: {
