@@ -4,7 +4,7 @@ import { useGetFragmentsByProjectQuery } from '@/api/memorise.service';
 import type { Project } from '@/api/memorise-client';
 import { useAppSelector } from '@/app/store';
 import { selectProjectsAndFragments } from '@/app/store/memorise.slice';
-import { baseAPIProject } from '~/config/memorise.config';
+import { baseAPIProject } from '~/config/apb.config';
 
 interface UseFragmentsFromProjectParams {
   project: Project['id'];

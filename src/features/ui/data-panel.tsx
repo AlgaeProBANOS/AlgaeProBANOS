@@ -4,7 +4,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { withDictionaries } from '@/app/i18n/with-dictionaries';
 import { useAppSelector } from '@/app/store';
 import { selectDocumentByProjectId } from '@/app/store/memorise.slice';
-import { baseAPIProject } from '~/config/memorise.config';
+import { baseAPIProject } from '~/config/apb.config';
 
 import DocumentPreview from './document-preview';
 import { useOverlayState } from '@/app/context/overlay.context';

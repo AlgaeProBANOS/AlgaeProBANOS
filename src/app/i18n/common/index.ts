@@ -14,11 +14,8 @@ export interface Dictionary {
     };
   };
   'app-bar': {
-    mapTest: string;
-    coordinationTest: string;
-    timelineTest: string;
-    fragmentTest: string;
-    documents: string;
+    algaeProducts: string;
+    algaeSpecies: string;
     search: string;
   };
   home: {

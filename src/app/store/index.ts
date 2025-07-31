@@ -17,8 +17,8 @@ import {
 import storage from 'redux-persist/lib/storage';
 import undoable from 'redux-undo';
 
-import { service as memoriseApiService } from '@/api/memorise.service';
-import { slice as memeroiseSlice } from '@/app/store/memorise.slice';
+import { service as apbApiService } from '@/api/apb.service';
+import { slice as apbSlice } from '@/app/store/apb.slice';
 import { visualizationSlice } from '@/features/common/visualization.slice';
 import { uiSlice } from '@/features/ui/ui.slice';
 
@@ -26,14 +26,14 @@ const persistConfig: PersistConfig<RootState> = {
   key: 'root',
   storage,
   version: 1,
-  whitelist: [uiSlice.name, memeroiseSlice.name, visualizationSlice.name],
+  whitelist: [apbSlice.name],
 };
 
 const undoableUIReducer = undoable(uiSlice.reducer);
 
 const rootReducer = combineReducers({
-  [memoriseApiService.reducerPath]: memoriseApiService.reducer,
-  [memeroiseSlice.name]: memeroiseSlice.reducer,
+  [apbApiService.reducerPath]: apbApiService.reducer,
+  [apbSlice.name]: apbSlice.reducer,
   [visualizationSlice.name]: visualizationSlice.reducer,
   [uiSlice.name]: undoableUIReducer,
   // [uiSlice.name]: uiSlice.reducer,
@@ -62,7 +62,7 @@ export const store = configureStore({
         ignoredPaths: ['memorise.fragmentsByID'],
       }, */
       immutableCheck: false,
-    }).concat(memoriseApiService.middleware);
+    }).concat(apbApiService.middleware);
   },
 });
 

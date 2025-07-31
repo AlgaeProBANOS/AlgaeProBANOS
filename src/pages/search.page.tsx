@@ -1,25 +1,25 @@
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
-import { useRouter } from "next/router";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
+import { useRouter } from 'next/router';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 
-import { useLazyGetSearchFragmentByIDQuery } from "@/api/memorise.service";
-import { useI18n } from "@/app/i18n/use-i18n";
-import { withDictionaries } from "@/app/i18n/with-dictionaries";
-import { useAppDispatch, useAppSelector } from "@/app/store";
+import { useLazyGetSearchFragmentByIDQuery } from '@/api/memorise.service';
+import { useI18n } from '@/app/i18n/use-i18n';
+import { withDictionaries } from '@/app/i18n/with-dictionaries';
+import { useAppDispatch, useAppSelector } from '@/app/store';
 import {
   clearSearchResults,
   selectFragmentsByProjectId,
   selectSearchResultDocuments,
   selectSearchResultFragments,
-} from "@/app/store/memorise.slice";
-import { Button } from "@/features/ui/button";
-import RegexTable from "@/features/ui/regex-table";
-import { baseAPIProject } from "~/config/memorise.config";
+} from '@/app/store/memorise.slice';
+import { Button } from '@/features/ui/button';
+import RegexTable from '@/features/ui/regex-table';
+import { baseAPIProject } from '~/config/apb.config';
 
-export const getStaticProps = withDictionaries(["common"]);
+export const getStaticProps = withDictionaries(['common']);
 
 export default function SearchPage(): JSX.Element {
-  const { t } = useI18n<"common">();
+  const { t } = useI18n<'common'>();
   const dispatch = useAppDispatch();
 
   const router = useRouter();
@@ -45,7 +45,7 @@ export default function SearchPage(): JSX.Element {
   const searchRef = useRef<HTMLInputElement>(null);
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSearchTerm(searchRef.current?.value ?? "");
+    setSearchTerm(searchRef.current?.value ?? '');
   }
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function SearchPage(): JSX.Element {
   }, [q]);
 
   useEffect(() => {
-    if (fragments != null && searchTerm !== "") {
+    if (fragments != null && searchTerm !== '') {
       dispatch(clearSearchResults());
       for (const frag of fragments.slice(0, fragmentLimit)) {
         void trigger({
@@ -72,13 +72,7 @@ export default function SearchPage(): JSX.Element {
   function SearchForm(): JSX.Element {
     return (
       <div className="flex px-8 py-4">
-        <form
-          autoComplete="off"
-          name="search"
-          noValidate
-          onSubmit={onSubmit}
-          role="search"
-        >
+        <form autoComplete="off" name="search" noValidate onSubmit={onSubmit} role="search">
           <div className="grid grid-cols-[1fr_auto_auto] gap-2">
             <input
               ref={searchRef}
@@ -86,7 +80,7 @@ export default function SearchPage(): JSX.Element {
               className="rounded-md border border-neutral-500 bg-neutral-50 p-2"
               defaultValue={searchTerm}
               key="search-test"
-              placeholder={`${t(["common", "form", "search"])} ...`}
+              placeholder={`${t(['common', 'form', 'search'])} ...`}
               type="search"
             />
             <Button>{`Search in the first ${fragmentLimit} fragments`}</Button>
@@ -97,7 +91,7 @@ export default function SearchPage(): JSX.Element {
             <PopoverButton>&#9432;</PopoverButton>
           </div>
           <PopoverPanel
-            anchor={{ to: "bottom" }}
+            anchor={{ to: 'bottom' }}
             transition
             className="z-[99998] flex p-1 transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
           >
@@ -130,13 +124,10 @@ export default function SearchPage(): JSX.Element {
             <div key={`search-result-${e}`}>
               <div className="font-bold">{`${searchResultDocuments[e]?.author?.lastName} ${searchResultDocuments[e]?.author?.firstName}`}</div>
               <div>
-                {searchTerm !== "" &&
+                {searchTerm !== '' &&
                   searchResultDocuments[e]!.fragments?.map((f) => {
-                    const text = searchResultFragments[f]!.text ?? "";
-                    const regex = new RegExp(
-                      `(?<!\\w)${searchTerm}(?!\\w)`,
-                      "gi",
-                    );
+                    const text = searchResultFragments[f]!.text ?? '';
+                    const regex = new RegExp(`(?<!\\w)${searchTerm}(?!\\w)`, 'gi');
 
                     let match;
                     const positions = [];
@@ -147,17 +138,13 @@ export default function SearchPage(): JSX.Element {
 
                     return (
                       <div className="ml-4" key={`search-result-fragment-${f}`}>
-                        <span className="font-bold">
-                          {searchResultFragments[f]?.date}:
-                        </span>
+                        <span className="font-bold">{searchResultFragments[f]?.date}:</span>
                         {positions.map((match, i) => {
                           return (
                             <div key={`search-result-fragment-text-${f}-${i}`}>
                               ...
                               {text.substring(match.index - 30, match.index)}
-                              <span className="rounded bg-yellow-300 shadow-md">
-                                {match.text}
-                              </span>
+                              <span className="rounded bg-yellow-300 shadow-md">{match.text}</span>
                               {text.substring(
                                 match.index + match.text.length,
                                 match.index + match.text.length + 30,

@@ -12,11 +12,8 @@ export const dictionary: Dictionary = {
     },
   },
   'app-bar': {
-    mapTest: 'Karten-Test',
-    coordinationTest: 'Koordinierte Ansichten Test',
-    timelineTest: 'Zeitstrahl-Test',
-    fragmentTest: 'Fragmente',
-    documents: 'Dokumente',
+    algaeProducts: 'Algen Produkte',
+    algaeSpecies: 'Algen Spezies',
     search: 'Suche',
   },
   entities: {

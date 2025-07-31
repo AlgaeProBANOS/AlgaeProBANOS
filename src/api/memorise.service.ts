@@ -3,7 +3,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import type { RequestOptions } from '@stefanprobst/request';
 import { request } from '@stefanprobst/request';
 
-import { baseUrl } from '~/config/memorise.config';
+import { baseUrl } from '~/config/apb.config';
 
 import type {
   FragmentPathParams,

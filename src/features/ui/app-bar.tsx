@@ -27,6 +27,7 @@ interface AppBarProps {
 
 export function AppBar(props: AppBarProps): JSX.Element {
   const { maintenanceMode = false } = props;
+  const { t } = useI18n<'common'>();
 
   const currentPath = usePathname();
 
@@ -71,13 +72,14 @@ export function AppBar(props: AppBarProps): JSX.Element {
         <div className="flex flex-row items-center gap-4 text-white underline-offset-8">
           <div className="relative h-14 w-32">
             <Link href="/" aria-current={currentPath === '/' ? 'page' : undefined}>
-              <div>
+              <div className="relative size-full">
                 <span className="sr-only">Home</span>
                 <Image
                   alt=""
                   src="/assets/images/APB-logo-white.png"
-                  layout="fill"
-                  objectFit="contain"
+                  fill={true}
+                  style={{ objectFit: 'contain' }}
+                  sizes={'100px 100px'}
                 />
               </div>
             </Link>
@@ -86,13 +88,13 @@ export function AppBar(props: AppBarProps): JSX.Element {
             href="/species"
             className={`${currentPath.includes('species') ? 'font-bold underline' : ''}`}
           >
-            Algae Species
+            {t(['common', 'app-bar', 'algaeSpecies'])}
           </Link>
           <Link
             href="/products"
             className={`${currentPath.includes('products') ? 'font-bold underline' : ''}`}
           >
-            Algae Products
+            {t(['common', 'app-bar', 'algaeProducts'])}
           </Link>
           {/* <div className="flex h-16 flex-row items-center gap-3 text-2xl">
             Heritage of Nazi Persecution - Portal
@@ -104,7 +106,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
           </div>
         )} */}
         <div className="flex flex-row items-center justify-center py-4">
-          <SearchForm />
+          {/* <SearchForm /> */}
           <Popover className="relative flex items-center">
             <PopoverButton>
               <GlobeAltIcon className="size-7 text-white" />

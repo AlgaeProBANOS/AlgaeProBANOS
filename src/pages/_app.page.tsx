@@ -13,6 +13,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { HoverProvider } from '@/app/context/hover.context';
+import { OverlayProvider } from '@/app/context/overlay.context';
 import { SearchProvider } from '@/app/context/search.context';
 import { useAppMetadata } from '@/app/metadata/use-app-metadata';
 import { RootErrorBoundaryFallback } from '@/app/root-error-boundary-fallback';
@@ -26,7 +27,6 @@ import { PageLayout } from '@/features/layouts/page-layout';
 import { createAppUrl } from '@/lib/create-app-url';
 import { createFaviconLink } from '@/lib/create-favicon-link';
 import { manifestFileName, openGraphImageName } from '~/config/metadata.config';
-import { OverlayProvider } from '@/app/context/overlay.context';
 
 export default function App(props: AppProps): JSX.Element {
   const { Component, pageProps } = props;
@@ -44,7 +44,7 @@ export default function App(props: AppProps): JSX.Element {
         <meta name="color-scheme" content="light dark" />
         <link
           rel="icon"
-          href={createFaviconLink({ locale, pathname: '/favicon.ico' })}
+          href={createFaviconLink({ locale, pathname: '/Algae_Favicon-USE-THIS-ONE.ico' })}
           sizes="any"
         />
         <link
