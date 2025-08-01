@@ -9,7 +9,7 @@ import { CheckIcon } from '@heroicons/react/16/solid';
 import clsx from 'clsx';
 
 import { withDictionaries } from '@/app/i18n/with-dictionaries';
-import { FormEvent, Fragment, useEffect, useRef, useState } from 'react';
+import { FormEvent, Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { MyCheckbox, MyCheckboxList } from './MyCheckbox';
 import { useI18n } from '@/app/i18n/use-i18n';
 import { useRouter } from 'next/router';
@@ -26,6 +26,8 @@ import {
 } from '@/app/store/apb.slice';
 import { dispatch } from 'd3';
 import { ContactSupport, DoNotDisturb, DoNotDisturbAltOutlined } from '@mui/icons-material';
+import { Bar, BarChart, Cell, ResponsiveContainer, XAxis } from 'recharts';
+import { algaeColors } from './utils';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -89,12 +91,6 @@ const colors = [
   '#b15928',
 ];
 
-const algaeColors = [
-  { color: '#33a02c', name: 'Green', value: 'green' },
-  { color: '#b15928', name: 'Brown', value: 'brown' },
-  { color: '#e31a1c', name: 'Red', value: 'red' },
-];
-
 export default function ProductFilter(): JSX.Element {
   // const { t } = useI18n<'common'>();
   const species = useAppSelector(selectSpecies);
@@ -138,6 +134,23 @@ export default function ProductFilter(): JSX.Element {
     );
   }, [includeNonApplications]);
 
+  const colorBarChartData = useMemo(() => {
+    return Object.values(algaeColors).map((col) => {
+      const colSpecies = filteredSpecies?.filter((spec) =>
+        species[spec]?.color.includes(col.value),
+      );
+      return {
+        name: col.name,
+        color: col.color,
+        num: colSpecies?.length,
+        species: colSpecies,
+        value: col.value,
+      };
+    });
+  }, [filteredSpecies]);
+
+  console.log(colorBarChartData);
+
   return (
     <div className="grid h-min grid-cols-1 p-4">
       <div className="text-lg font-bold mb-1">Algae Product Sectors</div>
@@ -158,15 +171,22 @@ export default function ProductFilter(): JSX.Element {
               }}
               key={category.key}
               onClick={(e) => {
-                const oldApplications = selectedApplication != null ? [...selectedApplication] : [];
-                if (oldApplications?.includes(category.key)) {
-                  var index = oldApplications.indexOf(category.key);
-                  if (index > -1) {
-                    oldApplications.splice(index, 1);
-                  }
-                } else {
-                  oldApplications.push(category.key);
+                let oldApplications = selectedApplication != null ? [...selectedApplication] : [];
+                switch (e.detail) {
+                  case 1:
+                    if (oldApplications?.includes(category.key)) {
+                      var index = oldApplications.indexOf(category.key);
+                      if (index > -1) {
+                        oldApplications.splice(index, 1);
+                      }
+                    } else {
+                      oldApplications.push(category.key);
+                    }
+                    break;
+                  default:
+                    oldApplications = [category.key];
                 }
+
                 setSelectedApplication(oldApplications);
               }}
             >
@@ -205,36 +225,68 @@ export default function ProductFilter(): JSX.Element {
               } species without any application`}</span>
             </div>
           </div>
-          {/* <div className="flex gap-2">
-            <Field className="flex items-center gap-2 cursor-pointer">
-              <Checkbox
-                checked={includeNonApplications}
-                onChange={(val) => {
-                  setIncludeNonApplications(!includeNonApplications);
-                }}
-                defaultChecked
-                className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray"
-              >
-                <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
-              </Checkbox>
-              <Label
-                className={`cursor-pointer select-none ${includeNonApplications ? 'text-black' : 'text-gray-400'}`}
-              >{`${
-                filteredSpecies?.filter(
-                  (k) =>
-                    Object.keys(species[k]?.applications).filter(
-                      (ak) => species[k]?.applications[ak] != null,
-                    ).length === 0,
-                ).length
-              } without any application`}</Label>
-            </Field>
-          </div> */}
         </div>
       </div>
-      <div className="grid grid-cols-[30%_70%] gap-2 mt-2">
+      <div className="grid grid-cols-[30%_70%] gap-2 mt-3">
         <div className="flex flex-col my-1">
           <div className="text-lg font-bold whitespace-nowrap mb-1">Algae Colors</div>
-          {algaeColors.map((color) => {
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              width={150}
+              height={40}
+              data={colorBarChartData}
+              margin={{
+                top: -6,
+                right: 1,
+                left: 1,
+                bottom: -6,
+              }}
+            >
+              <XAxis
+                dataKey="name"
+                onClick={(e) => {
+                  const col = e.value.toLowerCase();
+                  const oldVal = colorSelection[e.value.toLowerCase()] as boolean;
+
+                  dispatch(
+                    setFilters({
+                      type: 'colors',
+                      cat: e.value.toLowerCase(),
+                      val: !(colorSelection[e.value.toLowerCase()] as boolean),
+                    }),
+                  );
+                  updateColorSelection(col, !oldVal);
+                }}
+                className="cursor-pointer"
+              />
+              <Bar dataKey="num" fill="#8884d8" barSize={30} minPointSize={5}>
+                {colorBarChartData.map((entry, index) => {
+                  return (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={colorSelection[entry.value] ? entry.color : 'gray'}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        dispatch(
+                          setFilters({
+                            type: 'colors',
+                            cat: entry.value,
+                            val: !(colorSelection[entry.value] as boolean),
+                          }),
+                        );
+                        updateColorSelection(
+                          entry.value,
+                          !(colorSelection[entry.value] as boolean),
+                        );
+                      }}
+                    />
+                  );
+                })}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          {/* <div className="text-lg font-bold whitespace-nowrap mb-1">Algae Colors</div>
+          {Object.values(algaeColors).map((color) => {
             const colorVariants = {
               green:
                 'group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-[#33a02c] focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#33a02c]',
@@ -260,7 +312,7 @@ export default function ProductFilter(): JSX.Element {
                 <Label className={'cursor-pointer select-none'}>{color.name}</Label>
               </Field>
             );
-          })}
+          })}*/}
         </div>
         <div className="flex flex-col my-1">
           <div className="text-lg font-bold whitespace-nowrap mb-1">

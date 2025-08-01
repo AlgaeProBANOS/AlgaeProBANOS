@@ -62,6 +62,8 @@ export interface Species {
   risks: string | null;
   salinity: string;
   species: string;
+  genus: string;
+  scientificName: string;
   waterTemp: string;
   waterType: string;
 }

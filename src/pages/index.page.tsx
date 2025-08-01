@@ -25,35 +25,6 @@ export default function HomePage(): JSX.Element {
 
   const metadata = { title: t(['common', 'home', 'metadata', 'title']) };
 
-  const mapVis = useAppSelector((state) => {
-    return selectVisualizationById(state, 'map-test');
-  });
-
-  const timelineVis = useAppSelector((state) => {
-    return selectVisualizationById(state, 'timeline-test');
-  });
-
-  const documents = useAppSelector((state) => {
-    return selectDocuments(state);
-  });
-
-  const documentsAsStrings: Record<string, string> = {};
-
-  const fragsPerDocument = {} as Record<Document['id'], Array<Fragment>>;
-  for (const doc of Object.keys(documents)) {
-    const docString = useDocumentWordsAsOneString({ document: doc });
-    documentsAsStrings[doc] = docString;
-
-    const frags = useAppSelector((state) => {
-      return selectFragmentContentForDocumentByID(state, doc);
-    });
-    fragsPerDocument[doc] = Object.values(frags);
-  }
-
-  const convertedFragments = useConvertDataToInTaVia(fragsPerDocument);
-
-  console.log(convertedFragments);
-
   return (
     <div className="grid size-full grid-cols-[1fr] grid-rows-[1fr,auto] gap-2 p-2 dark:bg-apb-dark dark:text-apb-gold-100">
       <PageMetadata title={metadata.title} titleTemplate={titleTemplate} />

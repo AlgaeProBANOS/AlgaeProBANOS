@@ -27,12 +27,16 @@ export default function ProductMap(): JSX.Element {
   const productSpecies = Object.fromEntries(
     Object.entries(species).filter(([key, val]) => {
       if (filteredSpecies != null) {
-        return filteredAndSelectedSpecies?.includes(val.species) && val.emodnet_points != null;
+        return (
+          filteredAndSelectedSpecies?.includes(val.scientificName) && val.emodnet_points != null
+        );
       } else {
         return val.emodnet_points != null;
       }
     }),
   );
+
+  console.log('productSpecies', productSpecies);
 
   const mapMarkers = useMemo(() => {
     const markers = [];
@@ -74,10 +78,11 @@ export default function ProductMap(): JSX.Element {
       minZoom={0}
       maxZoom={20}
       style={{ width: '100%', height: '100%', position: 'relative' }}
-      mapStyle="https://api.maptiler.com/maps/01985667-132f-7fdb-9b7a-5e164b9d79f2/style.json?key=JryEbN305oNyHUvClr79"
+      mapStyle="https://api.maptiler.com/maps/019864da-bd1a-77a6-8cb4-b2fb2323302f/style.json?key=JryEbN305oNyHUvClr79"
       onLoad={() => {
         console.log('----- Map and Layers loaded! ----- ');
         if (mapRef.current) {
+          console.log(mapRef.current.getMap().getStyle().layers);
           mapRef.current.getMap().setPaintProperty('Water', 'fill-color', '#f0fbff');
         }
       }}
@@ -97,34 +102,32 @@ export default function ProductMap(): JSX.Element {
             'fill-color': [
               'step',
               ['get', 'depth'],
-              '#002b4f', // deeper than -6000
+              '#00527e', // 11
               -6000,
-              '#003f6b',
+              '#075a89', // 10
               -4000,
-              '#005c85',
+              '#0f6294', // 9
               -2000,
-              '#007acc',
+              '#166a9f', // 8
               -1000,
-              '#3399ff',
+              '#1c72ab', // 7
               -500,
-              '#66bfff',
+              '#237bb7', // 6
               -300,
-              '#80d4ff',
+              '#2983c2', // 5
               -200,
-              '#99e0ff',
+              '#2f8cce', // 4
               -150,
-              '#b3ecff',
+              '#3494da', // 3
               -100,
-              '#ccefff',
+              '#3a9de6', // 2
               -50,
-              '#e6f7ff',
-              -20,
-              '#f0fbff',
-              0,
-              '#ffffff', // land or 0m sea level
+              '#40a6f3', // 1
+              -10,
+              '#46afff',
             ],
           }}
-          beforeId="Aeroway"
+          beforeId="waterway"
         />
       </Source>
       <Source

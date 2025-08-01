@@ -8,7 +8,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-synthesis: none;
+  /* font-synthesis: none; */
 }
 
 :root {
@@ -86,4 +86,8 @@ we still enforce color-scheme: dark, despite the user preference */
 
 .maplibregl-ctrl-bottom-right {
   display: none;
+}
+
+.recharts-wrapper > svg {
+  outline: none !important;
 }
