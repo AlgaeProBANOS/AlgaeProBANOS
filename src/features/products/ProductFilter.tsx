@@ -4,71 +4,63 @@ import FactoryIcon from '@mui/icons-material/Factory';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import ParkIcon from '@mui/icons-material/Park';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-import { Checkbox, Field, Label } from '@headlessui/react';
-import { CheckIcon } from '@heroicons/react/16/solid';
-import clsx from 'clsx';
 
-import { withDictionaries } from '@/app/i18n/with-dictionaries';
-import { FormEvent, Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { MyCheckbox, MyCheckboxList } from './MyCheckbox';
+import { ApplicationType } from '@/api/apb.client';
 import { useI18n } from '@/app/i18n/use-i18n';
-import { useRouter } from 'next/router';
-import { Button } from '../ui/button';
-import { Input } from '@intavia/ui';
-import { useLazySearchSpeciesQuery } from '@/api/apb.service';
+import { withDictionaries } from '@/app/i18n/with-dictionaries';
 import { useAppDispatch, useAppSelector } from '@/app/store';
-import { ApplicationType, searchSpecies } from '@/api/apb.client';
 import {
   selectFilteredSpecies,
   selectFilters,
   selectSpecies,
   setFilters,
 } from '@/app/store/apb.slice';
-import { dispatch } from 'd3';
-import { ContactSupport, DoNotDisturb, DoNotDisturbAltOutlined } from '@mui/icons-material';
-import { Bar, BarChart, Cell, ResponsiveContainer, XAxis } from 'recharts';
-import { algaeColors } from './utils';
+import { Input } from '@intavia/ui';
+import { ContactSupport } from '@mui/icons-material';
+import { useRouter } from 'next/router';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ColorSelectionBarChart } from './ColorSelectionBarChart';
 
 export const getStaticProps = withDictionaries(['common']);
 
 const applicationCategories = [
   {
-    key: 'industrial',
+    key: 'industrial' as ApplicationType,
     title: 'Industrial',
     description: 'Industrial applications and processes',
     color: '#2196f3',
     icon: FactoryIcon,
   },
   {
-    key: 'agriculture',
+    key: 'agriculture' as ApplicationType,
     title: 'Agriculture',
     description: 'Agricultural and farming uses',
     color: '#4caf50',
     icon: AgricultureIcon,
   },
   {
-    key: 'medicinal',
+    key: 'medicinal' as ApplicationType,
     title: 'Medicinal',
     description: 'Medical and pharmaceutical applications',
     color: '#f44336',
     icon: MedicalServicesIcon,
   },
   {
-    key: 'cosmetics',
+    key: 'cosmetics' as ApplicationType,
     title: 'Cosmetics',
     description: 'Beauty and personal care products',
     color: '#e91e63',
     icon: FaceRetouchingNaturalIcon,
   },
   {
-    key: 'environmental',
+    key: 'environmental' as ApplicationType,
     title: 'Environmental',
     description: 'Environmental solutions and applications',
     color: '#009688',
     icon: ParkIcon,
   },
   {
-    key: 'humanConsumption',
+    key: 'humanConsumption' as ApplicationType,
     title: 'Human Consumption',
     description: 'Food and nutritional products',
     color: '#ff9800',
@@ -95,24 +87,18 @@ export default function ProductFilter(): JSX.Element {
   // const { t } = useI18n<'common'>();
   const species = useAppSelector(selectSpecies);
   const dispatch = useAppDispatch();
+
   const filters = useAppSelector(selectFilters);
-  const colorFilters = filters.colors;
   const appplicationFilter = filters.applications;
   const filteredSpecies = useAppSelector(selectFilteredSpecies);
   const [selectedApplication, setSelectedApplication] = useState<Array<ApplicationType> | null>(
     appplicationFilter,
   );
-  const [includeNonApplications, setIncludeNonApplications] = useState(true);
+  const includeNonApplicationsFilter = filters.includeNonApplications;
 
-  const [colorSelection, setColorSelection] = useState<Record<string, boolean> | null>(
-    colorFilters,
+  const [includeNonApplications, setIncludeNonApplications] = useState(
+    includeNonApplicationsFilter,
   );
-
-  const updateColorSelection = (colorName: string, val: boolean) => {
-    const tmpColorSelection = { ...colorSelection };
-    tmpColorSelection[colorName] = val;
-    setColorSelection(tmpColorSelection);
-  };
 
   useEffect(() => {
     dispatch(
@@ -134,25 +120,8 @@ export default function ProductFilter(): JSX.Element {
     );
   }, [includeNonApplications]);
 
-  const colorBarChartData = useMemo(() => {
-    return Object.values(algaeColors).map((col) => {
-      const colSpecies = filteredSpecies?.filter((spec) =>
-        species[spec]?.color.includes(col.value),
-      );
-      return {
-        name: col.name,
-        color: col.color,
-        num: colSpecies?.length,
-        species: colSpecies,
-        value: col.value,
-      };
-    });
-  }, [filteredSpecies]);
-
-  console.log(colorBarChartData);
-
   return (
-    <div className="grid h-min grid-cols-1 p-4">
+    <div className="grid grid-cols-1 p-4">
       <div className="text-lg font-bold mb-1">Algae Product Sectors</div>
       <div className="grid grid-cols-2 gap-4">
         {applicationCategories.map((category) => {
@@ -228,92 +197,7 @@ export default function ProductFilter(): JSX.Element {
         </div>
       </div>
       <div className="grid grid-cols-[30%_70%] gap-2 mt-3">
-        <div className="flex flex-col my-1">
-          <div className="text-lg font-bold whitespace-nowrap mb-1">Algae Colors</div>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              width={150}
-              height={40}
-              data={colorBarChartData}
-              margin={{
-                top: -6,
-                right: 1,
-                left: 1,
-                bottom: -6,
-              }}
-            >
-              <XAxis
-                dataKey="name"
-                onClick={(e) => {
-                  const col = e.value.toLowerCase();
-                  const oldVal = colorSelection[e.value.toLowerCase()] as boolean;
-
-                  dispatch(
-                    setFilters({
-                      type: 'colors',
-                      cat: e.value.toLowerCase(),
-                      val: !(colorSelection[e.value.toLowerCase()] as boolean),
-                    }),
-                  );
-                  updateColorSelection(col, !oldVal);
-                }}
-                className="cursor-pointer"
-              />
-              <Bar dataKey="num" fill="#8884d8" barSize={30} minPointSize={5}>
-                {colorBarChartData.map((entry, index) => {
-                  return (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={colorSelection[entry.value] ? entry.color : 'gray'}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        dispatch(
-                          setFilters({
-                            type: 'colors',
-                            cat: entry.value,
-                            val: !(colorSelection[entry.value] as boolean),
-                          }),
-                        );
-                        updateColorSelection(
-                          entry.value,
-                          !(colorSelection[entry.value] as boolean),
-                        );
-                      }}
-                    />
-                  );
-                })}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-          {/* <div className="text-lg font-bold whitespace-nowrap mb-1">Algae Colors</div>
-          {Object.values(algaeColors).map((color) => {
-            const colorVariants = {
-              green:
-                'group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-[#33a02c] focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#33a02c]',
-              brown:
-                'group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-[#b15928] focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#b15928]',
-              red: 'group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-[#e31a1c] focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#e31a1c]',
-            };
-
-            return (
-              <Field className="flex items-center gap-2 cursor-pointer" key={color.value}>
-                <Checkbox
-                  key={`checkbox-${color.value}`}
-                  checked={colorSelection[color.value]}
-                  onChange={(val) => {
-                    dispatch(setFilters({ type: 'colors', cat: color.value, val: val }));
-                    updateColorSelection(color.value, val);
-                  }}
-                  defaultChecked
-                  className={colorVariants[color.value]}
-                >
-                  <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
-                </Checkbox>
-                <Label className={'cursor-pointer select-none'}>{color.name}</Label>
-              </Field>
-            );
-          })}*/}
-        </div>
+        <ColorSelectionBarChart />
         <div className="flex flex-col my-1">
           <div className="text-lg font-bold whitespace-nowrap mb-1">
             Filter for species names, common names, ...
@@ -334,7 +218,7 @@ function SearchForm(): JSX.Element {
   const nameFilter = useAppSelector(selectFilters).name;
   const [value, setValue] = useState(nameFilter);
 
-  async function onSubmit(event) {
+  async function onSubmit(event: ChangeEvent) {
     const searchTerm = event.target.value;
     setValue(searchTerm);
     event.preventDefault();
@@ -351,7 +235,7 @@ function SearchForm(): JSX.Element {
         ref={searchRef}
         aria-label="Search"
         className="bg-neutral-50 rounded-full dark:bg-apb-gold-100 dark:text-apb-dark"
-        defaultValue={value}
+        defaultValue={value ?? ''}
         key="search-test"
         name="q"
         placeholder={`${t(['common', 'form', 'search'])} ...`}

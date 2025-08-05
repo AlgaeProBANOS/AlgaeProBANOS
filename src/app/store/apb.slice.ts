@@ -32,7 +32,7 @@ export interface APBState {
 const initialState: APBState = {
   species: {},
   filteredSpecies: null,
-  filters: {colors: {'green': true, 'brown': true, 'red': true}, name: null, species: null, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'],
+  filters: {colors: {'green': true, 'brown': true, 'red': true, 'unknown': true}, name: null, species: null, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'],
   includeNonApplications: true}
 };
 

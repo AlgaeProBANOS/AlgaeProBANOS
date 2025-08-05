@@ -7,6 +7,9 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import { selectFilters, selectSpecies, setFilteredSpecies } from '@/app/store/apb.slice';
 import { filter } from 'd3';
 import SpeciesList from '@/features/products/SpeciesList';
+import { useApplyFilters } from '@/lib/get-filtered-species';
+import test from 'node:test';
+import { LocalHospital } from '@mui/icons-material';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -14,58 +17,8 @@ export default function ProductPage(): JSX.Element {
   // const { t } = useI18n<'common'>();
   const dispatch = useAppDispatch();
 
+  const filteredSpecies = useApplyFilters();
   const species = useAppSelector(selectSpecies);
-  const filters = useAppSelector(selectFilters);
-  const colorFilter = filters?.colors;
-  const colorFilteredSpecies = Object.keys(species).filter((key) => {
-    let hit = false;
-    if (colorFilter) {
-      for (const col of Object.keys(colorFilter)) {
-        if (colorFilter[col] === true) {
-          hit = species[key]?.color.includes(col) as boolean;
-          if (hit) {
-            return hit;
-          }
-        }
-      }
-    }
-    return hit;
-  });
-
-  const nameFilter = filters?.name;
-  const nameFilteredSpecies = Object.keys(species).filter((key) => {
-    let hit = true;
-    if (nameFilter) {
-      return species[key]?.species.includes(nameFilter) as boolean;
-    }
-    return hit;
-  });
-
-  const colorAndNameFilteredSpecies = colorFilteredSpecies.filter((item) =>
-    nameFilteredSpecies.includes(item),
-  );
-
-  const applicationFilter = filters?.applications;
-  console.log('applicationFilter', applicationFilter);
-  const includeNonApplications = filters.includeNonApplications;
-
-  const applicationFilteredSpecies = Object.keys(species).filter((key) => {
-    let hit = true;
-    const speciesApplications = Object.keys(species[key]?.applications).filter(
-      (k) => species[key]?.applications[k] != null,
-    );
-
-    if (applicationFilter && includeNonApplications === false) {
-      hit = applicationFilter.some((a) =>
-        speciesApplications.length > 0 ? speciesApplications.includes(a) : true,
-      );
-    }
-    return hit;
-  });
-
-  const filteredSpecies = colorAndNameFilteredSpecies.filter((item) =>
-    applicationFilteredSpecies.includes(item),
-  );
 
   useEffect(() => {
     dispatch(setFilteredSpecies(filteredSpecies));
@@ -73,10 +26,12 @@ export default function ProductPage(): JSX.Element {
 
   return (
     <Fragment>
-      <div className="grid h-full grid-cols-[3fr_1fr] grid-rows-1">
+      <div className="grid h-full grid-cols-[60%_40%] grid-rows-[60%_40%]">
         <ProductMap />
-        <div className="flex flex-col">
+        <div className="flex flex-col row-span-2">
           <ProductFilter />
+        </div>
+        <div className="col-span">
           <SpeciesList />
         </div>
       </div>

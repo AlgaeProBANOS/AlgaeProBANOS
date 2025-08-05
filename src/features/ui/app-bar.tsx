@@ -96,9 +96,6 @@ export function AppBar(props: AppBarProps): JSX.Element {
           >
             {t(['common', 'app-bar', 'algaeProducts'])}
           </Link>
-          {/* <div className="flex h-16 flex-row items-center gap-3 text-2xl">
-            Heritage of Nazi Persecution - Portal
-          </div> */}
         </div>
         {/* {maintenanceMode === true && (
           <div className="flex h-10 items-center rounded-full bg-apb-pink-100 p-[4px_12px] text-center text-apb-dark text-white">

@@ -22,26 +22,17 @@ export default function ProductMap(): JSX.Element {
       ? filteredSpecies.filter((item) =>
           speciesFilter != null && speciesFilter.length > 0 ? speciesFilter.includes(item) : true,
         )
-      : species;
+      : Object.keys(species);
 
-  const productSpecies = Object.fromEntries(
-    Object.entries(species).filter(([key, val]) => {
-      if (filteredSpecies != null) {
-        return (
-          filteredAndSelectedSpecies?.includes(val.scientificName) && val.emodnet_points != null
-        );
-      } else {
-        return val.emodnet_points != null;
-      }
-    }),
-  );
-
-  console.log('productSpecies', productSpecies);
+  const productSpecies = filteredAndSelectedSpecies.filter((key) => {
+    return species[key]!.emodnet_points != null;
+  });
 
   const mapMarkers = useMemo(() => {
     const markers = [];
-    for (const species of Object.values(productSpecies)) {
-      for (const dot of species.emodnet_points) {
+    for (const speciesName of productSpecies) {
+      const spec = species[speciesName];
+      for (const dot of spec.emodnet_points) {
         const newMarker = {
           type: 'Feature',
           properties: {},
@@ -82,7 +73,6 @@ export default function ProductMap(): JSX.Element {
       onLoad={() => {
         console.log('----- Map and Layers loaded! ----- ');
         if (mapRef.current) {
-          console.log(mapRef.current.getMap().getStyle().layers);
           mapRef.current.getMap().setPaintProperty('Water', 'fill-color', '#f0fbff');
         }
       }}

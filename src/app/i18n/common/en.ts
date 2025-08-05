@@ -23,11 +23,11 @@ export const dictionary: Dictionary = {
   },
   home: {
     hero: {
-      title: 'Heritage of Nazi Persecution - Portal',
-      subtitle: 'Heritage of Nazi Persecution',
+      title: 'AlgaeProBANOS',
+      subtitle: 'AlgaeProBANOS',
     },
     metadata: {
-      title: 'Heritage of Nazi Persecution - Portal',
+      title: 'AlgaeProBANOS',
     },
     'card-search': {
       title: 'Search in {{number-fragments}} Fragments',
