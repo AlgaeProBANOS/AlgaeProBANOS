@@ -10,6 +10,7 @@ import SpeciesList from '@/features/products/SpeciesList';
 import { useApplyFilters } from '@/lib/get-filtered-species';
 import test from 'node:test';
 import { LocalHospital } from '@mui/icons-material';
+import { SpeciesTreeMap } from '@/features/products/SpeciesTreeMap';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -28,11 +29,14 @@ export default function ProductPage(): JSX.Element {
     <Fragment>
       <div className="grid h-full grid-cols-[60%_40%] grid-rows-[60%_40%]">
         <ProductMap />
-        <div className="flex flex-col row-span-2">
+        <div className="flex flex-col">
           <ProductFilter />
         </div>
-        <div className="col-span">
+        <div>
           <SpeciesList />
+        </div>
+        <div className="grid size-full border border-gray-600">
+          <SpeciesTreeMap />
         </div>
       </div>
     </Fragment>

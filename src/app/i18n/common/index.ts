@@ -70,5 +70,15 @@ export interface Dictionary {
     'click-to-filter': string;
     'click-to-search': string;
   };
+  products: {
+    'productSectors': string;
+    'industrial': string;
+    'agriculture': string;
+    'cosmetics': string;
+    'environmental': string;
+    'humanConsumption': string;
+    'medicinal': string;
+    'noApplication': string;
+  };
   regex: Record<string, Record<string, string>>;
 }

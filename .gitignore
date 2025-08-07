@@ -64,3 +64,6 @@ tsconfig.tsbuildinfo
 public/nl/*
 public/de/*
 .DS_Store
+
+backend/data/
+backend/datacopy/

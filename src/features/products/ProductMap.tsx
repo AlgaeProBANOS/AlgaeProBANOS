@@ -8,6 +8,7 @@ import { useAppSelector } from '@/app/store';
 import { Marker } from 'maplibre-gl';
 import { Checkbox, Field, Label } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/16/solid';
+import { MapDataSourceSwitch } from './MapDataSourceSwitch';
 
 export default function ProductMap(): JSX.Element {
   const mapRef = useRef<MapRef>(null);
@@ -180,10 +181,10 @@ export default function ProductMap(): JSX.Element {
           source="micro-source"
         />
       </Source>
-      <div className="absolute top-3 right-3 p-2 bg-apb-gray-light shadow-md rounded-md flex flex-col">
+      <div className="absolute top-3 right-3 p-2 bg-apb-gray-light shadow-md rounded-md flex flex-col gap-1">
         <b>Map Options</b>
         <div>{`${Object.keys(productSpecies).length} product species on map`}</div>
-        <div className="w-full h-1 border-b border-gray-400 mb-1"></div>
+        <div className="w-full h-1 border-b border-gray-400"></div>
         <div>
           <Field className="flex items-center gap-1 cursor-pointer">
             <Checkbox
@@ -202,6 +203,9 @@ export default function ProductMap(): JSX.Element {
               Show Bathymetry
             </Label>
           </Field>
+        </div>
+        <div className="flex gap-1">
+          Source: <MapDataSourceSwitch />
         </div>
       </div>
     </Map>

@@ -59,6 +59,15 @@ export const dictionary: Dictionary = {
     clear: 'Wissen',
     search: 'Zoeken',
   },
+  products: {
+    "productSectors": "Algenproductsectoren",
+    "industrial": "Industrieel",
+    "agriculture": "Landbouw",
+    "cosmetics": "Cosmetica",
+    "environmental": "Milieu",
+    "humanConsumption": "Menselijke consumptie",
+    "medicinal": "Medicinaal"
+  },
   documents: {
     'show-annotations': 'Toon annotaties',
     'search-in-text': 'Zoeken in teksten',

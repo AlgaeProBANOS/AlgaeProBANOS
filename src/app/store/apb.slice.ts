@@ -85,28 +85,28 @@ export const slice = createSlice({
         const newSpecies = {} as Record<Species['id'], Species>;
         for(const speciesIt of result) {
           let species = {...speciesIt};
-          const newID = species.species;
+          const newID = species.scientificName;
           if(Object.keys(newSpecies).includes(newID)) {
             console.error("Species already exists in store", newID, species);
           }
           else {
-            if(newID.endsWith("sp.") || newID.endsWith("spp.")) {
-              const splitArray = newID.split(" ");
-              const genus = splitArray[0] as string;
-              const speciesName = "";
-              species.genus = genus;
-              species.species = speciesName;
-              species.scientificName = newID;
-            }
-            else if(newID.includes(" ")) {
-              const splitArray = newID.split(" ");
-              const genus = splitArray[0] as string;
-              const speciesName = splitArray.slice(1).join(" ");
-              const scientificName = genus + " " + speciesName;
-              species.genus = genus;
-              species.species = speciesName;
-              species.scientificName = scientificName;
-            }
+            // if(newID.endsWith("sp.") || newID.endsWith("spp.")) {
+            //   const splitArray = newID.split(" ");
+            //   const genus = splitArray[0] as string;
+            //   const speciesName = "";
+            //   species.genus = genus;
+            //   species.species = speciesName;
+            //   species.scientificName = newID;
+            // }
+            // else if(newID.includes(" ")) {
+            //   const splitArray = newID.split(" ");
+            //   const genus = splitArray[0] as string;
+            //   const speciesName = splitArray.slice(1).join(" ");
+            //   const scientificName = genus + " " + speciesName;
+            //   species.genus = genus;
+            //   species.species = speciesName;
+            //   species.scientificName = scientificName;
+            // }
             newSpecies[newID] = species;
           }
         }

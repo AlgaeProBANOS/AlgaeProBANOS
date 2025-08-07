@@ -59,6 +59,16 @@ export const dictionary: Dictionary = {
     clear: 'Clear',
     search: 'Search',
   },
+  products: {
+    'productSectors': 'Algae Product Sectors',
+    'industrial': 'Industrial',
+    'agriculture': 'Agriculture',
+    'cosmetics': 'Cosmetics',
+    'environmental': 'Environmental',
+    'humanConsumption': 'Human Consumption',
+    'medicinal': 'Medicinal',
+    'noApplication': "No Application"
+  },
   documents: {
     'show-annotations': 'Show Annotations',
     'search-in-text': 'Search in texts',

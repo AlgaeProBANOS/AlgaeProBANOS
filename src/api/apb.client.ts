@@ -63,6 +63,7 @@ export interface Species {
   salinity: string;
   species: string;
   genus: string;
+  synonyms: string;
   scientificName: string;
   waterTemp: string;
   waterType: string;
