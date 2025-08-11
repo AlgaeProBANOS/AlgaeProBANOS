@@ -48,7 +48,29 @@ export function useApplyFilters() {
   // TODO this needs to be elaborated since the name search is supposed to include also the trade name and so on
   const nameFilter = filters.name;
   if (nameFilter != null && nameFilter.length > 0) {
-    currentSpecies = currentSpecies.filter((spec) => spec.includes(nameFilter));
+    currentSpecies = currentSpecies.filter((spec) => {
+      const testSpecies = species[spec];
+      if(testSpecies?.scientificName.includes(nameFilter)) {
+        return true;
+      }
+
+      if(testSpecies?.commonName.includes(nameFilter)) {
+        return true;
+      }
+
+      return false;
+    });
+  }
+
+  //Country filter
+  const countriesFilter = filters.countries;
+  if(countriesFilter != null && Object.keys(countriesFilter).length > 0) {
+    currentSpecies = currentSpecies.filter((spec)=> {
+      if(species[spec]?.emodnet_points != null) {
+        return species[spec]?.emodnet_points.some(e=>Object.keys(countriesFilter).includes(e.country));
+      }
+      return false;
+    })
   }
 
   return currentSpecies;

@@ -3,16 +3,25 @@ import 'maplibre-gl/dist/maplibre-gl.css'; // See notes below
 import type { MapRef } from '@vis.gl/react-maplibre';
 import { Layer, Map, Source } from '@vis.gl/react-maplibre';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { selectFilteredSpecies, selectFilters, selectSpecies } from '@/app/store/apb.slice';
-import { useAppSelector } from '@/app/store';
+import {
+  Country,
+  selectFilteredSpecies,
+  selectFilters,
+  selectSpecies,
+  setFilters,
+} from '@/app/store/apb.slice';
+import { useAppDispatch, useAppSelector } from '@/app/store';
 import { Marker } from 'maplibre-gl';
 import { Checkbox, Field, Label } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/16/solid';
 import { MapDataSourceSwitch } from './MapDataSourceSwitch';
+import { CountryLayer } from './CountryLayer';
 
 export default function ProductMap(): JSX.Element {
   const mapRef = useRef<MapRef>(null);
+  const dispatch = useAppDispatch();
   const [isClustering, setIsClustering] = useState(true);
+  const countryFilters = useAppSelector(selectFilters).countries ?? {};
 
   const species = useAppSelector(selectSpecies);
   const filteredSpecies = useAppSelector(selectFilteredSpecies);
@@ -72,11 +81,35 @@ export default function ProductMap(): JSX.Element {
       style={{ width: '100%', height: '100%', position: 'relative' }}
       mapStyle="https://api.maptiler.com/maps/019864da-bd1a-77a6-8cb4-b2fb2323302f/style.json?key=JryEbN305oNyHUvClr79"
       onLoad={() => {
-        console.log('----- Map and Layers loaded! ----- ');
+        console.log('----- Map and Layers loaded! ----- ', mapRef.current?.getStyle().layers);
         if (mapRef.current) {
           mapRef.current.getMap().setPaintProperty('Water', 'fill-color', '#f0fbff');
         }
       }}
+      onClick={(e) => {
+        const feature = e.features?.[0];
+        if (feature && feature.layer.id === 'country-fill') {
+          const oldFilters = { ...countryFilters } as Record<Country['title'], Country>;
+          if (Object.keys(oldFilters).includes(feature.properties.ROMNAM)) {
+            delete oldFilters[feature.properties.ROMNAM];
+          } else {
+            oldFilters[feature.properties.ROMNAM] = {
+              title: feature.properties.ROMNAM,
+              value: feature.properties.ROMNAM,
+              iso3: feature.properties.ISO3CD,
+            };
+          }
+
+          dispatch(
+            setFilters({
+              type: 'countries',
+              cat: 'countries',
+              val: oldFilters,
+            }),
+          );
+        }
+      }}
+      interactiveLayerIds={['country-fill']}
     >
       <Source
         id="bathymetry-source"
@@ -121,6 +154,7 @@ export default function ProductMap(): JSX.Element {
           beforeId="waterway"
         />
       </Source>
+      <CountryLayer />
       <Source
         id="micro-source"
         data={{

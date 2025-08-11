@@ -17,6 +17,8 @@ import { applicationCategories } from './utils';
 import { ProductSectionTreeMap } from './ProductSectionTreeMap';
 import { ProductSectionSelector } from './ProductSectionSelector';
 import { Switch } from './Switch';
+import CountrySearchBar from './CountrySearchBar';
+import NameSearchBar from './NameSearchBar';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -80,16 +82,16 @@ export default function ProductFilter(): JSX.Element {
   }, [selectedApplication]);
 
   return (
-    <div className="grid grid-cols-1 p-4">
+    <div className="grid grid-cols-1 p-2">
       <div className="flex gap-2 justify-between">
         <div className="text-lg font-bold mb-1">{t(['common', 'products', 'productSectors'])}</div>
-        <Switch
+        {/* <Switch
           value={sectionType}
           setValue={setSectionType}
           firstOption={{ val: 'selection', name: 'Selection' }}
           secondOption={{ val: 'treeMap', name: 'TreeMap' }}
           className="h-min"
-        />
+        /> */}
       </div>
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div
@@ -105,7 +107,7 @@ export default function ProductFilter(): JSX.Element {
           <div className="flex h-full flex-col p-1">
             <div className="flex items-center">
               <ContactSupport className="mr-1" style={{ color: '#3c3c3c' }} />
-              <span className="text-lg font-bold">Select All</span>
+              <span className="font-bold">Select All</span>
             </div>
             <span className="text-sm text-gray-500">{`Include all species.`}</span>
           </div>
@@ -122,7 +124,7 @@ export default function ProductFilter(): JSX.Element {
           <div className="flex h-full flex-col p-1">
             <div className="flex items-center">
               <ContactSupport className="mr-1" style={{ color: '#3c3c3c' }} />
-              <span className="text-lg font-bold">No Application</span>
+              <span className="font-bold">No Application</span>
             </div>
             <span className="text-sm text-gray-500">{`Include ${
               filteredSpecies?.filter(
@@ -135,23 +137,13 @@ export default function ProductFilter(): JSX.Element {
           </div>
         </div>
       </div>
-      {sectionType === 'treeMap' ? (
-        <div className="grid h-[300px]">
-          <ProductSectionTreeMap />
-        </div>
-      ) : (
-        <ProductSectionSelector />
-      )}
-      <div className="grid grid-cols-[30%_70%] gap-2 mt-3">
-        <ColorSelectionBarChart />
-        <div className="flex flex-col my-1">
-          <div className="text-lg font-bold whitespace-nowrap mb-1">
-            Filter for species names, common names, ...
-          </div>
-          <SearchForm />
-          <div className="text-sm text-gray-500 mt-1">{`${Object.keys(species).length} species in sum`}</div>
-        </div>
+      {/* {sectionType === 'treeMap' ? ( */}
+      <div className="grid h-[250px]">
+        <ProductSectionTreeMap />
       </div>
+      {/* ) : ( */}
+      {/* <ProductSectionSelector /> */}
+      {/* )} */}
     </div>
   );
 }

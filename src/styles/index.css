@@ -91,3 +91,7 @@ we still enforce color-scheme: dark, despite the user preference */
 .recharts-wrapper > svg {
   outline: none !important;
 }
+
+#country-search-input {
+  margin-left: 25px;
+}

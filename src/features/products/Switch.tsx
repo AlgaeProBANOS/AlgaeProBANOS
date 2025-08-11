@@ -5,7 +5,7 @@ export function Switch(props) {
 
   return (
     <div
-      className={`${className} flex cursor-pointer rounded-md w-min overflow-hidden`}
+      className={`${className} flex cursor-pointer rounded-md w-min overflow-hidden border-apb-gray border`}
       onClick={() => {
         if (value === firstOption.val) {
           setValue(secondOption.val);

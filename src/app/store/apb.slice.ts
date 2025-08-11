@@ -13,12 +13,22 @@ import type { RootState } from '@/app/store';
 // State management; logic for handling parts of a state; organisation, reducers, actions
 //===
 
+export interface Country {
+   title: string; 
+   value: string; 
+   iso: string; 
+   iso3: string; 
+   type: string; 
+   found: boolean;
+}
+
 export interface Filters {
   colors: Record<string, boolean> | null;
   name: string | null;
   species: Array<Species['id']> | null;
   applications: Array<ApplicationType> | null;
   includeNonApplications: boolean;
+  countries: Record<Country['title'], Country> | null;
 };
 
 //Declaration
@@ -33,7 +43,7 @@ const initialState: APBState = {
   species: {},
   filteredSpecies: null,
   filters: {colors: {'green': true, 'brown': true, 'red': true, 'unknown': true}, name: null, species: null, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'],
-  includeNonApplications: true}
+  includeNonApplications: true, countries: null}
 };
 
 export const slice = createSlice({
@@ -67,6 +77,9 @@ export const slice = createSlice({
           break;
         case "applications":
           state.filters.applications = val;
+          break;
+        case "countries":
+          state.filters.countries = val;
           break;
         case "includeNonApplications":
           state.filters.includeNonApplications = val;

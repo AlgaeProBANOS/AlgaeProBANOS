@@ -108,7 +108,7 @@ export function ProductSectionTreeMap() {
           >
             <div
               // className="size-full items-center flex justify-center overflow-hidden text-ellipsis cursor-pointer p-1 rounded-md"
-              className={`rounded flex h-full cursor-pointer flex-col border-l-4 transition-all p-2 hover:shadow-md select-none ${isSelected ? 'shadow-md' : ''}`}
+              className={`rounded flex h-full cursor-pointer flex-col border-l-4 transition-all hover:shadow-md select-none ${isSelected ? 'shadow-md' : ''}`}
               style={{
                 borderColor: element.color,
                 backgroundColor: isSelected ? `${root.children[index].color}22` : 'white',
@@ -136,9 +136,7 @@ export function ProductSectionTreeMap() {
               <div className="flex h-full flex-col p-1">
                 <div className="flex items-center mb-2">
                   <Icon className="mr-1" style={{ color: element.color, stroke: 'none' }} />
-                  <span className="text-lg font-bold">
-                    {t(['common', 'products', element.name])}
-                  </span>
+                  <span className="font-bold">{t(['common', 'products', element.name])}</span>
                 </div>
                 <span className="text-sm text-gray-500">{element.description}</span>
               </div>
@@ -172,8 +170,8 @@ export function ProductSectionTreeMap() {
       )} */}
       <ResponsiveContainer width="100%" height="100%">
         <Treemap
-          // width={400}
-          // height={200}
+          width={400}
+          height={200}
           data={treeMapData}
           dataKey="size"
           aspectRatio={15 / 6}

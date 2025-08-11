@@ -45,7 +45,7 @@ export function ColorSelectionBarChart() {
 
   return (
     <div className="flex flex-col my-1">
-      <div className="text-lg font-bold whitespace-nowrap mb-1">Algae Colors</div>
+      <div className="font-bold whitespace-nowrap mb-1">Algae Colors</div>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           width={150}
