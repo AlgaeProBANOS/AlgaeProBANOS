@@ -7,6 +7,10 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import ParkIcon from '@mui/icons-material/Park';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 
+export const replaceSpecialCharacters = (input: string) => {
+  return input.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
+};
+
 export const algaeColors = {
   green: { color: '#33a02c', name: 'Green', value: 'green' },
   brown: { color: '#b15928', name: 'Brown', value: 'brown' },

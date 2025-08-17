@@ -56,10 +56,6 @@ export function translateEventType(
   return returnValue;
 }
 
-/* export const replaceSpecialCharacters = (input: string) => {
-  return input.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
-}; */
-
 export const pick = (obj: Record<string, any>, keys: Array<string>) => {
   return Object.fromEntries(
     keys

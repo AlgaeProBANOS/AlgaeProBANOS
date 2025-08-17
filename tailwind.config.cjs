@@ -39,8 +39,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['DM Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'], //Default font for text
-        mono: ['DM Mono', 'monospace'],
+        sans: ['sans-serif'], //Default font for text
+        mono: ['monospace'],
       },
     },
   },

@@ -40,7 +40,7 @@ export function TooltipProvider(props: TooltipProviderProps): JSX.Element {
     return { content, updateTooltip };
   }, [content]);
 
-  const { containerRef, containerBounds } = useTooltipInPortal({
+  const { containerRef, containerBounds, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
     detectBounds: true,
   });
@@ -71,11 +71,11 @@ export function TooltipProvider(props: TooltipProviderProps): JSX.Element {
     [showTooltip, containerBounds],
   );
 
-  const TooltipComponent = TooltipWithBounds;
+  const TooltipComponent = TooltipInPortal;
 
   return (
     <TooltipContext.Provider value={value}>
-      <div
+      {/* <div
         id="tooltipProviderWrapper"
         style={{
           position: 'absolute',
@@ -85,24 +85,24 @@ export function TooltipProvider(props: TooltipProviderProps): JSX.Element {
           top: 0,
           overflow: 'hidden',
         }}
+      >*/}
+      <div
+        id="tooltipProvider"
+        ref={containerRef}
+        onPointerMove={handlePointerMove}
+        className="w-full h-full overflow-hidden z-[40]"
       >
-        <div
-          id="tooltipProvider"
-          ref={containerRef}
-          onPointerMove={handlePointerMove}
-          className="relative w-full h-full overflow-hidden z-[40]"
+        <TooltipComponent
+          key={Math.random()} // needed for bounds to update correctly
+          left={tooltipLeft}
+          top={tooltipTop}
+          style={tooltipStyles}
+          className={`z-[41] ${content != null ? 'visible' : 'hidden'}`}
         >
-          <TooltipComponent
-            key={Math.random()} // needed for bounds to update correctly
-            left={tooltipLeft}
-            top={tooltipTop}
-            style={tooltipStyles}
-            className={`z-[41] ${content != null ? 'visible' : 'hidden'}`}
-          >
-            {content}
-          </TooltipComponent>
-          {children}
-        </div>
+          {content}
+        </TooltipComponent>
+        {children}
+        {/* </div> */}
       </div>
     </TooltipContext.Provider>
   );

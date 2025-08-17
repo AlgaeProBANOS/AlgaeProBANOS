@@ -10,15 +10,10 @@ import {
 } from '@/app/store/apb.slice';
 import { Input } from '@intavia/ui';
 import { ContactSupport } from '@mui/icons-material';
-import { useRouter } from 'next/router';
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { ColorSelectionBarChart } from './ColorSelectionBarChart';
-import { applicationCategories } from './utils';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useTooltipState } from '../common/tooltip/tooltip-provider';
 import { ProductSectionTreeMap } from './ProductSectionTreeMap';
-import { ProductSectionSelector } from './ProductSectionSelector';
-import { Switch } from './Switch';
-import CountrySearchBar from './CountrySearchBar';
-import NameSearchBar from './NameSearchBar';
+import { applicationCategories } from './utils';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -44,6 +39,7 @@ export default function ProductFilter(): JSX.Element {
   const appplicationFilter = filters.applications;
   const { t } = useI18n<'common'>();
   const dispatch = useAppDispatch();
+  const tooltip = useTooltipState();
 
   type SectionType = 'treeMap' | 'selection';
   const [sectionType, setSectionType] = useState<SectionType>('treeMap');
@@ -82,7 +78,7 @@ export default function ProductFilter(): JSX.Element {
   }, [selectedApplication]);
 
   return (
-    <div className="grid grid-cols-1 p-2">
+    <div className="grid size-full grid-cols-1 grid-rows-[min-content_auto_1fr] p-2">
       <div className="flex gap-2 justify-between">
         <div className="text-lg font-bold mb-1">{t(['common', 'products', 'productSectors'])}</div>
         {/* <Switch
@@ -138,7 +134,7 @@ export default function ProductFilter(): JSX.Element {
         </div>
       </div>
       {/* {sectionType === 'treeMap' ? ( */}
-      <div className="grid h-[250px]">
+      <div className="grid h-full">
         <ProductSectionTreeMap />
       </div>
       {/* ) : ( */}
@@ -150,7 +146,6 @@ export default function ProductFilter(): JSX.Element {
 
 function SearchForm(): JSX.Element {
   const searchRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const { t } = useI18n<'common'>();
   const nameFilter = useAppSelector(selectFilters).name;

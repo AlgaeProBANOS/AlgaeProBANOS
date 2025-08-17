@@ -1,6 +1,8 @@
 import pandas as pd
 import json
+from crawling.crawlAPI import query_species_taxonomy
 from crawling.crawlGBIF import get_children, get_synonyms, query_occurrences, query_species, query_species_by_genus
+import traceback
 
 
 csv_file_path = 'testOutput.csv'
@@ -27,6 +29,10 @@ try:
     print("CSV file loaded successfully.")
 
     for index, row in df.iterrows():
+        if row["Scientific Name"] is None:
+            continue
+        if pd.isnull(row["Scientific Name"]):
+            continue
         print(f'Processing {row["Scientific Name"]} ({index+1}/{len(df)})')
         print(f'\tSyns: {row["Synonyms"]}')
         if pd.isna(row["Species"]):
@@ -62,6 +68,15 @@ try:
                 with open(f'data/species/{row["Scientific Name"].replace(" ", "_")}.json', 'w') as f:
                     json.dump(list(map(filter_occ_dict, occs)), f)
                     f.close()
+
+        if row["Scientific Name"].endswith(".") is False:
+            print("Query API for taxonomy data")
+            taxData = query_species_taxonomy(row["Scientific Name"])
+            if row["Scientific Name"] in species:
+                species[row["Scientific Name"]] = taxData | species[row["Scientific Name"]]
+            else:
+                species[row["Scientific Name"]] = taxData
+
         print()
         if dry != True:
             with open(f'data/species.json', 'w') as f:
@@ -97,3 +112,4 @@ except pd.errors.ParserError:
     print("Error: The CSV file is badly formatted.")
 except Exception as e:
     print(f"An unexpected error occurred: {e}")
+    print(traceback.format_exc())

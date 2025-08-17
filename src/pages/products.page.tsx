@@ -14,6 +14,7 @@ import { SpeciesTreeMap } from '@/features/products/SpeciesTreeMap';
 import { ColorSelectionBarChart } from '@/features/products/ColorSelectionBarChart';
 import NameSearchBar from '@/features/products/NameSearchBar';
 import CountrySearchBar from '@/features/products/CountrySearchBar';
+import { MySpeciesTreeMap } from '@/features/products/MySpeciesTreeMap';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -37,7 +38,7 @@ export default function ProductPage(): JSX.Element {
         <div>
           <ProductFilter />
         </div>
-        <div className="col-span-2 border border-apb-gray grid grid-cols-3 gap-1">
+        <div className="col-span-2 grid grid-cols-3 gap-1 p-2">
           <ColorSelectionBarChart />
           <div className="flex items-center justify-center">
             <NameSearchBar />
@@ -50,7 +51,7 @@ export default function ProductPage(): JSX.Element {
           <SpeciesList />
         </div>
         <div>
-          <SpeciesTreeMap />
+          <MySpeciesTreeMap />
         </div>
       </div>
       {/* <div className="grid h-full grid-cols-[60%_40%] grid-rows-[60%_40%]">

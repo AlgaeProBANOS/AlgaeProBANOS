@@ -4,6 +4,7 @@ import { withDictionaries } from '@/app/i18n/with-dictionaries';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import {
   selectFilteredSpecies,
+  selectFilters,
   selectSpecies,
   setFilteredSpecies,
   setFilters,
@@ -11,19 +12,23 @@ import {
 import { Species } from '@/api/apb.client';
 import { MapPinIcon } from '@heroicons/react/24/solid';
 import { algaeColors } from './utils';
+import { useTooltipState } from '../common/tooltip/tooltip-provider';
+import { useI18n } from '@/app/i18n/use-i18n';
 
 export const getStaticProps = withDictionaries(['common']);
 
 export default function SpeciesList(): JSX.Element {
   const [selectedSpecies, setSelectedSpecies] = useState<Array<Species['id']>>([]);
-
+  const { t } = useI18n<'common'>();
   const dispatch = useAppDispatch();
   const filteredSpecies = useAppSelector(selectFilteredSpecies) ?? [];
   const species = useAppSelector(selectSpecies);
+  const { updateTooltip } = useTooltipState();
+  const applicationFilter = useAppSelector(selectFilters).applications ?? [];
 
-  useEffect(() => {
-    dispatch(setFilters({ type: 'species', cat: 'species', val: selectedSpecies }));
-  }, [selectedSpecies]);
+  // useEffect(() => {
+  //   dispatch(setFilters({ type: 'species', cat: 'species', val: selectedSpecies }));
+  // }, [selectedSpecies]);
 
   const groupedGenusSpecies = useMemo(() => {
     const genusSpecies: Record<Species['genus'], Array<Species>> = {};
@@ -62,9 +67,10 @@ export default function SpeciesList(): JSX.Element {
         <div className="flex flex-col absolute overflow-hidden overflow-y-scroll size-full font-sans">
           {sortedFilteredSpecies?.map((spec) => {
             const algae = species[spec] as Species;
+            const selected = selectedSpecies != null ? selectedSpecies.includes(spec) : false;
             return (
               <div
-                className={`${selectedSpecies.includes(spec) ? 'bg-apb-green-light' : 'bg-transparent'} cursor-pointer flex items-center gap-1 p-1 border-apb-gray-light border-b`}
+                className={`${selected ? 'bg-gray-200' : 'bg-transparent'} cursor-pointer grid items-center gap-1 p-1 border-apb-gray-light border-b hover:bg-gray-200`}
                 key={`species-entry-${spec}`}
                 onClick={() => {
                   const oldSelected = [...selectedSpecies];
@@ -79,7 +85,7 @@ export default function SpeciesList(): JSX.Element {
                   setSelectedSpecies(oldSelected);
                 }}
               >
-                <div className="grid grid-cols-[15px_auto] items-center">
+                <div className="grid grid-cols-[15px_auto] items-center w-full">
                   <div className="flex gap-[1px]">
                     {Object.values(algaeColors)
                       .filter((col) => algae.color.includes(col.value))
@@ -103,15 +109,57 @@ export default function SpeciesList(): JSX.Element {
                     ) : (
                       'Unknown species'
                     )}
-                    <span>
-                      {algae.commonName && algae.commonName !== 'No common name'
-                        ? `(${algae.commonName})`
-                        : ''}
-                    </span>
                     {species[spec]?.emodnet_points && (
                       <MapPinIcon className="size-4 text-apb-gray" />
                     )}
                   </div>
+                  {selected && (
+                    <div className="col-start-2 grid grid-cols-2 gap-1 w-full">
+                      <div className="col-span-2">
+                        {algae.commonName && algae.commonName !== 'No common name'
+                          ? `(${algae.commonName})`
+                          : ''}
+                      </div>
+                      <div className="col-start-1">
+                        <span className="font-bold">Division: </span>
+                        {algae.division}
+                        <div className="col-start-1">
+                          <span className="font-bold">Type: </span>
+                          {algae.microMacro}
+                        </div>
+                        <div className="col-start-1">
+                          <span className="font-bold">Water Type: </span>
+                          {algae.waterType}
+                        </div>
+                        <div className="col-start-1">
+                          <span className="font-bold">Location: </span>
+                          {algae.geographicPosition}
+                        </div>
+                        <div className="col-start-1">
+                          <span className="font-bold">Habitat: </span>
+                          {algae.habitat}
+                        </div>
+                        <div className="col-start-1">
+                          <span className="font-bold">Invasive: </span>
+                          {algae.invasive}
+                        </div>
+                      </div>
+                      <div className="col-start-2 row-start-2">
+                        {applicationFilter.map((e, i) => {
+                          if (algae.applications[e] != null) {
+                            return (
+                              <div>
+                                <span className="font-bold">{t(['common', 'products', e])}: </span>
+                                {algae.applications[e]}
+                              </div>
+                            );
+                          } else {
+                            return <></>;
+                          }
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             );
