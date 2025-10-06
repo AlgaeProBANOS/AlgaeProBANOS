@@ -343,7 +343,7 @@ const MapSection = forwardRef<MapSectionHandle, MapSectionProps>(
           )}
           <MapContainer
             center={[54, 15]}
-            zoom={3}
+            zoom={2}
             scrollWheelZoom={true}
             style={{ height: '100%', width: '100%' }}
             minZoom={2}

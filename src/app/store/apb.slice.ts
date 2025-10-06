@@ -25,7 +25,7 @@ export interface Country {
 export interface Filters {
   colors: Record<string, boolean> | null;
   name: string | null;
-  species: Array<Species['id']> | null;
+  species: Record<string, string | null>;
   applications: Array<ApplicationType> | null;
   includeNonApplications: boolean;
   countries: Record<Country['title'], Country> | null;
@@ -36,14 +36,16 @@ export interface APBState {
   species: Record<Species['id'], Species>;
   filteredSpecies: Array<Species['id']> | null;
   filters: Filters;
+  speciesPhotos: Record<Species['id'], string | null>;
 }
 
 //Constructor
 const initialState: APBState = {
   species: {},
   filteredSpecies: null,
-  filters: {colors: {'green': true, 'brown': true, 'red': true, 'unknown': true}, name: null, species: null, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'],
-  includeNonApplications: true, countries: null}
+  filters: {colors: {'green': true, 'brown': true, 'red': true, 'purple': true, 'unknown': true}, name: null, species: {'species': null, 'genus': null, 'type': null}, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'],
+  includeNonApplications: true, countries: null},
+  speciesPhotos: {}
 };
 
 export const slice = createSlice({
@@ -55,6 +57,13 @@ export const slice = createSlice({
     },
     setFilteredSpecies: (state, action) => {
       state.filteredSpecies = action.payload;
+    },
+    resetSpeciesFilters: (state, acion) => {
+      state.filters.species = {species: null, genus: null, type: null}
+    },
+    setSpeciesPhotos: (state, action) =>{
+      const photos = action.payload;
+      state.speciesPhotos = photos;
     },
     setFilters: (state, action) => {
       const {type, cat, val} = action.payload;
@@ -73,7 +82,7 @@ export const slice = createSlice({
           state.filters.name = val;
           break;
         case "species":
-          state.filters.species = val;
+        state.filters.species[cat] = val;
           break;
         case "applications":
           state.filters.applications = val;
@@ -135,6 +144,10 @@ export function selectSpecies(state: RootState) {
 
 export function selectFilters(state: RootState) {
   return state.apb.filters;
+}
+
+export function selectSpeciesPhotos(state: RootState) {
+  return state.apb.speciesPhotos;
 }
 
 export function selectFilteredSpecies(state: RootState) {
@@ -250,7 +263,7 @@ export const selectFragmentContentForDocumentByID = createSelector(
   },
 );
 
-export const { clearSearchResults, setFilteredSpecies, setFilters } = slice.actions;
+export const { clearSearchResults, setFilteredSpecies, setFilters, resetSpeciesFilters, setSpeciesPhotos } = slice.actions;
 
 /* export const {
   addLocalEntity,

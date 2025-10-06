@@ -1,35 +1,91 @@
+import { Species } from '@/api/apb.client';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { selectSpecies, setFilters } from '@/app/store/apb.slice';
 import Autocomplete from '@mui/material/Autocomplete';
-import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import { isEmojiSupported } from 'is-emoji-supported';
-import React from 'react';
 import { useEffect, useMemo, useState } from 'react';
-import { ReactCountryFlag } from 'react-country-flag';
 // import { getFlagEmoji, langUnicode } from "./Tooltip";
 
+export interface NameSearchEntry {
+  value: string;
+  title: string;
+}
+
 export default function NameSearchBar() {
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState<NameSearchEntry | null>(null);
   const species = useAppSelector(selectSpecies);
+  const filters = useAppSelector(selectSpecies);
   const dispatch = useAppDispatch();
+
+  const groupedGenusSpecies = useMemo(() => {
+    const genusSpecies: Record<Species['genus'], Array<Species>> = {};
+
+    for (const specObj of Object.values(species)) {
+      if (genusSpecies[specObj.genus] != null) {
+        genusSpecies[specObj.genus]?.push(specObj);
+      } else {
+        genusSpecies[specObj.genus] = [specObj];
+      }
+    }
+    return genusSpecies;
+  }, [species]);
+
+  const sortedGenusKeys = Object.keys(groupedGenusSpecies).sort();
+
+  useEffect(() => {
+    dispatch(
+      setFilters({
+        type: 'name',
+        cat: 'name',
+        val: value,
+      }),
+    );
+  }, [value]);
+
+  useEffect(() => {
+    if (value !== filters.name) {
+      setValue(filters.name);
+    }
+  }, [filters.name]);
 
   const nameOptions = useMemo(() => {
     let tmpNameOptions: Array<{
       title: Species['scientificName'];
       value: Species['scientificName'];
+      commonName: Species['commonName'];
+      found: 'commonName' | 'name';
+      genus: boolean;
     }> = [];
-    if (species != null) {
-      tmpNameOptions = Object.keys(species).map((key) => {
-        return {
-          title: species[key]?.scientificName,
-          value: species[key]?.scientificName,
-        };
+
+    if (groupedGenusSpecies != null) {
+      tmpNameOptions = sortedGenusKeys.flatMap((genusKey) => {
+        const speciesEntries = groupedGenusSpecies[genusKey]
+          .filter((e) => e.species != null)
+          ?.map((spec) => {
+            return {
+              title: spec.scientificName,
+              value: spec.scientificName,
+              commonName: spec.commonName,
+              genus: !(spec.species != null),
+              found: null,
+            };
+          });
+
+        return [
+          {
+            title: !genusKey.trim().endsWith('p.') ? genusKey + ' spp.' : genusKey,
+            value: genusKey,
+            commonName: genusKey,
+            genus: !(species[genusKey]?.species != null),
+            found: null,
+          },
+          ...speciesEntries,
+        ];
       });
     }
 
     return tmpNameOptions;
-  }, [species]);
+  }, [sortedGenusKeys, groupedGenusSpecies]);
 
   const label = 'Name Search';
 
@@ -37,106 +93,113 @@ export default function NameSearchBar() {
     dispatch(setFilters({ type: 'name', cat: '', val: value !== '' ? value : null }));
   }, [value]);
 
+  const [currentValue, setCurrentValue] = useState<string | null>();
+
+  function highlightText(text, searchTerm) {
+    if (!searchTerm) return text;
+
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const parts = text.split(regex);
+
+    return parts.map((part, i) =>
+      part.toLowerCase() === searchTerm.toLowerCase() ? (
+        <span key={i} className="bg-yellow-300">
+          {part}
+        </span>
+      ) : (
+        part
+      ),
+    );
+  }
+
   return (
     <Autocomplete
       value={value != null ? value : null}
       onChange={(event, newValue) => {
         setValue(newValue);
       }}
+      onInputChange={(e, v) => {
+        setCurrentValue(v);
+      }}
       filterOptions={(options, params) => {
         const { inputValue } = params;
+        const tmpOptions = [];
 
-        const filtered = options.filter((entry) => {
-          if (entry.title.toLowerCase().includes(inputValue.toLowerCase())) {
-            entry.found = null;
-            return true;
+        options.map((entry) => {
+          if (inputValue === '' || inputValue == null) {
+            tmpOptions.push({ ...entry, found: 'name' });
+          } else if (entry.title.toLowerCase().includes(inputValue.toLowerCase())) {
+            tmpOptions.push({ ...entry });
+          } else if (
+            entry.commonName != null &&
+            entry.commonName.toLowerCase().includes(inputValue.toLowerCase())
+          ) {
+            tmpOptions.push({ ...entry, found: 'commonName' });
           } else if (
             entry.all != null &&
             entry.all.toLowerCase().includes(inputValue.toLowerCase())
           ) {
             entry.found = [];
             if (entry.en != null && entry.en.toLowerCase().includes(inputValue.toLowerCase())) {
-              entry.found.push('en');
+              // entry.found.push('en');
             }
 
             if (entry.fr != null && entry.fr.toLowerCase().includes(inputValue.toLowerCase())) {
-              entry.found.push('fr');
+              // entry.found.push('fr');
             }
 
             if (entry.es != null && entry.es.toLowerCase().includes(inputValue.toLowerCase())) {
-              entry.found.push('es');
+              // entry.found.push('es');
             }
 
             if (entry.de != null && entry.de.toLowerCase().includes(inputValue.toLowerCase())) {
-              entry.found.push('de');
+              // entry.found.push('de');
             }
-            return true;
+            // return true;
           } else {
-            entry.found = null;
-            return false;
+            // entry.found = null;
+            // return false;
           }
         });
 
-        return filtered;
+        return tmpOptions;
       }}
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
       options={nameOptions}
       getOptionLabel={(option) => {
-        if (option.iso != null) {
-          return `${option.title}`;
-        }
+        // if (option.iso != null) {
+        //   return `${option.title}`;
+        // }
 
         // Value selected with enter, right from the input
         if (typeof option === 'string') {
           return option;
-        }
-        // Add "xxx" option created dynamically
-        if (option.inputValue) {
-          return option.inputValue;
         }
 
         // Regular option
         return option.title;
       }}
       renderOption={(props, option) => {
-        if (option.iso != null) {
-          return (
-            <li {...props}>
-              <ReactCountryFlag
-                style={{
-                  fontSize: '1.5em',
-                  lineHeight: '1.5em',
-                }}
-                countryCode={option.iso}
-                svg={!isEmojiSupported('🇬🇧')}
-              />
-              &nbsp;
-              {option.title}
-            </li>
-          );
-        } else {
-          return <li {...props}>{option.title}</li>;
-        }
+        return (
+          <li {...props}>
+            <div className="flex flex-col">
+              <div className={option.genus ? 'font-bold italic' : 'italic'}>
+                {highlightText(option.title, currentValue)}
+              </div>
+              {option.found === 'commonName' && (
+                <div className="text-sm">{highlightText(option.commonName, currentValue)}</div>
+              )}
+            </div>
+          </li>
+        );
       }}
       sx={{ width: 250 }}
       freeSolo
       renderInput={(params) => {
         return (
           <div className="relative">
-            {value != null && (
-              <ReactCountryFlag
-                className="absolute h-[1.6em] z-40 left-2"
-                style={{
-                  fontSize: '1.6em',
-                  lineHeight: '1.6em',
-                  height: '1.6em',
-                }}
-                countryCode={value.iso}
-                svg={!isEmojiSupported('🇬🇧')}
-              />
-            )}
             <TextField
               {...params}
               className={value ? 'filterUsed' : ''}

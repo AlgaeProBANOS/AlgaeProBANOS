@@ -7,8 +7,21 @@ export function useApplyFilters() {
   const species = useAppSelector(selectSpecies);
   const filters = useAppSelector(selectFilters);
 
-  // Start with all species in the beginning and then narrow the arrow of species names down with all the set filters
+// Start with all species in the beginning and then narrow the arrow of species names down with all the set filters
   let currentSpecies = Object.keys(species);
+
+  // Species Filter
+  const speciesFilter = filters.species;
+  
+  if(speciesFilter.species != null) {
+    currentSpecies = currentSpecies.filter(e => species[e]?.species === speciesFilter.species);
+  }
+  else if(speciesFilter.genus != null) {
+    currentSpecies = currentSpecies.filter(e => species[e]?.genus === speciesFilter.genus);
+  }
+  else if(speciesFilter.type != null) {
+    currentSpecies = currentSpecies.filter(e => species[e]?.microMacro?.toLowerCase().includes(speciesFilter.type?.toLowerCase()));
+  }
 
   // Application Filter
   const applicationFilter = filters.applications;
@@ -47,19 +60,19 @@ export function useApplyFilters() {
   // Name Filter
   // TODO this needs to be elaborated since the name search is supposed to include also the trade name and so on
   const nameFilter = filters.name;
-  if (nameFilter != null && nameFilter.length > 0) {
-    currentSpecies = currentSpecies.filter((spec) => {
+  if(nameFilter != null) {
+    currentSpecies = currentSpecies.filter((spec)=>{
       const testSpecies = species[spec];
-      if(testSpecies?.scientificName.includes(nameFilter)) {
+      if(testSpecies?.scientificName.includes(nameFilter.value)) {
         return true;
       }
 
-      if(testSpecies?.commonName.includes(nameFilter)) {
+      if(testSpecies?.commonName.includes(nameFilter.value)) {
         return true;
       }
 
       return false;
-    });
+    })
   }
 
   //Country filter

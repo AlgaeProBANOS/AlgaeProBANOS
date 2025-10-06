@@ -66,9 +66,25 @@ export default function CountrySearchBar() {
     if (countriesDictionary != null) {
       tmpCountryOptions = Object.keys(countriesDictionary)
         .filter((key) => {
-          return (
-            countriesDictionary[key].BGCI !== '' && countriesDictionary[key].BGCI !== 'replaceME'
-          );
+          if (
+            countriesDictionary[key].BGCI === '' ||
+            countriesDictionary[key].BGCI === 'replaceME'
+          ) {
+            return false;
+          } else {
+            const currentSpecies = Object.keys(species).filter((spec) => {
+              if (species[spec]?.emodnet_points != null) {
+                return species[spec]?.emodnet_points.some(
+                  (e) => e.country === countriesDictionary[key].BGCI,
+                );
+              }
+              return false;
+            });
+
+            if (currentSpecies.length > 0) {
+              return true;
+            }
+          }
         })
         .map((e) => {
           return {
@@ -85,7 +101,7 @@ export default function CountrySearchBar() {
     }
 
     return tmpCountryOptions;
-  }, [countriesDictionary]);
+  }, [countriesDictionary, species]);
 
   const label = 'Country Search';
 

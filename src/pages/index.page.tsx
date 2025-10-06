@@ -1,18 +1,9 @@
 import { PageMetadata } from '@stefanprobst/next-page-metadata';
 import Image from 'next/image';
 
-import { Document, Fragment } from '@/api/apb-client';
 import { useI18n } from '@/app/i18n/use-i18n';
 import { withDictionaries } from '@/app/i18n/with-dictionaries';
 import { usePageTitleTemplate } from '@/app/metadata/use-page-title-template';
-import { useAppSelector } from '@/app/store';
-import { selectDocuments, selectFragmentContentForDocumentByID } from '@/app/store/memorise.slice';
-import { useConvertDataToInTaVia } from '@/features/common/data/use-convert-data';
-import { selectVisualizationById } from '@/features/common/visualization.slice';
-import DataPanel from '@/features/ui/data-panel';
-import { useDocumentWordsAsOneString } from '@/features/ui/use-document-words';
-import VisualisationComponent from '@/features/visualization-layouts/visualization-wrapper';
-import Wordcloud from '@/features/wordcloud/wordcloud';
 import Link from 'next/link';
 // import { useTestResponseType } from '@/features/common/data/use-data';
 
@@ -29,16 +20,10 @@ export default function HomePage(): JSX.Element {
     <div className="grid size-full grid-cols-[1fr] grid-rows-[1fr,auto] gap-2 p-2 dark:bg-apb-dark dark:text-apb-gold-100">
       <PageMetadata title={metadata.title} titleTemplate={titleTemplate} />
       <div className="flex size-full items-center justify-center gap-2">
-        <div className="flex rounded-md border border-apb-gray flex-col p-4">
-          Species
-          <Link className="text-apb-aubergine" href="/species">
-            Algae Species
-          </Link>
-        </div>
         <div className="rounded-md border border-apb-gray flex flex-col p-4">
-          Products
+          Explore
           <Link className="text-apb-aubergine" href="/products">
-            Algae Products
+            Algae Species & Products
           </Link>
         </div>
       </div>

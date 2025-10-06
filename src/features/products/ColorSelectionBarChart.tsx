@@ -31,7 +31,7 @@ export function ColorSelectionBarChart() {
   const colorBarChartData = useMemo(() => {
     return Object.values(algaeColors).map((col) => {
       const colSpecies = filteredSpecies?.filter((spec) =>
-        species[spec]?.color.includes(col.value),
+        species[spec]?.color.toLowerCase().includes(col.value),
       );
       return {
         name: col.name,

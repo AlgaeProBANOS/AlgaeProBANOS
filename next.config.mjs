@@ -60,6 +60,7 @@ const config = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  crossOrigin: 'anonymous',
   webpack(/** @type {WebpackConfig} */ config) {
     /* eslint-disable no-param-reassign */
     config.experiments = config.experiments ?? {};

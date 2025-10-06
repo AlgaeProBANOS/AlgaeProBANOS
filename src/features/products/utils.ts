@@ -15,7 +15,8 @@ export const algaeColors = {
   green: { color: '#33a02c', name: 'Green', value: 'green' },
   brown: { color: '#b15928', name: 'Brown', value: 'brown' },
   red: { color: '#e31a1c', name: 'Red', value: 'red' },
-  unknown: { color: '#ad03fc', name: 'Unknown', value: 'unknown' },
+  purple: { color: '#ad03fc', name: 'Purple', value: 'purple' },
+  unknown: { color: '#000000', name: 'Unknown', value: 'unknown' },
 };
 
 export const applicationCategories = [

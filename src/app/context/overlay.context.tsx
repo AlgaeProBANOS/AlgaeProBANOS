@@ -2,14 +2,9 @@ import { assert } from '@stefanprobst/assert';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useMemo, useState } from 'react';
 
-export interface Overlay {
-  entity: Array<string>;
-  mode: string;
-}
-
 interface OverlayContextType {
-  overlay: Overlay | null;
-  updateOverlay: (overlay: Overlay | null) => void;
+  overlay: JSX.Element | null;
+  updateOverlay: (overlay: JSX.Element | null) => void;
 }
 
 interface OverlayProviderProps {
@@ -20,10 +15,10 @@ export const OverlayContext = createContext<OverlayContextType | null>(null);
 
 export function OverlayProvider(props: OverlayProviderProps): JSX.Element {
   const { children } = props;
-  const [overlay, setOverlay] = useState<Overlay | null>(null);
+  const [overlay, setOverlay] = useState<JSX.Element | null>(null);
 
   const value = useMemo(() => {
-    const updateOverlay = (overlay: Overlay | null) => {
+    const updateOverlay = (overlay: JSX.Element | null) => {
       setOverlay(overlay);
     };
     return { overlay, updateOverlay };

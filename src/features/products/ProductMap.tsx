@@ -72,16 +72,16 @@ export default function ProductMap(): JSX.Element {
     <Map
       ref={mapRef}
       initialViewState={{
-        longitude: 15,
+        longitude: 8,
         latitude: 54,
-        zoom: 4,
+        zoom: 3,
       }}
       minZoom={0}
       maxZoom={20}
       style={{ width: '100%', height: '100%', position: 'relative' }}
       mapStyle="https://api.maptiler.com/maps/019864da-bd1a-77a6-8cb4-b2fb2323302f/style.json?key=JryEbN305oNyHUvClr79"
       onLoad={() => {
-        console.log('----- Map and Layers loaded! ----- ', mapRef.current?.getStyle().layers);
+        // console.log('----- Map and Layers loaded! ----- ', mapRef.current?.getStyle().layers);
         if (mapRef.current) {
           mapRef.current.getMap().setPaintProperty('Water', 'fill-color', '#f0fbff');
         }

@@ -10,7 +10,7 @@ import {
 import { useElementDimensions } from '@/lib/use-element-dimensions';
 import { useElementRef } from '@/lib/use-element-ref';
 import * as d3 from 'd3';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTooltipState } from '../common/tooltip/tooltip-provider';
 import { applicationCategories } from './utils';
 
@@ -26,8 +26,6 @@ export function ProductSectionTreeMap() {
   const [containerElement, setContainerElement] = useElementRef();
   const containerSize = useElementDimensions({ element: containerElement });
 
-  const PAD = 4;
-
   const treeMapData = useMemo(() => {
     const specPerApp: Record<ApplicationType, Array<Species['id']>> = {
       agriculture: [],
@@ -39,7 +37,8 @@ export function ProductSectionTreeMap() {
     };
 
     if (filteredSpecies) {
-      for (const spec of Object.keys(species)) {
+      // Filter all the species per application
+      for (const spec of filteredSpecies) {
         let hit = false;
         for (const appl of applicationCategories) {
           if (species[spec]?.applications[appl.key] != null) {
@@ -57,7 +56,7 @@ export function ProductSectionTreeMap() {
           color: entry.color,
           icon: entry.icon,
           description: entry.description,
-          value: 1,
+          value: specPerApp[entry.key].length,
           children: specPerApp[entry.key].map((spec) => {
             return { name: spec, size: 1, value: 1 };
           }),
@@ -77,13 +76,15 @@ export function ProductSectionTreeMap() {
   }, [appplicationFilter]);
 
   useEffect(() => {
-    dispatch(
-      setFilters({
-        type: 'applications',
-        cat: 'applications',
-        val: selectedApplication != null ? selectedApplication : null,
-      }),
-    );
+    setTimeout(() => {
+      dispatch(
+        setFilters({
+          type: 'applications',
+          cat: 'applications',
+          val: selectedApplication != null ? selectedApplication : null,
+        }),
+      );
+    }, 100);
   }, [selectedApplication]);
 
   // Specify the chart’s dimensions.
@@ -119,6 +120,8 @@ export function ProductSectionTreeMap() {
     .paddingLeft(4)
     .tile(tile)(hierarchy);
 
+  const timer = useRef();
+
   return (
     <div
       ref={setContainerElement}
@@ -153,8 +156,12 @@ export function ProductSectionTreeMap() {
             }}
             onClick={(e) => {
               let oldApplications = selectedApplication != null ? [...selectedApplication] : [];
-              switch (e.detail) {
-                case 1:
+              clearTimeout(timer.current);
+
+              if (e.detail === 1) {
+                timer.current = setTimeout(() => {
+                  console.log('SINGLE CLICK');
+
                   if (oldApplications?.includes(entry.data.name)) {
                     var index = oldApplications.indexOf(entry.data.name);
                     if (index > -1) {
@@ -163,11 +170,27 @@ export function ProductSectionTreeMap() {
                   } else {
                     oldApplications.push(entry.data.name);
                   }
-                  break;
-                default:
-                  oldApplications = [entry.data.name];
+                  setSelectedApplication(oldApplications);
+                }, 200);
+              } else if (e.detail === 2) {
+                console.log('Double Click!');
+                oldApplications = [entry.data.name];
+                setSelectedApplication(oldApplications);
               }
-              setSelectedApplication(oldApplications);
+
+              // switch (e.detail) {
+              // case 1:
+              //     if (oldApplications?.includes(entry.data.name)) {
+              //       var index = oldApplications.indexOf(entry.data.name);
+              //       if (index > -1) {
+              //         oldApplications.splice(index, 1);
+              //       }
+              //     } else {
+              //     }
+              //     break;
+              //   default:
+              //     oldApplications = [entry.data.name];
+              // }
             }}
           >
             <div className="flex h-full flex-col p-1">
@@ -177,6 +200,7 @@ export function ProductSectionTreeMap() {
               </div>
               <span className="text-sm text-gray-500">{entry.data.description}</span>
             </div>
+            <div className="absolute bottom-1 right-1">{entry.children?.length}</div>
           </div>
         );
       })}

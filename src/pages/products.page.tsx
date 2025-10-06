@@ -1,20 +1,17 @@
 import { Fragment, useEffect } from 'react';
 
+import { Species } from '@/api/apb.client';
 import { withDictionaries } from '@/app/i18n/with-dictionaries';
+import { useAppDispatch, useAppSelector } from '@/app/store';
+import { selectSpecies, setFilteredSpecies, setSpeciesPhotos } from '@/app/store/apb.slice';
+import { ColorSelectionBarChart } from '@/features/products/ColorSelectionBarChart';
+import CountrySearchBar from '@/features/products/CountrySearchBar';
+import NameSearchBar from '@/features/products/NameSearchBar';
 import ProductFilter from '@/features/products/ProductFilter';
 import ProductMap from '@/features/products/ProductMap';
-import { useAppDispatch, useAppSelector } from '@/app/store';
-import { selectFilters, selectSpecies, setFilteredSpecies } from '@/app/store/apb.slice';
-import { filter } from 'd3';
 import SpeciesList from '@/features/products/SpeciesList';
-import { useApplyFilters } from '@/lib/get-filtered-species';
-import test from 'node:test';
-import { LocalHospital } from '@mui/icons-material';
 import { SpeciesTreeMap } from '@/features/products/SpeciesTreeMap';
-import { ColorSelectionBarChart } from '@/features/products/ColorSelectionBarChart';
-import NameSearchBar from '@/features/products/NameSearchBar';
-import CountrySearchBar from '@/features/products/CountrySearchBar';
-import { MySpeciesTreeMap } from '@/features/products/MySpeciesTreeMap';
+import { useApplyFilters } from '@/lib/get-filtered-species';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -28,6 +25,26 @@ export default function ProductPage(): JSX.Element {
   useEffect(() => {
     dispatch(setFilteredSpecies(filteredSpecies));
   }, [filteredSpecies]);
+
+  useEffect(() => {
+    fetch('/data/species.json')
+      .then((res) => res.json())
+      .then(function (json) {
+        const tmpPhotos: Record<Species['id'], string | null> = {};
+        for (const spec of Object.keys(json)) {
+          const photo =
+            json != null
+              ? json[spec] != null && json[spec].images != null
+                ? json[spec].images[0]
+                : null
+              : null;
+
+          tmpPhotos[spec] = photo;
+        }
+
+        dispatch(setSpeciesPhotos(tmpPhotos));
+      });
+  }, []);
 
   return (
     <Fragment>
@@ -51,7 +68,7 @@ export default function ProductPage(): JSX.Element {
           <SpeciesList />
         </div>
         <div>
-          <MySpeciesTreeMap />
+          <SpeciesTreeMap />
         </div>
       </div>
       {/* <div className="grid h-full grid-cols-[60%_40%] grid-rows-[60%_40%]">

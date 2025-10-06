@@ -85,12 +85,6 @@ export function AppBar(props: AppBarProps): JSX.Element {
             </Link>
           </div>
           <Link
-            href="/species"
-            className={`${currentPath.includes('species') ? 'font-bold underline' : ''}`}
-          >
-            {t(['common', 'app-bar', 'algaeSpecies'])}
-          </Link>
-          <Link
             href="/products"
             className={`${currentPath.includes('products') ? 'font-bold underline' : ''}`}
           >

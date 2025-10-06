@@ -69,6 +69,46 @@ export interface Species {
   waterType: string;
 }
 
+export const EmptySpecies: Species = {
+  id: "",
+  applications: {
+    agriculture: null,
+    cosmetics: null,
+    environmental: null,
+    humanConsumption: null,
+    industrial: null,
+    medicinal: null,
+  },
+  certifications: {
+    canBeGrownInPolyculture: false,
+    inNovelFoodCatalogue: false,
+    inUnionNovelFoodList: false,
+    onMarket: false,
+  },
+  color: "",
+  commonName: "",
+  companiesAndProducts: null,
+  coordinates: null,
+  depthRange: "",
+  division: "",
+  emodnet_points: null,
+  geographicPosition: "",
+  habitat: "",
+  invasive: "",
+  match_score: 0,
+  microMacro: "",
+  nutritionalProfile: "",
+  optimalTemp: "",
+  risks: null,
+  salinity: "",
+  species: "",
+  genus: "",
+  synonyms: "",
+  scientificName: "",
+  waterTemp: "",
+  waterType: "",
+};
+
 export interface Applications {
   agriculture: string | null;
   cosmetics: string | null;
