@@ -109,7 +109,7 @@ we still enforce color-scheme: dark, despite the user preference */
   font-size: small;
 }
 
-.treeMapLevel:hover {
+.treeMapLevel:hover { 
   border-color: blue !important;
 }
 

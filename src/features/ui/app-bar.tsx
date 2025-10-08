@@ -91,11 +91,11 @@ export function AppBar(props: AppBarProps): JSX.Element {
             {t(['common', 'app-bar', 'algaeProducts'])}
           </Link>
         </div>
-        {/* {maintenanceMode === true && (
-          <div className="flex h-10 items-center rounded-full bg-apb-pink-100 p-[4px_12px] text-center text-apb-dark text-white">
+        {maintenanceMode === true && (
+          <div className="flex h-10 items-center rounded-b-md bg-apb-aubergine p-[4px_12px] text-center text-apb-dark text-white">
             &#9888; Maintenance Mode
           </div>
-        )} */}
+        )}
         <div className="flex flex-row items-center justify-center py-4">
           {/* <SearchForm /> */}
           <Popover className="relative flex items-center">

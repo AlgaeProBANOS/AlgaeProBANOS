@@ -172,32 +172,34 @@ export default function SpeciesDetails(): JSX.Element {
         </div>
       </div>
       <div className="flex flex-col gap-4 pr-4">
-        <div className="details-card">
-          <span className="text-xl">Application & Uses</span>
-          {applicationCategories.map((entry, i) => {
-            if (algae.applications[entry.key] == null) {
-              return <></>;
-            } else {
-              const Icon = entry.icon;
-              return (
-                <div
-                  style={{
-                    backgroundColor: `${entry.color}11`,
-                    borderColor: `${entry.color}22`,
-                  }}
-                  className="p-2 rounded-md border grid grid-cols-[min-content_auto] w-full"
-                  key={`applic-entry-${i}`}
-                >
-                  {<Icon className="mr-1" style={{ color: entry.color, stroke: 'none' }} />}
-                  <span style={{ color: entry.color }} className="font-bold">
-                    {entry.title}
-                  </span>
-                  <span className="col-start-2">{algae.applications[entry.key]}</span>
-                </div>
-              );
-            }
-          })}
-        </div>
+        {Object.values(algae.applications).filter((e) => e != null).length > 0 && (
+          <div className="details-card">
+            <span className="text-xl">Application & Uses</span>
+            {applicationCategories.map((entry, i) => {
+              if (algae.applications[entry.key] == null) {
+                return <></>;
+              } else {
+                const Icon = entry.icon;
+                return (
+                  <div
+                    style={{
+                      backgroundColor: `${entry.color}11`,
+                      borderColor: `${entry.color}22`,
+                    }}
+                    className="p-2 rounded-md border grid grid-cols-[min-content_auto] w-full"
+                    key={`applic-entry-${i}`}
+                  >
+                    {<Icon className="mr-1" style={{ color: entry.color, stroke: 'none' }} />}
+                    <span style={{ color: entry.color }} className="font-bold">
+                      {entry.title}
+                    </span>
+                    <span className="col-start-2">{algae.applications[entry.key]}</span>
+                  </div>
+                );
+              }
+            })}
+          </div>
+        )}
         <div className="details-card">
           <span className="text-xl">Certifications & Market Status</span>
           <div className="flex w-full justify-between">

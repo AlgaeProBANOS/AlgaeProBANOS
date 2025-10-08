@@ -61,7 +61,7 @@ export interface Species {
   optimalTemp: string;
   risks: string | null;
   salinity: string;
-  species: string;
+  species: string | null;
   genus: string;
   synonyms: string;
   scientificName: string;
@@ -101,7 +101,7 @@ export const EmptySpecies: Species = {
   optimalTemp: "",
   risks: null,
   salinity: "",
-  species: "",
+  species: null,
   genus: "",
   synonyms: "",
   scientificName: "",

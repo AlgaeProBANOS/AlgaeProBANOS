@@ -265,6 +265,7 @@ export default function SpeciesList(): JSX.Element {
                             ...EmptySpecies,
                             id: genusKey,
                             scientificName: genusKey,
+                            genus: genusKey,
                             color:
                               groupedGenusSpecies[genusKey]?.map((e) => e.color).join(',') ?? '',
                           },
