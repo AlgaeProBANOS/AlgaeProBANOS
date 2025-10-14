@@ -12,6 +12,7 @@ import ProductMap from '@/features/products/ProductMap';
 import SpeciesList from '@/features/products/SpeciesList';
 import { SpeciesTreeMap } from '@/features/products/SpeciesTreeMap';
 import { useApplyFilters } from '@/lib/get-filtered-species';
+import AreaSearchBar from '@/features/products/AreaSearchBar';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -55,10 +56,13 @@ export default function ProductPage(): JSX.Element {
         <div>
           <ProductFilter />
         </div>
-        <div className="col-span-2 grid grid-cols-3 gap-1 p-2">
+        <div className="col-span-2 grid grid-cols-4 gap-1 p-2">
           <ColorSelectionBarChart />
           <div className="flex items-center justify-center">
             <NameSearchBar />
+          </div>
+          <div className="flex items-center justify-center">
+            <AreaSearchBar />
           </div>
           <div className="flex items-center justify-center">
             <CountrySearchBar />

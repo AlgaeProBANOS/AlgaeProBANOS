@@ -27,6 +27,7 @@ export default function SpeciesList(): JSX.Element {
   const { updateTooltip } = useTooltipState();
   const applicationFilter = useAppSelector(selectFilters).applications ?? [];
   const speciesPhotos = useAppSelector(selectSpeciesPhotos);
+  const [speciesWithOccurrences, setSpeciesWithOccurrences] = useState<string[]>([]);
 
   const applicationColors = useMemo(() => {
     return Object.fromEntries(applicationCategories.map((e) => [e.key, e.color]));
@@ -43,6 +44,13 @@ export default function SpeciesList(): JSX.Element {
   }, [selectedSpecies]);
 
   useEffect(() => {}, [filters.name]);
+
+  fetch('/data/hex_counts.json')
+    .then((res) => res.json())
+    .then(function (json) {
+      const tmp = Object.keys(json).filter((e) => json[e] != null);
+      setSpeciesWithOccurrences(tmp);
+    });
 
   const groupedGenusSpecies = useMemo(() => {
     const genusSpecies: Record<Species['genus'], Array<Species>> = {};
@@ -151,9 +159,9 @@ export default function SpeciesList(): JSX.Element {
           onMouseOver={() => {
             updateTooltip(<div>{genEntryDetailPanel(algae)}</div>);
           }}
-          /* onMouseLeave={() => {
+          onMouseLeave={() => {
             updateTooltip(null);
-          }} */
+          }}
         >
           <div className="flex gap-[1px]">
             {algae != null &&
@@ -173,9 +181,21 @@ export default function SpeciesList(): JSX.Element {
             <span className="flex flex-row items-center gap-1">
               <span className={`italic ${isGenus ? 'font-bold' : ''}`}>
                 {algae.scientificName}
-                {isGenus && !algae.scientificName.trim().endsWith('p.') && <span> spp.</span>}
+                {/* {isGenus && !algae.scientificName.trim().endsWith('p.') && <span> spp.</span>} */}
               </span>
               {algae?.emodnet_points && <MapPinIcon className="size-4 text-apb-gray" />}
+              {speciesWithOccurrences.includes(algae.scientificName) && (
+                <div
+                  style={{
+                    width: '15px',
+                    height: '15px',
+                    '-webkit-clip-path':
+                      'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
+                    clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
+                  }}
+                  className="bg-apb-gray"
+                ></div>
+              )}
             </span>
             <span className="p-1">
               {selected && (

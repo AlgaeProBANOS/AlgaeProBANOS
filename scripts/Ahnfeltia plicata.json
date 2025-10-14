@@ -1,0 +1,211 @@
+{
+  "offset": 0,
+  "limit": 300,
+  "endOfRecords": true,
+  "count": 1,
+  "results": [
+    {
+      "key": 3911935850,
+      "datasetKey": "0efb41b8-d8b7-43f5-bd91-949d4ed3efcb",
+      "publishingOrgKey": "ab733144-7043-4e88-bd4f-fca7bf858880",
+      "installationKey": "fb5e4c2a-579c-434b-a446-3a665dd732ad",
+      "hostingOrganizationKey": "fbca90e3-8aed-48b1-84e3-369afbd000ce",
+      "publishingCountry": "GB",
+      "protocol": "DWC_ARCHIVE",
+      "lastCrawled": "2025-10-10T19:07:54.432+00:00",
+      "lastParsed": "2025-10-10T19:08:44.715+00:00",
+      "crawlId": 151,
+      "extensions": {},
+      "basisOfRecord": "MATERIAL_SAMPLE",
+      "occurrenceStatus": "PRESENT",
+      "classifications": {
+        "7ddf754f-d193-4cc9-b351-99906754a03b": {
+          "usage": {
+            "key": "QH9SC",
+            "name": "Microchloropsis M.W. Fawley, I. Jameson & K.P. Fawley, 2015",
+            "rank": "GENUS",
+            "code": "BOTANICAL",
+            "authorship": "M.W. Fawley, I. Jameson & K.P. Fawley, 2015",
+            "formattedName": "<i>Microchloropsis</i> M.W. Fawley, I. Jameson & K.P. Fawley, 2015"
+          },
+          "acceptedUsage": {
+            "key": "QH9SC",
+            "name": "Microchloropsis M.W. Fawley, I. Jameson & K.P. Fawley, 2015",
+            "rank": "GENUS",
+            "code": "BOTANICAL",
+            "authorship": "M.W. Fawley, I. Jameson & K.P. Fawley, 2015",
+            "formattedName": "<i>Microchloropsis</i> M.W. Fawley, I. Jameson & K.P. Fawley, 2015"
+          },
+          "taxonomicStatus": "ACCEPTED",
+          "classification": [
+            {
+              "key": "CS5HF",
+              "name": "Eukaryota",
+              "rank": "DOMAIN"
+            },
+            {
+              "key": "C",
+              "name": "Chromista",
+              "rank": "KINGDOM"
+            },
+            {
+              "key": "D3MRQ",
+              "name": "Harosa",
+              "rank": "SUBKINGDOM"
+            },
+            {
+              "key": "D3MRV",
+              "name": "Heterokonta",
+              "rank": "INFRAKINGDOM"
+            },
+            {
+              "key": "QRLDK",
+              "name": "Ochrophyta",
+              "rank": "PHYLUM"
+            },
+            {
+              "key": "7NFB4",
+              "name": "Eustigmatophyceae",
+              "rank": "CLASS"
+            },
+            {
+              "key": "P7PQP",
+              "name": "Eustigmatales",
+              "rank": "ORDER"
+            },
+            {
+              "key": "QJB6N",
+              "name": "Monodopsidaceae",
+              "rank": "FAMILY"
+            },
+            {
+              "key": "QH9SC",
+              "name": "Microchloropsis",
+              "rank": "GENUS"
+            }
+          ],
+          "issues": []
+        },
+        "d7dddbf4-2cf0-4f39-9b2a-bb099caae36c": {
+          "usage": {
+            "key": "10535892",
+            "name": "Microchloropsis M.W.Fawley, I.Jameson & K.P.Fawley, 2015",
+            "rank": "GENUS",
+            "code": "ZOOLOGICAL",
+            "authorship": "M.W.Fawley, I.Jameson & K.P.Fawley, 2015",
+            "formattedName": "<i>Microchloropsis</i> M.W.Fawley, I.Jameson & K.P.Fawley, 2015"
+          },
+          "acceptedUsage": {
+            "key": "10535892",
+            "name": "Microchloropsis M.W.Fawley, I.Jameson & K.P.Fawley, 2015",
+            "rank": "GENUS",
+            "code": "ZOOLOGICAL",
+            "authorship": "M.W.Fawley, I.Jameson & K.P.Fawley, 2015",
+            "formattedName": "<i>Microchloropsis</i> M.W.Fawley, I.Jameson & K.P.Fawley, 2015"
+          },
+          "taxonomicStatus": "PROVISIONALLY_ACCEPTED",
+          "classification": [
+            {
+              "key": "4",
+              "name": "Chromista",
+              "rank": "KINGDOM"
+            },
+            {
+              "key": "98",
+              "name": "Ochrophyta",
+              "rank": "PHYLUM"
+            },
+            {
+              "key": "286",
+              "name": "Eustigmatophyceae",
+              "rank": "CLASS"
+            },
+            {
+              "key": "8408718",
+              "name": "Eustigmatales",
+              "rank": "ORDER"
+            },
+            {
+              "key": "1947",
+              "name": "Monodopsidaceae",
+              "rank": "FAMILY"
+            },
+            {
+              "key": "10535892",
+              "name": "Microchloropsis",
+              "rank": "GENUS"
+            }
+          ],
+          "issues": []
+        }
+      },
+      "taxonKey": 10535892,
+      "kingdomKey": 4,
+      "phylumKey": 98,
+      "classKey": 286,
+      "orderKey": 8408718,
+      "familyKey": 1947,
+      "genusKey": 10535892,
+      "acceptedTaxonKey": 10535892,
+      "scientificName": "Microchloropsis M.W.Fawley, I.Jameson & K.P.Fawley, 2015",
+      "scientificNameAuthorship": "M.W.Fawley, I.Jameson & K.P.Fawley, 2015",
+      "acceptedScientificName": "Microchloropsis M.W.Fawley, I.Jameson & K.P.Fawley, 2015",
+      "kingdom": "Chromista",
+      "phylum": "Ochrophyta",
+      "order": "Eustigmatales",
+      "family": "Monodopsidaceae",
+      "genus": "Microchloropsis",
+      "taxonRank": "GENUS",
+      "taxonomicStatus": "PROVISIONALLY_ACCEPTED",
+      "decimalLatitude": 57.2137,
+      "decimalLongitude": 19.509,
+      "gadm": {},
+      "year": 2018,
+      "month": 4,
+      "day": 23,
+      "eventDate": "2018-04-23",
+      "startDayOfYear": 113,
+      "endDayOfYear": 113,
+      "issues": [
+        "GEODETIC_DATUM_ASSUMED_WGS84"
+      ],
+      "lastInterpreted": "2025-10-10T19:08:44.715+00:00",
+      "license": "http://creativecommons.org/licenses/by/4.0/legalcode",
+      "organismQuantity": 1.0,
+      "organismQuantityType": "DNA sequence reads",
+      "sampleSizeUnit": "DNA sequence reads",
+      "sampleSizeValue": 5.7498414E7,
+      "relativeOrganismQuantity": 1.7391784058600295E-8,
+      "isSequenced": false,
+      "identifiers": [
+        {
+          "identifier": "MGYA00572459_Eukaryota:::Eustigmatophyceae:Eustigmatales:Monodopsidaceae:Microchloropsis"
+        }
+      ],
+      "media": [],
+      "facts": [],
+      "relations": [],
+      "isInCluster": false,
+      "dnaSequenceID": [],
+      "geodeticDatum": "WGS84",
+      "class": "Eustigmatophyceae",
+      "countryCode": "SE",
+      "recordedByIDs": [],
+      "identifiedByIDs": [],
+      "gbifRegion": "EUROPE",
+      "country": "Sweden",
+      "publishedByGbifRegion": "EUROPE",
+      "identificationReferences": "https://www.ebi.ac.uk/metagenomics/pipelines/5.0",
+      "eventID": "MGYA00572459",
+      "identifier": "MGYA00572459_Eukaryota:::Eustigmatophyceae:Eustigmatales:Monodopsidaceae:Microchloropsis",
+      "dynamicProperties": "{\"geographic location (longitude)\":\"19.508972\",\"geographic location (country and/or sea,region)\":\"Sweden: Baltic Sea\",\"collection date\":\"2018-04-23\",\"geographic location (latitude)\":\"57.21366\"}",
+      "locality": "Baltic Sea",
+      "eventRemarks": "RNA data from Eastern Gotland Basin sediment",
+      "identificationRemarks": "SSU rRNA annotated using the taxonomic reference database described here: https://www.ebi.ac.uk/metagenomics/pipelines/5.0. This occurrence appeared in following analyses: SSU taxonomy from analyses https://www.ebi.ac.uk/metagenomics/analyses/MGYA00572459#taxonomic.",
+      "gbifID": "3911935850",
+      "materialSampleID": "https://www.ebi.ac.uk/metagenomics/samples/SRS4661454",
+      "occurrenceID": "MGYA00572459_Eukaryota:::Eustigmatophyceae:Eustigmatales:Monodopsidaceae:Microchloropsis"
+    }
+  ],
+  "facets": []
+}

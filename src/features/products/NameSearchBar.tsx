@@ -1,6 +1,6 @@
 import { Species } from '@/api/apb.client';
 import { useAppDispatch, useAppSelector } from '@/app/store';
-import { selectSpecies, setFilters } from '@/app/store/apb.slice';
+import { selectFilteredSpecies, selectSpecies, setFilters } from '@/app/store/apb.slice';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useEffect, useMemo, useState } from 'react';
@@ -14,6 +14,7 @@ export interface NameSearchEntry {
 export default function NameSearchBar() {
   const [value, setValue] = useState<NameSearchEntry | null>(null);
   const species = useAppSelector(selectSpecies);
+  const filteredSpecies = useAppSelector(selectFilteredSpecies);
   const filters = useAppSelector(selectSpecies);
   const dispatch = useAppDispatch();
 
@@ -21,10 +22,12 @@ export default function NameSearchBar() {
     const genusSpecies: Record<Species['genus'], Array<Species>> = {};
 
     for (const specObj of Object.values(species)) {
-      if (genusSpecies[specObj.genus] != null) {
-        genusSpecies[specObj.genus]?.push(specObj);
-      } else {
-        genusSpecies[specObj.genus] = [specObj];
+      if (filteredSpecies?.includes(specObj.scientificName)) {
+        if (genusSpecies[specObj.genus] != null) {
+          genusSpecies[specObj.genus]?.push(specObj);
+        } else {
+          genusSpecies[specObj.genus] = [specObj];
+        }
       }
     }
     return genusSpecies;
@@ -85,7 +88,7 @@ export default function NameSearchBar() {
     }
 
     return tmpNameOptions;
-  }, [sortedGenusKeys, groupedGenusSpecies]);
+  }, [sortedGenusKeys, groupedGenusSpecies, filteredSpecies]);
 
   const label = 'Name Search';
 
@@ -183,7 +186,7 @@ export default function NameSearchBar() {
       }}
       renderOption={(props, option) => {
         return (
-          <li {...props}>
+          <li {...props} key={props.key}>
             <div className="flex flex-col">
               <div className={option.genus ? 'font-bold italic' : 'italic'}>
                 {highlightText(option.title, currentValue)}

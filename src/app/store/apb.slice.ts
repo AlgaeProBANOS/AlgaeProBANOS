@@ -8,6 +8,8 @@ import type {
     Project
 } from '@/api/memorise-client';
 import type { RootState } from '@/app/store';
+import { Region } from '@/features/products/AreaSearchBar';
+import { MapDataSourceType } from '@/features/products/MapDataSourceSwitch';
 
 //===
 // State management; logic for handling parts of a state; organisation, reducers, actions
@@ -29,6 +31,7 @@ export interface Filters {
   applications: Array<ApplicationType> | null;
   includeNonApplications: boolean;
   countries: Record<Country['title'], Country> | null;
+  region: Region | null;
 };
 
 //Declaration
@@ -37,15 +40,17 @@ export interface APBState {
   filteredSpecies: Array<Species['id']> | null;
   filters: Filters;
   speciesPhotos: Record<Species['id'], string | null>;
+  productMapMode: MapDataSourceType;
 }
 
 //Constructor
 const initialState: APBState = {
   species: {},
   filteredSpecies: null,
-  filters: {colors: {'green': true, 'brown': true, 'red': true, 'purple': true, 'unknown': true}, name: null, species: {'species': null, 'genus': null, 'type': null}, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'],
+  filters: {region: null, colors: {'green': true, 'brown': true, 'red': true, 'purple': true, 'unknown': true}, name: null, species: {'species': null, 'genus': null, 'type': null}, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'],
   includeNonApplications: true, countries: null},
-  speciesPhotos: {}
+  speciesPhotos: {},
+  productMapMode: "EMOD"
 };
 
 export const slice = createSlice({
@@ -57,6 +62,9 @@ export const slice = createSlice({
     },
     setFilteredSpecies: (state, action) => {
       state.filteredSpecies = action.payload;
+    },
+    setProductMapMode: (state, action) => {
+      state.productMapMode = action.payload;
     },
     resetSpeciesFilters: (state, acion) => {
       state.filters.species = {species: null, genus: null, type: null}
@@ -89,6 +97,9 @@ export const slice = createSlice({
           break;
         case "countries":
           state.filters.countries = val;
+          break;
+        case "region":
+          state.filters.region = val;
           break;
         case "includeNonApplications":
           state.filters.includeNonApplications = val;
@@ -152,6 +163,10 @@ export function selectSpeciesPhotos(state: RootState) {
 
 export function selectFilteredSpecies(state: RootState) {
   return state.apb.filteredSpecies;
+}
+
+export function selectProductMapMode(state: RootState) {
+  return state.apb.productMapMode;
 }
 
 
@@ -263,7 +278,7 @@ export const selectFragmentContentForDocumentByID = createSelector(
   },
 );
 
-export const { clearSearchResults, setFilteredSpecies, setFilters, resetSpeciesFilters, setSpeciesPhotos } = slice.actions;
+export const { clearSearchResults, setFilteredSpecies, setFilters, resetSpeciesFilters, setSpeciesPhotos, setProductMapMode } = slice.actions;
 
 /* export const {
   addLocalEntity,

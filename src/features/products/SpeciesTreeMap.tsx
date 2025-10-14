@@ -204,7 +204,7 @@ export function SpeciesTreeMap() {
                   onClick={() => {
                     resetSelected('everything');
                   }}
-                  className="row-span-2 items-center flex"
+                  className="row-span-2 items-center flex bg-apb-aubergine text-white px-2 rounded-md"
                 >
                   Reset
                 </div>

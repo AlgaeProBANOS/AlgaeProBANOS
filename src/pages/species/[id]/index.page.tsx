@@ -3,7 +3,7 @@ import { withDictionaries } from '@/app/i18n/with-dictionaries';
 import { useParams } from '@/app/route/use-params';
 import { useAppSelector } from '@/app/store';
 import { selectSpecies } from '@/app/store/apb.slice';
-import { applicationCategories } from '@/features/products/utils';
+import { algaeColors, applicationCategories } from '@/features/products/utils';
 import { useEffect, useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useOverlayState } from '@/app/context/overlay.context';
@@ -103,6 +103,8 @@ export default function SpeciesDetails(): JSX.Element {
       });
   }, []);
 
+  console.log('EXTRA', extraData);
+
   const algae = species[speciesID ?? ''];
 
   if (speciesID == null || algae == null) return <>Select a species to see its details.</>;
@@ -115,6 +117,22 @@ export default function SpeciesDetails(): JSX.Element {
         <div className="flex flex-col gap-2 mb-14">
           <span className="text-4xl font-bold">{algae?.scientificName}</span>
           <span className="text-xl">{algae?.commonName}</span>
+          <div className="flex gap-1">
+            {algae != null &&
+              Object.values(algaeColors)
+                .filter((col) => algae.color.includes(col.value))
+                .map((col, i) => {
+                  return (
+                    <div
+                      className="px-2 rounded-sm text-white"
+                      key={`color-bar-${i}-${algae.species}`}
+                      style={{ backgroundColor: col.color }}
+                    >
+                      {col.name}
+                    </div>
+                  );
+                })}
+          </div>
         </div>
         <div className="size-full overflow-hidden rounded-md">
           {extraData && <ImageCarousel images={extraData[algae.scientificName].images} />}

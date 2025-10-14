@@ -8,6 +8,7 @@ import { isEmojiSupported } from 'is-emoji-supported';
 import React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { ReactCountryFlag } from 'react-country-flag';
+import { regionCountries } from './AreaSearchBar';
 // import { getFlagEmoji, langUnicode } from "./Tooltip";
 
 export default function CountrySearchBar() {
@@ -22,10 +23,6 @@ export default function CountrySearchBar() {
       { title: string; value: string; iso: string; type: string; found: boolean; iso3: string }
     >
   >(filters.countries);
-
-  useEffect(() => {
-    console.log('UPDATE ME HERE!');
-  }, [filters.countries]);
 
   useEffect(() => {
     dispatch(
@@ -103,7 +100,18 @@ export default function CountrySearchBar() {
     return tmpCountryOptions;
   }, [countriesDictionary, species]);
 
-  const label = 'Country Search';
+  useEffect(() => {
+    const selectedRegion = filters.region;
+    if (selectedRegion != null) {
+      const toBeSelected = countryOptions.filter((e) =>
+        regionCountries[selectedRegion.title]?.includes(e.title),
+      );
+      // console.log('REGION changed', selectedRegion, toBeSelected);
+      setValue(Object.fromEntries(toBeSelected.map((e) => [e.title, e])));
+    } else {
+      setValue({});
+    }
+  }, [filters.region]);
 
   return (
     <Autocomplete

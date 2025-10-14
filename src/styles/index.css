@@ -110,7 +110,7 @@ we still enforce color-scheme: dark, despite the user preference */
 }
 
 .treeMapLevel:hover { 
-  border-color: blue !important;
+  border-color: theme(colors.apb-aubergine) !important;
 }
 
 .details-card {
