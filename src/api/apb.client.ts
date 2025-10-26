@@ -133,6 +133,7 @@ export interface EmodnetPoint {
   organism_group: string;
   production_details: string;
   production_method: string;
+  production_method_array?: Array<string>;
   site_id: string;
 }
 

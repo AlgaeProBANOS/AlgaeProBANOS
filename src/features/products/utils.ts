@@ -11,6 +11,21 @@ export const replaceSpecialCharacters = (input: string) => {
   return input.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
 };
 
+export const all_colors = [
+  '#a6cee3',
+  '#1f78b4',
+  '#b2df8a',
+  '#33a02c',
+  '#fb9a99',
+  '#e31a1c',
+  '#fdbf6f',
+  '#ff7f00',
+  '#cab2d6',
+  '#6a3d9a',
+  '#ffff99',
+  '#b15928',
+];
+
 export const algaeColors = {
   green: { color: '#33a02c', name: 'Green', value: 'green' },
   brown: { color: '#b15928', name: 'Brown', value: 'brown' },

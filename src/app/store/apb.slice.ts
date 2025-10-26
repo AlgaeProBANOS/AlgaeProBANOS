@@ -10,6 +10,7 @@ import type {
 import type { RootState } from '@/app/store';
 import { Region } from '@/features/products/AreaSearchBar';
 import { MapDataSourceType } from '@/features/products/MapDataSourceSwitch';
+import { all_colors } from '@/features/products/utils';
 
 //===
 // State management; logic for handling parts of a state; organisation, reducers, actions
@@ -50,6 +51,7 @@ export interface APBState {
   filters: Filters;
   speciesPhotos: Record<Species['id'], string | null>;
   productMapMode: MapDataSourceType;
+  categoryColors: Record<string, string>;
 }
 
 //Constructor
@@ -64,7 +66,8 @@ const initialState: APBState = {
   polyCulture: false,
 }, keyword: null},
   speciesPhotos: {},
-  productMapMode: "EMOD"
+  productMapMode: "EMOD",
+  categoryColors: {}
 };
 
 export const slice = createSlice({
@@ -134,7 +137,7 @@ export const slice = createSlice({
       (state, action) => {
         //then execute the reducer with state and action
         const result = action.payload; //result of the API call aka data
-        
+        const clusterProperties = {};
         const newSpecies = {} as Record<Species['id'], Species>;
         for(const speciesIt of result) {
           let species = {...speciesIt};
@@ -160,10 +163,39 @@ export const slice = createSlice({
             //   species.species = speciesName;
             //   species.scientificName = scientificName;
             // }
-            newSpecies[newID] = species;
+            
+            let newEmodPoints = null;
+            if(species.emodnet_points != null) {
+              newEmodPoints = [];
+              for (const dot of species.emodnet_points) {
+                const newMethods = [];
+                for (const meth of dot.production_method.split(',')) {
+                  const propKey = `${meth.trim()}`;
+                  newMethods.push(propKey);
+                  if (!Object.keys(clusterProperties).includes(propKey)) {
+                    clusterProperties[propKey] = [
+                      '+',
+                      ['case', ['>=', ['index-of', meth.trim(), ['get', 'production_method']], 0], 1, 0],
+                    ];
+                  }
+                }
+                const newDot = {...dot, production_method_array: newMethods}
+                newEmodPoints.push(newDot);
+              }
+            }
+
+            newSpecies[newID] = {...species, emodnet_points: newEmodPoints};
+
           }
         }
+
+        const categoryColors = {};
+        const sortedKeys = Object.keys(clusterProperties).sort();
+        for (const [i, key] of sortedKeys.entries()) {
+          categoryColors[key] = all_colors[i];
+        }
         state.species = newSpecies;
+        state.categoryColors = categoryColors;
       },
     );
     builder.addMatcher(
@@ -186,6 +218,10 @@ export function selectSpecies(state: RootState) {
 
 export function selectFilters(state: RootState) {
   return state.apb.filters;
+}
+
+export function selectCategoryColors(state: RootState) {
+  return state.apb.categoryColors;
 }
 
 export function selectSpeciesPhotos(state: RootState) {

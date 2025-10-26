@@ -4,6 +4,7 @@ import { Species } from '@/api/apb.client';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import {
   Country,
+  selectCategoryColors,
   selectFilteredSpecies,
   selectFilters,
   selectProductMapMode,
@@ -16,11 +17,12 @@ import { CheckIcon } from '@heroicons/react/16/solid';
 // import type { MapRef } from '@vis.gl/react-maplibre';
 // import { Layer, Map, Source } from '@vis.gl/react-maplibre';
 import * as d3 from 'd3';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTooltipState } from '../common/tooltip/tooltip-provider';
 
-import ReactMapGL, { Layer, Source } from 'react-map-gl';
+import ReactMapGL, { Layer, Marker, Source } from 'react-map-gl';
 import { Switch } from './Switch';
+import { nanoid } from '@reduxjs/toolkit';
 
 const outerMapBounds: [number, number, number, number] = [
   -26.942848249874004, 31.43581990686755, 65.1077179732153, 73.33119246537285,
@@ -197,53 +199,57 @@ function groupBy(xs, key) {
   }, {});
 }
 
-function createDonutChart(props) {
+function createDonutChart(props, dataKeys, colors) {
   const offsets = [];
 
-  // const counts = [props.mag1, props.mag2, props.mag3, props.mag4, props.mag5];
-  const data = props.data;
-
-  const grouped = groupBy(Object.values(data), 'numvalue');
+  const grouped = Object.fromEntries(
+    Object.entries(props).filter(([key, val]) => dataKeys.includes(key)),
+  );
 
   const sortedGroupedKeys = Object.keys(grouped).sort().reverse();
 
   let total = 0;
   for (const group of sortedGroupedKeys) {
     offsets.push(total);
-    total += grouped[group].length;
+    total = total + grouped[group];
   }
 
   const fontSize = total >= 1000 ? 22 : total >= 100 ? 20 : total >= 10 ? 18 : 16;
-  const r = total >= 1000 ? 50 : total >= 100 ? 32 : total >= 10 ? 24 : 18;
-  const r0 = Math.round(r * 0.6);
+  let r = total >= 1000 ? 50 : total >= 100 ? 32 : total >= 10 ? 24 : 18;
+  if (props.point_count == null || props.point_count <= 1) {
+    r = r - 8;
+  }
+  const r0 = props.point_count > 1 ? Math.round(r * 0.6) : 0;
   const w = r * 2;
 
   return (
-    <svg width={`${w}`} height={`${w}`} viewBox={`0 0 ${w} ${w}`} textAnchor="middle">
-      <circle
-        cx={r}
-        cy={r}
-        r={r}
-        fill="white"
-        stroke={showThreatDonuts === 'white' ? 'gray' : 'none'}
-      ></circle>
-      {showThreatDonuts && showThreatDonuts !== 'white' && (
-        <g transform={'translate(1, 1)'}>
-          {sortedGroupedKeys.map((item, index) => {
-            return donutSegment(
-              offsets[index] / total,
-              (offsets[index] + grouped[item].length) / total,
-              r - 1,
-              r0 - 1,
-              grouped[item][0].getColor(colorBlind),
-              `donut-segment-${index}-${nanoid()}`,
-            );
-          })}
-        </g>
+    <svg
+      onClick={(e) => {
+        console.log(props);
+      }}
+      width={`${w}`}
+      height={`${w}`}
+      viewBox={`0 0 ${w} ${w}`}
+      textAnchor="middle"
+    >
+      {props.point_count > 1 && <circle cx={r} cy={r} r={r} fill="white" stroke={'none'}></circle>}
+      <g transform={'translate(1, 1)'}>
+        {sortedGroupedKeys.map((item, index) => {
+          return donutSegment(
+            offsets[index] / total,
+            (offsets[index] + grouped[item]) / total,
+            r - 1,
+            r0,
+            colors[item],
+            `donut-segment-${index}-${nanoid()}`,
+          );
+        })}
+      </g>
+      {props.point_count > 1 && (
+        <text dominantBaseline="central" transform={`translate(${r}, ${r})`}>
+          {total.toLocaleString()}
+        </text>
       )}
-      <text dominantBaseline="central" transform={`translate(${r}, ${r})`}>
-        {total.toLocaleString()}
-      </text>
     </svg>
   );
 }
@@ -285,6 +291,7 @@ export default function Map(props: MapProps): JSX.Element {
   const [projection, setProjection] = useState<'globe' | 'equalEarth'>('globe');
   const productMapMode = useAppSelector(selectProductMapMode);
   const [mapSource, setMapSource] = useState<MapDataSourceType>(productMapMode);
+  const categoryColors = useAppSelector(selectCategoryColors);
 
   useEffect(() => {
     dispatch(setProductMapMode(mapSource));
@@ -396,14 +403,33 @@ export default function Map(props: MapProps): JSX.Element {
     });
   }, [filteredAndSelectedSpecies]);
 
-  const mapMarkers = useMemo(() => {
+  const [mapMarkers, clusterProperties] = useMemo(() => {
+    const clusterProperties = {};
     const markers = [];
     for (const speciesName of productSpecies) {
       const spec = species[speciesName];
       for (const dot of spec.emodnet_points) {
+        const newProps = {};
+        for (const meth of dot.production_method_array) {
+          const propKey = `${meth.trim()}`;
+          newProps[propKey] = 1;
+          if (!Object.keys(clusterProperties).includes(propKey)) {
+            clusterProperties[propKey] = [
+              '+',
+              ['case', ['in', propKey, ['get', 'production_method_array']], 1, 0],
+            ];
+          }
+        }
+
         const newMarker = {
           type: 'Feature',
-          properties: {},
+          properties: {
+            site_id: dot.site_id,
+            production_details: dot.production_details,
+            production_method: dot.production_method,
+            production_method_array: dot.production_method_array,
+            ...newProps,
+          },
           geometry: {
             type: 'Point',
             coordinates: [dot.coordinates[1], dot.coordinates[0]],
@@ -413,7 +439,7 @@ export default function Map(props: MapProps): JSX.Element {
       }
     }
 
-    return markers;
+    return [markers, clusterProperties];
   }, [productSpecies, isClustering]);
 
   const [hexagonGeoJson3, colors3, legendColsString] = useMemo(() => {
@@ -472,6 +498,37 @@ export default function Map(props: MapProps): JSX.Element {
   //   return <div>No Map!</div>;
   // }
 
+  const [donutClusterMarkers, setDonutClusterMarkers] = useState([]);
+
+  const updateDonutClusterMarkers = useCallback(() => {
+    const newMarkers = [];
+    if (mapRef.current != null) {
+      const features = mapRef.current.querySourceFeatures('micro-source');
+      const clusterPropertiesKey = Object.keys(clusterProperties);
+
+      let index = 0;
+      for (const feat of features) {
+        const markerKey = `marker-${index}`;
+
+        // if (feat.properties.point_count > 0) {
+        newMarkers.push(
+          <Marker
+            key={markerKey}
+            longitude={feat.geometry.coordinates[0]}
+            latitude={feat.geometry.coordinates[1]}
+            anchor="center"
+          >
+            {createDonutChart(feat.properties, clusterPropertiesKey, categoryColors)}
+          </Marker>,
+        );
+        index = index + 1;
+        // }
+      }
+    }
+
+    setDonutClusterMarkers(newMarkers);
+  }, [categoryColors]);
+
   return (
     <div className="size-full relative">
       <ReactMapGL
@@ -502,8 +559,14 @@ export default function Map(props: MapProps): JSX.Element {
             mapRef.current.getMap().setPaintProperty('Water', 'fill-color', '#f0fbff');
           }
         }}
+        onRender={() => {
+          // if (isClustering) {
+          updateDonutClusterMarkers();
+          // }
+        }}
         onClick={(e) => {
           const feature = e.features?.[0];
+          console.log('Feature', e, feature);
 
           if (feature && feature.layer.id === 'country-fill') {
             const oldFilters = { ...countryFilters } as Record<Country['title'], Country>;
@@ -526,7 +589,7 @@ export default function Map(props: MapProps): JSX.Element {
             );
           }
         }}
-        interactiveLayerIds={['country-fill']}
+        interactiveLayerIds={['geojson-fill']}
       >
         <Source
           id="bathymetry-source"
@@ -699,56 +762,46 @@ export default function Map(props: MapProps): JSX.Element {
             cluster={isClustering ? true : false}
             clusterMaxZoom={14}
             clusterRadius={50}
+            clusterProperties={{
+              ...clusterProperties,
+              sites: ['concat', ['concat', ' ', ['get', 'site_id']]],
+            }}
           >
-            {isClustering && (
-              <>
-                <Layer
-                  id="clusters"
-                  type="circle"
-                  key={`geojson-clusters-${isClustering}`}
-                  source="micro-source"
-                  filter={['has', 'point_count']}
-                  paint={{
-                    'circle-color': [
-                      'step',
-                      ['get', 'point_count'],
-                      '#ff6600',
-                      100,
-                      '#f1f075',
-                      750,
-                      '#f28cb1',
-                    ],
-                    'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
-                    // 'circle-emissive-strength': 1,
-                  }}
-                />
-                <Layer
-                  id="cluster-count"
-                  key={`geojson-symbol-${isClustering}`}
-                  type="symbol"
-                  source="micro-source"
-                  filter={['has', 'point_count']}
-                  layout={{
-                    'text-field': ['get', 'point_count_abbreviated'],
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 12,
-                  }}
-                />
-              </>
-            )}
-            <Layer
-              id="geojson-fill"
-              key={`geojson-fill-${isClustering}`}
-              type="circle"
-              filter={['!', ['has', 'point_count']]}
-              paint={{
-                'circle-radius': 6,
-                'circle-color': '#ff6600',
-                'circle-stroke-width': 1,
-                'circle-stroke-color': '#fff',
-              }}
-              source="micro-source"
-            />
+            {/* {isClustering && ( */}
+            <>
+              {donutClusterMarkers}
+              <Layer
+                id="geojson-fill"
+                key={`geojson-fill-${isClustering}`}
+                type="circle"
+                filter={['!', ['has', 'point_count']]}
+                paint={{ 'circle-radius': 0 }}
+                source="micro-source"
+              />
+            </>
+            {/* )} */}
+            {/* {isClustering && (
+              <Layer
+                id="clusters"
+                type="circle"
+                key={`geojson-clusters-${isClustering}`}
+                source="micro-source"
+                filter={['has', 'point_count']}
+                paint={{
+                  'circle-color': [
+                    'step',
+                    ['get', 'point_count'],
+                    '#ff6600',
+                    100,
+                    '#f1f075',
+                    750,
+                    '#f28cb1',
+                  ],
+                  'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+                  // 'circle-emissive-strength': 1,
+                }} 
+              ></Layer>
+            )}*/}
           </Source>
         )}
         {mapDataMode === 'GBIF' && (
@@ -801,6 +854,24 @@ export default function Map(props: MapProps): JSX.Element {
                 className="bg-apb-gray"
               ></div>
             </div>
+          </div>
+        )}
+        {mapDataMode === 'EMOD' && (
+          <div
+            className={`absolute bottom-4 right-3 p-1 pt-0 bg-apb-gray-light shadow-md rounded-md grid grid-cols-[min-content_auto] max-w-1/2 gap-x-1`}
+          >
+            <div className="col-span-2 font-bold">Production Methods</div>
+            {categoryColors &&
+              Object.keys(categoryColors).map((e) => (
+                <>
+                  <div
+                    className="size-2 rounded-full self-center"
+                    style={{ backgroundColor: categoryColors[e] }}
+                  ></div>
+                  <div>{e.replace('count_', '')}</div>
+                </>
+              ))}
+            <div></div>
           </div>
         )}
       </ReactMapGL>
@@ -867,4 +938,39 @@ export default function Map(props: MapProps): JSX.Element {
       </div>
     </div>
   );
+}
+
+{
+  /* <Layer
+                  id="clusters"
+                  type="circle"
+                  key={`geojson-clusters-${isClustering}`}
+                  source="micro-source"
+                  filter={['has', 'point_count']}
+                  paint={{
+                    'circle-color': [
+                      'step',
+                      ['get', 'point_count'],
+                      '#ff6600',
+                      100,
+                      '#f1f075',
+                      750,
+                      '#f28cb1',
+                    ],
+                    'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+                    // 'circle-emissive-strength': 1,
+                  }}
+                />
+                <Layer
+                  id="cluster-count"
+                  key={`geojson-symbol-${isClustering}`}
+                  type="symbol"
+                  source="micro-source"
+                  filter={['has', 'point_count']}
+                  layout={{
+                    'text-field': ['get', 'point_count_abbreviated'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12,
+                  }}
+                /> */
 }

@@ -38,12 +38,14 @@ export default function CountrySearchBar() {
 
   useEffect(() => {
     const selectedCountries = filters.countries;
-    console.log(
-      'CHANGED',
-      JSON.stringify(Object.keys(selectedCountries)) !== JSON.stringify(Object.keys(value)),
-      JSON.stringify(Object.keys(selectedCountries)),
-      JSON.stringify(Object.keys(value)),
-    );
+    if (selectedCountries != null) {
+      console.log(
+        'CHANGED',
+        JSON.stringify(Object.keys(selectedCountries)) !== JSON.stringify(Object.keys(value)),
+        JSON.stringify(Object.keys(selectedCountries)),
+        JSON.stringify(Object.keys(value)),
+      );
+    }
 
     // if (JSON.stringify(Object.keys(selectedCountries)) !== JSON.stringify(Object.keys(value))) {
     //   if (selectedCountries != null) {
