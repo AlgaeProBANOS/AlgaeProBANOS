@@ -80,7 +80,6 @@ export default function ProductFilter(): JSX.Element {
   return (
     <div className="grid size-full grid-cols-1 grid-rows-[min-content_auto_1fr] p-2">
       <div className="flex gap-2 justify-between">
-        <div className="text-lg font-bold mb-1">{t(['common', 'products', 'productSectors'])}</div>
         {/* <Switch
           value={sectionType}
           setValue={setSectionType}
@@ -103,9 +102,9 @@ export default function ProductFilter(): JSX.Element {
           <div className="flex h-full flex-col p-1">
             <div className="flex items-center">
               <ContactSupport className="mr-1" style={{ color: '#3c3c3c' }} />
-              <span className="font-bold">Select All</span>
+              <span className="text-sm 2xl:text-base">Select All</span>
             </div>
-            <span className="text-sm text-gray-500">{`Include all species.`}</span>
+            <span className="text-xs 2xl:text-sm text-gray-500">{`Include all species.`}</span>
           </div>
         </div>
         <div
@@ -120,9 +119,9 @@ export default function ProductFilter(): JSX.Element {
           <div className="flex h-full flex-col p-1">
             <div className="flex items-center">
               <ContactSupport className="mr-1" style={{ color: '#3c3c3c' }} />
-              <span className="font-bold">No Application</span>
+              <span className="text-sm 2xl:text-base">No Application</span>
             </div>
-            <span className="text-sm text-gray-500">{`Include ${
+            <span className="text-xs 2xl:text-sm text-gray-500">{`Include ${
               filteredSpecies?.filter(
                 (k) =>
                   Object.keys(species[k]?.applications).filter(

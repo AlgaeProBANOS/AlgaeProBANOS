@@ -90,14 +90,14 @@ export function TooltipProvider(props: TooltipProviderProps): JSX.Element {
         id="tooltipProvider"
         ref={containerRef}
         onPointerMove={handlePointerMove}
-        className="w-full h-full overflow-hidden z-[40]"
+        className="w-full h-full overflow-hidden z-[60]"
       >
         <TooltipComponent
           key={Math.random()} // needed for bounds to update correctly
           left={tooltipLeft}
           top={tooltipTop}
           style={tooltipStyles}
-          className={`z-[41] ${content != null ? 'visible' : 'hidden'}`}
+          className={`z-[61] ${content != null ? 'visible' : 'hidden'}`}
         >
           {content}
         </TooltipComponent>

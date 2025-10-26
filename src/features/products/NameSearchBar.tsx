@@ -214,7 +214,7 @@ export default function NameSearchBar() {
           </div>
         );
       }}
-      style={{ display: 'table-cell', verticalAlign: 'middle' }}
+      style={{ display: 'table-cell', verticalAlign: 'middle', width: '100%' }}
     />
   );
 }

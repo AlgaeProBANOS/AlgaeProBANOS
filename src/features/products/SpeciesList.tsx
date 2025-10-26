@@ -27,7 +27,7 @@ export default function SpeciesList(): JSX.Element {
   const { updateTooltip } = useTooltipState();
   const applicationFilter = useAppSelector(selectFilters).applications ?? [];
   const speciesPhotos = useAppSelector(selectSpeciesPhotos);
-  const [speciesWithOccurrences, setSpeciesWithOccurrences] = useState<string[]>([]);
+  const [speciesWithOccurrences, setSpeciesWithOccurrences] = useState<string[]>();
 
   const applicationColors = useMemo(() => {
     return Object.fromEntries(applicationCategories.map((e) => [e.key, e.color]));
@@ -43,14 +43,16 @@ export default function SpeciesList(): JSX.Element {
     );
   }, [selectedSpecies]);
 
-  useEffect(() => {}, [filters.name]);
-
-  fetch('/data/hex_counts.json')
-    .then((res) => res.json())
-    .then(function (json) {
-      const tmp = Object.keys(json).filter((e) => json[e] != null);
-      setSpeciesWithOccurrences(tmp);
-    });
+  useEffect(() => {
+    fetch('/data/hex_counts.json')
+      .then((res) => res.json())
+      .then(function (json) {
+        const tmp = Object.keys(json).filter(
+          (e) => json[e] != null && Object.keys(json[e]).length > 0,
+        );
+        setSpeciesWithOccurrences(tmp);
+      });
+  }, []);
 
   const groupedGenusSpecies = useMemo(() => {
     const genusSpecies: Record<Species['genus'], Array<Species>> = {};
@@ -76,7 +78,7 @@ export default function SpeciesList(): JSX.Element {
     (algae: Species) => {
       const speciesKey = algae.scientificName.replace(' ', '_');
       return (
-        <div className="grid grid-cols-[min-content_auto auto] gap-1.5 w-[40vw]">
+        <div className="grid grid-cols-[min-content_auto auto] gap-1.5 w-[40vw] max-w-[800px]">
           <div key={`species-title-${speciesKey}`} className="col-span-3 italic font-bold">
             {algae.scientificName}
           </div>
@@ -145,7 +147,10 @@ export default function SpeciesList(): JSX.Element {
     [speciesPhotos],
   );
 
-  const sortedGenusKeys = Object.keys(groupedGenusSpecies).sort();
+  const sortedGenusKeys =
+    filters.keyword != null
+      ? Object.keys(groupedGenusSpecies)
+      : Object.keys(groupedGenusSpecies).sort();
 
   const genListEntry = useCallback(
     (algae: Species, selected: boolean, selectedSpecies, isGenus) => {
@@ -184,18 +189,19 @@ export default function SpeciesList(): JSX.Element {
                 {/* {isGenus && !algae.scientificName.trim().endsWith('p.') && <span> spp.</span>} */}
               </span>
               {algae?.emodnet_points && <MapPinIcon className="size-4 text-apb-gray" />}
-              {speciesWithOccurrences.includes(algae.scientificName) && (
-                <div
-                  style={{
-                    width: '15px',
-                    height: '15px',
-                    '-webkit-clip-path':
-                      'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
-                    clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
-                  }}
-                  className="bg-apb-gray"
-                ></div>
-              )}
+              {speciesWithOccurrences != null &&
+                speciesWithOccurrences.includes(algae.scientificName) && (
+                  <div
+                    style={{
+                      width: '15px',
+                      height: '15px',
+                      '-webkit-clip-path':
+                        'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
+                      clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
+                    }}
+                    className="bg-apb-gray"
+                  ></div>
+                )}
             </span>
             <span className="p-1">
               {selected && (
@@ -258,12 +264,12 @@ export default function SpeciesList(): JSX.Element {
         </div>
       );
     },
-    [algaeColors],
+    [algaeColors, speciesWithOccurrences],
   );
 
   return (
-    <div className="grid grid-cols-1 grid-rows-[auto_1fr] size-full p-4">
-      <div className="font-bold">{`${Object.keys(filteredSpecies).length} species filtered`}</div>
+    <div className="grid grid-cols-1 grid-rows-1 size-full p-4">
+      {/* <div className="font-bold">{`${Object.keys(filteredSpecies).length} species filtered`}</div> */}
       <div className="relative">
         <div className="flex flex-col absolute overflow-hidden overflow-y-scroll size-full font-sans">
           <>

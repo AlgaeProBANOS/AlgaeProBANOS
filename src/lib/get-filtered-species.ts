@@ -1,7 +1,9 @@
 import { ApplicationType, Species } from '@/api/apb.client';
 import { useAppSelector } from '@/app/store';
 import { selectFilters, selectSpecies } from '@/app/store/apb.slice';
+import { getMatchingSpecies } from '@/features/common/prodcutFilter';
 import { filter } from 'd3';
+import { useEffect } from 'react';
 
 export function useApplyFilters() {
   const species = useAppSelector(selectSpecies);
@@ -21,6 +23,33 @@ export function useApplyFilters() {
   }
   else if(speciesFilter.type != null) {
     currentSpecies = currentSpecies.filter(e => species[e]?.microMacro?.toLowerCase().includes(speciesFilter.type?.toLowerCase()));
+  }
+
+  //Certification filters
+  const certificationsFilter = filters.certifications;
+  if(certificationsFilter != null && Object.values(certificationsFilter).find(e => e)) {
+    currentSpecies = currentSpecies.filter((spec)=> {
+      
+      let hit = true;
+
+      if(certificationsFilter.polyCulture === true) {
+        hit = hit && species[spec]?.certifications.canBeGrownInPolyculture as boolean;
+      }
+
+      if(certificationsFilter.novelFood === true) {
+        hit = hit && species[spec]?.certifications.inNovelFoodCatalogue as boolean;
+      }
+
+      if(certificationsFilter.foodList === true) {
+        hit = hit && species[spec]?.certifications.inUnionNovelFoodList as boolean;
+      }
+
+      if(certificationsFilter.onMarket === true) {
+        hit = hit && species[spec]?.certifications.onMarket as boolean;
+      }
+      
+      return hit;
+    })
   }
 
   // Application Filter
@@ -84,6 +113,16 @@ export function useApplyFilters() {
       }
       return false;
     })
+  }
+  
+  //Product Keyword filter
+  const keywordFilter = filters.keyword;
+  if(keywordFilter != null) {
+    console.log("Keyword Filter", keywordFilter, Object.values(species).filter(e=>currentSpecies.includes(e.scientificName)));
+    const matchingResults = getMatchingSpecies(Object.values(species).filter(e=>currentSpecies.includes(e.scientificName)), keywordFilter);
+    console.log("matching results", matchingResults);
+    
+    currentSpecies = matchingResults.map(e=>e.id);
   }
 
   return currentSpecies;

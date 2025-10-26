@@ -1,36 +1,43 @@
 export type SectionType = 'selection' | 'treeMap';
 
-export function Switch(props) {
+interface Option {
+  value: string;
+  title: string;
+}
+
+interface SwitchProps {
+  value: any;
+  setValue: (v) => void;
+  firstOption: Option;
+  secondOption: Option;
+  className?: string;
+}
+
+export function Switch(props: SwitchProps) {
   const { value, setValue, firstOption, secondOption, className } = props;
 
   return (
     <div
-      className={`${className} flex cursor-pointer rounded-md w-min overflow-hidden border-apb-gray border`}
+      className={`${className} flex cursor-pointer rounded-md overflow-hidden`}
       onClick={() => {
-        if (value === firstOption.val) {
-          setValue(secondOption.val);
+        if (value === firstOption.value) {
+          setValue(secondOption.value);
         } else {
-          setValue(firstOption.val);
+          setValue(firstOption.value);
         }
       }}
     >
       <div
-        className="px-1 py-[1px] transition-colors duration-500"
-        style={{
-          backgroundColor: value === firstOption.val ? 'black' : 'white',
-          color: value === firstOption.val ? 'white' : 'black',
-        }}
+        aria-selected={value === firstOption.value}
+        className="px-1 py-[1px] transition-colors duration-500 bg-white aria-selected:bg-black aria-selected:text-white hover:bg-gray-400 hover:text-white select-none"
       >
-        Selection
+        {firstOption.title}
       </div>
       <div
-        className="px-1 py-[1px] transition-colors duration-500"
-        style={{
-          backgroundColor: value === secondOption.val ? 'black' : 'white',
-          color: value === secondOption.val ? 'white' : 'black',
-        }}
+        aria-selected={value === secondOption.value}
+        className="px-1 py-[1px] transition-colors duration-500 bg-white aria-selected:bg-black aria-selected:text-white hover:bg-gray-400 hover:text-white select-none"
       >
-        TreeMap
+        {secondOption.title}
       </div>
     </div>
   );

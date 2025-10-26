@@ -1,11 +1,11 @@
-import { createSelector, createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
-import type { Applications, ApplicationType, JSONObject, Species } from '@/api/apb.client';
+import type { ApplicationType, Species } from '@/api/apb.client';
 import { service as apbService } from '@/api/apb.service';
 import type {
-    Document,
-    Fragment,
-    Project
+  Document,
+  Fragment,
+  Project
 } from '@/api/memorise-client';
 import type { RootState } from '@/app/store';
 import { Region } from '@/features/products/AreaSearchBar';
@@ -24,6 +24,13 @@ export interface Country {
    found: boolean;
 }
 
+export interface Certifications {
+  onMarket: boolean;
+  novelFood: boolean;
+  foodList: boolean;
+  polyCulture: boolean;
+}
+
 export interface Filters {
   colors: Record<string, boolean> | null;
   name: string | null;
@@ -32,6 +39,8 @@ export interface Filters {
   includeNonApplications: boolean;
   countries: Record<Country['title'], Country> | null;
   region: Region | null;
+  certifications: Certifications;
+  keyword: string | null;
 };
 
 //Declaration
@@ -48,7 +57,12 @@ const initialState: APBState = {
   species: {},
   filteredSpecies: null,
   filters: {region: null, colors: {'green': true, 'brown': true, 'red': true, 'purple': true, 'unknown': true}, name: null, species: {'species': null, 'genus': null, 'type': null}, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'],
-  includeNonApplications: true, countries: null},
+  includeNonApplications: true, countries: null, certifications: {
+  onMarket: false,
+  novelFood: false,
+  foodList: false,
+  polyCulture: false,
+}, keyword: null},
   speciesPhotos: {},
   productMapMode: "EMOD"
 };
@@ -89,8 +103,14 @@ export const slice = createSlice({
         case "name":
           state.filters.name = val;
           break;
+        case "certifications":
+          state.filters.certifications[cat] = val;
+          break;
         case "species":
-        state.filters.species[cat] = val;
+          state.filters.species[cat] = val;
+          break;
+        case "keyword":
+          state.filters.keyword = val;
           break;
         case "applications":
           state.filters.applications = val;
@@ -110,7 +130,7 @@ export const slice = createSlice({
   },
   extraReducers(builder) {
     builder.addMatcher(
-      apbService.endpoints.searchSpecies.matchFulfilled, //Do this if determined that getFragmentsByProject was called
+      apbService.endpoints.searchSpecies.matchFulfilled,
       (state, action) => {
         //then execute the reducer with state and action
         const result = action.payload; //result of the API call aka data
@@ -144,6 +164,17 @@ export const slice = createSlice({
           }
         }
         state.species = newSpecies;
+      },
+    );
+    builder.addMatcher(
+      apbService.endpoints.searchSpeciesByProduct.matchFulfilled,
+      (state, action) => {
+        //then execute the reducer with state and action
+        const result = action.payload; //result of the API call aka data
+        
+        console.log('result', result);
+        
+        // state.species = newSpecies;
       },
     );
   },

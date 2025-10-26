@@ -14,6 +14,7 @@ import * as routes from '@/app/route/routes';
 import { usePathname } from '@/app/route/use-pathname';
 
 import { Button } from './button';
+import { useTooltipState } from '../common/tooltip/tooltip-provider';
 
 interface Link {
   id: string;
@@ -30,6 +31,8 @@ export function AppBar(props: AppBarProps): JSX.Element {
   const { t } = useI18n<'common'>();
 
   const currentPath = usePathname();
+
+  const { updateTooltip } = useTooltipState();
 
   const languages = [
     { localeString: 'en', countryCode: 'GB', languageString: 'English' },
@@ -67,10 +70,10 @@ export function AppBar(props: AppBarProps): JSX.Element {
   };
 
   return (
-    <div className="h-16 w-full px-4 bg-apb-green">
-      <div className="flex flex-row flex-nowrap justify-between">
+    <div className="h-12 w-full px-4 bg-apb-green">
+      <div className="flex flex-row flex-nowrap justify-between h-full">
         <div className="flex flex-row items-center gap-4 text-white underline-offset-8">
-          <div className="relative h-14 w-32">
+          <div className="relative h-10 w-24">
             <Link href="/" aria-current={currentPath === '/' ? 'page' : undefined}>
               <div className="relative size-full">
                 <span className="sr-only">Home</span>
@@ -79,25 +82,41 @@ export function AppBar(props: AppBarProps): JSX.Element {
                   src="/assets/images/APB-logo-white.png"
                   fill={true}
                   style={{ objectFit: 'contain' }}
-                  sizes={'100px 100px'}
+                  sizes={'40px 40px'}
                 />
               </div>
             </Link>
           </div>
-          <Link
-            href="/products"
-            className={`${currentPath.includes('products') ? 'font-bold underline' : ''}`}
+          <div
+            className="relative h-10 w-24 flex items-center"
+            onMouseEnter={() => {
+              updateTooltip(
+                <div className="p-1">
+                  This project is funded by the European Union's Horizon Europe research and
+                  innovation programme under grant agreement No. 101061016. This website reflects
+                  only the authors' views.
+                </div>,
+              );
+            }}
+            onMouseLeave={() => {
+              updateTooltip(null);
+            }}
           >
-            {t(['common', 'app-bar', 'algaeProducts'])}
-          </Link>
+            <Image
+              alt="EC Logo"
+              src="/assets/images/EC_logo_s.png"
+              style={{ objectFit: 'contain' }}
+              width={45}
+              height={26}
+            />
+          </div>
         </div>
         {maintenanceMode === true && (
-          <div className="flex h-10 items-center rounded-b-md bg-apb-aubergine p-[4px_12px] text-center text-apb-dark text-white">
+          <div className="flex h-8 items-center rounded-b-md bg-apb-aubergine p-[4px_12px] text-center text-apb-dark text-white">
             &#9888; Maintenance Mode
           </div>
         )}
         <div className="flex flex-row items-center justify-center py-4">
-          {/* <SearchForm /> */}
           <Popover className="relative flex items-center">
             <PopoverButton>
               <GlobeAltIcon className="size-7 text-white" />

@@ -8,8 +8,8 @@ export default function MapTest(): JSX.Element {
   // const { t } = useI18n<'common'>();
 
   return (
-    <Fragment>
-      <div className="grid h-full grid-cols-[200px_1fr] grid-rows-1"></div>
-    </Fragment>
+    <div className='size-full grid grid-cols-2 grid-rows-2'>
+      
+    </div>
   );
 }

@@ -1,5 +1,8 @@
 import requests
 import time
+import os
+import random
+import json
 
 BASE_URL = "http://api.gbif.org/v1"
 
@@ -37,6 +40,16 @@ def query_occurrences(taxon_key):
     limit = 300
 
     while True:
+        if os.path.isfile(f"temp/{taxon_key}_{offset}.json"):
+            with open(f"temp/{taxon_key}_{offset}.json", "r") as f:
+                print(f"Found temp file {f}")
+                results.extend(json.load(f))
+                offset += limit
+                continue
+
+        if offset + limit > 100000:
+            return results
+
         response = requests.get(
             f"{BASE_URL}/occurrence/search",
             params={
@@ -58,10 +71,16 @@ def query_occurrences(taxon_key):
         if data.get("endOfRecords") or not batch:
             break
 
+        print(f"{len(results)}/{data['count']} ({len(results)/data['count']*100}%)")
+
+        tempFile = open(f"temp/{taxon_key}_{offset}.json", "w")
+        tempFile.write(json.dumps(batch, indent=2).replace('NaN', 'null'))
+        tempFile.close()
+
         offset += limit
 
-        # Wait 200 milliseconds before the next request
-        time.sleep(0.2)
+        # Wait random amount of milliseconds before the next request
+        time.sleep(random.randrange(1, 300, 1)/100)
 
     return results
 

@@ -84,7 +84,6 @@ export function SpeciesTreeMap() {
   const containerSize = useElementDimensions({ element: containerElement });
 
   const microMacro = useMemo(() => {
-    const tmpGenus = {};
     const tmpMicroMacro = {};
 
     if (filteredSpecies != null) {
@@ -198,8 +197,8 @@ export function SpeciesTreeMap() {
       <div className="cursor-pointer">
         <div>
           <div className="grid grid-cols-[min-content_min-content_min-content_min-content] p-1 gap-x-6">
-            {selectedType && (
-              <>
+            <>
+              {selectedType && (
                 <div
                   onClick={() => {
                     resetSelected('everything');
@@ -208,17 +207,17 @@ export function SpeciesTreeMap() {
                 >
                   Reset
                 </div>
-                <div
-                  onClick={() => {
-                    resetSelected('type');
-                  }}
-                >
-                  <div className="speciesTreemapHeaderType">Type</div>
-                  <div>{selectedType?.data?.name ?? ''}</div>
-                </div>
-              </>
-            )}
-            {selectedGenus && (
+              )}
+              <div
+                onClick={() => {
+                  resetSelected('type');
+                }}
+              >
+                <div className="speciesTreemapHeaderType">Type</div>
+                <div>{selectedType?.data?.name ?? ''}</div>
+              </div>
+            </>
+            {selectedType && (
               <div
                 onClick={() => {
                   resetSelected('genus');
@@ -228,7 +227,7 @@ export function SpeciesTreeMap() {
                 <div className="italic">{selectedGenus?.data?.name ?? ''}</div>
               </div>
             )}
-            {selectedSpecies && (
+            {selectedGenus && (
               <div
                 onClick={() => {
                   resetSelected('species');

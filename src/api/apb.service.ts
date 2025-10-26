@@ -5,7 +5,7 @@ import { request } from '@stefanprobst/request';
 
 import { baseUrl } from '~/config/apb.config';
 
-import type { SearchPathParams, SearchResponse} from './apb.client';
+import { ProductPathParams, SearchPathParams, SearchResponse, searchSpeciesByProduct} from './apb.client';
 import { searchSpecies } from './apb.client';
 
 //===
@@ -35,11 +35,20 @@ export const service = createApi({
           };
         },
       }),
+      searchSpeciesByProduct: builder.query<SearchResponse, ProductPathParams>({
+        query(params) {
+          return {
+            url: searchSpeciesByProduct.url(params),
+            options: searchSpeciesByProduct.options(),
+          };
+        },
+      }),
     };
   },
 });
 
 export const {
   useSearchSpeciesQuery,
+  useSearchSpeciesByProductQuery,
   useLazySearchSpeciesQuery
 } = service;

@@ -69,7 +69,7 @@ const config = {
     config.resolve = config.resolve ?? {};
     config.resolve.alias = {
       ...config.resolve.alias,
-      'mapbox-gl': 'maplibre-gl',
+      // 'mapbox-gl': 'maplibre-gl',
     };
 
     /* eslint-enable no-param-reassign */

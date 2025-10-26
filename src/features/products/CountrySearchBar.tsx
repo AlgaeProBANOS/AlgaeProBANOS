@@ -24,6 +24,8 @@ export default function CountrySearchBar() {
     >
   >(filters.countries);
 
+  console.log(filters.countries, value);
+
   useEffect(() => {
     dispatch(
       setFilters({
@@ -33,6 +35,28 @@ export default function CountrySearchBar() {
       }),
     );
   }, [value]);
+
+  useEffect(() => {
+    const selectedCountries = filters.countries;
+    console.log(
+      'CHANGED',
+      JSON.stringify(Object.keys(selectedCountries)) !== JSON.stringify(Object.keys(value)),
+      JSON.stringify(Object.keys(selectedCountries)),
+      JSON.stringify(Object.keys(value)),
+    );
+
+    // if (JSON.stringify(Object.keys(selectedCountries)) !== JSON.stringify(Object.keys(value))) {
+    //   if (selectedCountries != null) {
+    //     const toBeSelected = countryOptions.filter((e) =>
+    //       Object.keys(selectedCountries).includes(e.title),
+    //     );
+    //     console.log('COUNTRIES changed', selectedCountries, toBeSelected);
+    //     setValue(Object.fromEntries(toBeSelected.map((e) => [e.title, e])));
+    //   } else {
+    //     setValue({});
+    //   }
+    // }
+  }, [filters.countries]);
 
   useEffect(() => {
     fetch('/data/countryDictionary.json')

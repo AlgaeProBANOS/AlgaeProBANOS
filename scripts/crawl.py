@@ -33,7 +33,6 @@ with open("../public/data/species.json", "r") as f:
             specFile = open(f"occurrences/{specKey}.json", "w")
             specFile.write(json.dumps(occs, indent=2).replace('NaN', 'null'))
             specFile.close()
-            pass
         elif "scientificName" in all_species[specKey]:
             print(specKey)
             print("========== SEARCH! ==========")

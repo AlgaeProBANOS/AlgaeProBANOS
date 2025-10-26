@@ -22,7 +22,7 @@ export function CountryLayer() {
       <Source type="geojson" data={data}>
         <Layer
           beforeId="country"
-          id="country-fill"
+          id="country-fill2"
           type="fill"
           paint={{
             'fill-color': 'transparent',

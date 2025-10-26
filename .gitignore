@@ -69,3 +69,7 @@ backend/data/
 backend/datacopy/
 
 scripts/occurrences/
+scripts/temp/
+scripts/querries/
+
+scripts/species_occs_*

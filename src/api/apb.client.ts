@@ -159,6 +159,10 @@ export type SearchPathParams = {
   q: string;
 };
 
+export type ProductPathParams = {
+  product: string;
+};
+
 export type SearchResponse = Array<Species>;
 
 export type FragmentSearchPathParams = {
@@ -214,7 +218,8 @@ export const getFragmentsByProject = {
 
 export const searchSpecies = {
   pathname(params: SearchPathParams): string {
-    return `/api/search?q=${encodeURIComponent(params.q)}`;
+    
+      return `/api/search?q=${encodeURIComponent(params.q)}`;
   },
   url(params: SearchPathParams): URL {
     const url = createApiUrl({
@@ -232,6 +237,32 @@ export const searchSpecies = {
   request(params: SearchPathParams): Promise<SearchResponse> {
     const url = searchSpecies.url(params);
     const options = searchSpecies.options();
+    return request(url, options);
+  },
+};
+
+export const searchSpeciesByProduct = {
+  pathname(params: ProductPathParams): string {
+      console.log("PARAMS", params);
+      return `/api/search?product=${encodeURIComponent(params?.product ?? "")}`;
+  },
+  url(params: ProductPathParams): URL {
+    const url = createApiUrl({
+      pathname: searchSpeciesByProduct.pathname(params),
+    });
+    console.log("URL", url);
+    return url;
+  },
+  options(): RequestOptions {
+    return {
+      method: 'get',
+      responseType: 'json',
+      headers: new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' }),
+    };
+  },
+  request(params: ProductPathParams): Promise<SearchResponse> {
+    const url = searchSpeciesByProduct.url(params);
+    const options = searchSpeciesByProduct.options();
     return request(url, options);
   },
 };

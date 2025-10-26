@@ -1,0 +1,32 @@
+{
+    "creator": "vokabelsalat",
+    "notificationAddresses": [
+        "kusnick@imada.sdu.dk"
+    ],
+    "sendNotification": true,
+    "format": "SIMPLE_CSV",
+    "predicate": {
+        "type": "and",
+        "predicates": [
+            {
+                "type": "in",
+                "key": "TAXON_KEY",
+                "values": [
+                    "2663815",
+                    "5422592",
+                    "6539336",
+                    "8222574"
+                ]
+            },
+            {
+                "type": "within",
+                "geometry": "POLYGON((-26.942848249874004 31.43581990686755, 65.1077179732153 31.43581990686755, 65.1077179732153 73.33119246537285, -26.942848249874004 73.33119246537285, -26.942848249874004 31.43581990686755))"
+            },
+            {
+                "type": "greaterThanOrEquals",
+                "key": "YEAR",
+                "value": "2015"
+            }
+        ]
+    }
+}

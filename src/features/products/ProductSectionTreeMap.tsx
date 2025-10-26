@@ -76,15 +76,13 @@ export function ProductSectionTreeMap() {
   }, [appplicationFilter]);
 
   useEffect(() => {
-    setTimeout(() => {
-      dispatch(
-        setFilters({
-          type: 'applications',
-          cat: 'applications',
-          val: selectedApplication != null ? selectedApplication : null,
-        }),
-      );
-    }, 100);
+    dispatch(
+      setFilters({
+        type: 'applications',
+        cat: 'applications',
+        val: selectedApplication != null ? selectedApplication : null,
+      }),
+    );
   }, [selectedApplication]);
 
   // Specify the chart’s dimensions.
@@ -133,7 +131,7 @@ export function ProductSectionTreeMap() {
         return (
           <div
             key={`treemap-node-section-${entry.data.name}`}
-            className={`absolute rounded flex h-full cursor-pointer flex-col border-l-4 transition-all hover:shadow-md select-none overflow-hidden ${isSelected ? 'shadow-md' : ''}`}
+            className={`absolute rounded flex h-full cursor-pointer flex-col border-l-4 transition-all hover:shadow-md select-none overflow-hidden ${isSelected ? '' : ''}`}
             style={{
               position: 'absolute',
               top: entry.y0,
@@ -156,49 +154,25 @@ export function ProductSectionTreeMap() {
             }}
             onClick={(e) => {
               let oldApplications = selectedApplication != null ? [...selectedApplication] : [];
-              clearTimeout(timer.current);
-
-              if (e.detail === 1) {
-                timer.current = setTimeout(() => {
-                  console.log('SINGLE CLICK');
-
-                  if (oldApplications?.includes(entry.data.name)) {
-                    var index = oldApplications.indexOf(entry.data.name);
-                    if (index > -1) {
-                      oldApplications.splice(index, 1);
-                    }
-                  } else {
-                    oldApplications.push(entry.data.name);
-                  }
-                  setSelectedApplication(oldApplications);
-                }, 200);
-              } else if (e.detail === 2) {
-                console.log('Double Click!');
-                oldApplications = [entry.data.name];
-                setSelectedApplication(oldApplications);
+              if (oldApplications?.includes(entry.data.name)) {
+                var index = oldApplications.indexOf(entry.data.name);
+                if (index > -1) {
+                  oldApplications.splice(index, 1);
+                }
+              } else {
+                oldApplications.push(entry.data.name);
               }
-
-              // switch (e.detail) {
-              // case 1:
-              //     if (oldApplications?.includes(entry.data.name)) {
-              //       var index = oldApplications.indexOf(entry.data.name);
-              //       if (index > -1) {
-              //         oldApplications.splice(index, 1);
-              //       }
-              //     } else {
-              //     }
-              //     break;
-              //   default:
-              //     oldApplications = [entry.data.name];
-              // }
+              setSelectedApplication(oldApplications);
             }}
           >
             <div className="flex h-full flex-col p-1">
-              <div className="flex items-center mb-2">
+              <div className="flex items-center mb-1">
                 <Icon className="mr-1" style={{ color: entry.data.color, stroke: 'none' }} />
-                <span className="font-bold">{t(['common', 'products', entry.data.name])}</span>
+                <span className="text-sm 2xl:text-base">
+                  {t(['common', 'products', entry.data.name])}
+                </span>
               </div>
-              <span className="text-sm text-gray-500">{entry.data.description}</span>
+              <span className="text-xs 2xl:text-sm text-gray-500">{entry.data.description}</span>
             </div>
             <div className="absolute bottom-1 right-1">{entry.children?.length}</div>
           </div>
