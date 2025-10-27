@@ -79,7 +79,7 @@ export default function CertificationSearchPanel(): JSX.Element {
   }, [polyCulture]);
 
   return (
-    <div className="grid grid-cols-2">
+    <div className="grid grid-cols-2 px-2 border rounded-md">
       <span className="col-span-2">Certifications & Market Status</span>
       <Field className="flex items-center gap-1 cursor-pointer">
         <Checkbox

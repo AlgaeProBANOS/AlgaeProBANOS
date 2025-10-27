@@ -165,14 +165,16 @@ export function ProductSectionTreeMap() {
               setSelectedApplication(oldApplications);
             }}
           >
-            <div className="flex h-full flex-col p-1">
+            <div className="flex size-full flex-col p-1 overflow-hidden">
               <div className="flex items-center mb-1">
                 <Icon className="mr-1" style={{ color: entry.data.color, stroke: 'none' }} />
-                <span className="text-sm 2xl:text-base">
+                {/* <span className="text-sm 2xl:text-base">
                   {t(['common', 'products', entry.data.name])}
-                </span>
+                </span> */}
               </div>
-              <span className="text-xs 2xl:text-sm text-gray-500">{entry.data.description}</span>
+              <div className="text-xs 2xl:text-sm text-gray-500 overflow-hidden">
+                {entry.data.description}
+              </div>
             </div>
             <div className="absolute bottom-1 right-1">{entry.children?.length}</div>
           </div>

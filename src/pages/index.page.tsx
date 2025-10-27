@@ -73,22 +73,22 @@ export default function HomePage(): JSX.Element {
 
   return (
     <Fragment>
-      <div className="grid size-full grid-rows-[1fr_1fr] grid-cols-2">
+      <div className="grid size-full grid-rows-[1fr_1fr] grid-cols-2 gap-1">
         <PageMetadata title={metadata.title} titleTemplate={titleTemplate} />
-        <div className="row-span-2 grid grid-cols-1 grid-rows-[1fr_100px]">
+        <div className="row-span-2 grid grid-cols-1 grid-rows-[50px_1fr]">
           {/* <TestMap key="product-page-map" /> */}
-          <Map key="product-page-map" />
-          <div className="grid grid-cols-4 grid-rows-2 gap-1 p-2">
+          <div className="grid grid-cols-3 grid-rows-1 gap-1 p-2">
             <div className="flex items-center justify-center">
               <AreaSearchBar />
             </div>
             <div className="flex items-center justify-center">
               <CountrySearchBar />
             </div>
-            <div className="col-start-1 row-start-2 flex items-center justify-center">
+            <div className="flex items-center justify-center">
               <NameSearchBar />
             </div>
           </div>
+          <Map key="product-page-map" />
         </div>
         <div className="relative size-full overflow-hidden">
           <div className="absolute size-full">

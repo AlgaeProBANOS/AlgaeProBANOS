@@ -17,10 +17,10 @@ import { CheckIcon } from '@heroicons/react/16/solid';
 // import type { MapRef } from '@vis.gl/react-maplibre';
 // import { Layer, Map, Source } from '@vis.gl/react-maplibre';
 import * as d3 from 'd3';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTooltipState } from '../common/tooltip/tooltip-provider';
 
-import ReactMapGL, { Layer, Marker, Source } from 'react-map-gl';
+import ReactMapGL, { AttributionControl, Layer, Marker, Source } from 'react-map-gl';
 import { Switch } from './Switch';
 import { nanoid } from '@reduxjs/toolkit';
 
@@ -232,7 +232,7 @@ function createDonutChart(props, dataKeys, colors) {
       viewBox={`0 0 ${w} ${w}`}
       textAnchor="middle"
     >
-      {props.point_count > 1 && <circle cx={r} cy={r} r={r} fill="white" stroke={'none'}></circle>}
+      <circle cx={r} cy={r} r={r} fill="white" stroke={'none'}></circle>
       <g transform={'translate(1, 1)'}>
         {sortedGroupedKeys.map((item, index) => {
           return donutSegment(
@@ -284,6 +284,7 @@ export default function Map(props: MapProps): JSX.Element {
   const [focusSpecies] = useState(props.focusSpecies ?? null);
   const dispatch = useAppDispatch();
   const [isClustering, setIsClustering] = useState(true);
+  const [combineBoth, setCombineBoth] = useState(false);
   const countryFilters = useAppSelector(selectFilters).countries ?? {};
   const mapDataMode = useAppSelector(selectProductMapMode);
   const { updateTooltip } = useTooltipState();
@@ -337,6 +338,23 @@ export default function Map(props: MapProps): JSX.Element {
     speciesFilter.type,
     focusSpecies,
   ]);
+
+  const [filteredProductionMethods, setFilteredProductionMethods] = useState<Array<string>>(
+    Object.keys(categoryColors),
+  );
+
+  const updateFilteredProductionMethods = useCallback(
+    (element, filteredProductionMethods) => {
+      const newMethods = new Set(filteredProductionMethods);
+      if (newMethods.has(element)) {
+        newMethods.delete(element);
+      } else {
+        newMethods.add(element);
+      }
+      setFilteredProductionMethods([...newMethods]);
+    },
+    [setFilteredProductionMethods],
+  );
 
   useEffect(() => {
     fetch('/data/UN_Worldmap_FeaturesToJSON10percentCorrected.json')
@@ -435,12 +453,15 @@ export default function Map(props: MapProps): JSX.Element {
             coordinates: [dot.coordinates[1], dot.coordinates[0]],
           },
         };
-        markers.push(newMarker);
+
+        if (dot.production_method_array?.some((e) => filteredProductionMethods.includes(e))) {
+          markers.push(newMarker);
+        }
       }
     }
 
     return [markers, clusterProperties];
-  }, [productSpecies, isClustering]);
+  }, [productSpecies, isClustering, filteredProductionMethods]);
 
   const [hexagonGeoJson3, colors3, legendColsString] = useMemo(() => {
     if (hexCounts3 != null) {
@@ -662,7 +683,7 @@ export default function Map(props: MapProps): JSX.Element {
             />
           </Source>
         )}
-        {mapDataMode === 'GBIF' && hexagonGeoJson3 != null && (
+        {(mapDataMode === 'GBIF' || combineBoth) && hexagonGeoJson3 != null && (
           <Source type="geojson" id="hexagonsource3" data={hexagonGeoJson3}>
             <Layer
               beforeId="state-label"
@@ -690,7 +711,7 @@ export default function Map(props: MapProps): JSX.Element {
             />
           </Source>
         )}
-        {mapDataMode === 'GBIF' && hexagonGeoJson4 != null && (
+        {(mapDataMode === 'GBIF' || combineBoth) && hexagonGeoJson4 != null && (
           <Source type="geojson" id="hexagonsource4" data={hexagonGeoJson4}>
             <Layer
               beforeId="state-label"
@@ -749,7 +770,7 @@ export default function Map(props: MapProps): JSX.Element {
         <Source id="bbox-rect" type="geojson" data={rectangle}>
           <Layer {...lineStyle} />
         </Source>
-        {mapDataMode === 'EMOD' && (
+        {(mapDataMode === 'EMOD' || combineBoth) && (
           <Source
             id="micro-source"
             data={{
@@ -804,9 +825,9 @@ export default function Map(props: MapProps): JSX.Element {
             )}*/}
           </Source>
         )}
-        {mapDataMode === 'GBIF' && (
+        {(mapDataMode === 'GBIF' || combineBoth) && (
           <div
-            className={`absolute bottom-4 right-3 p-1 pt-0 bg-apb-gray-light shadow-md rounded-md grid ${legendColsString} grid-rows-2 h-[30px] max-w-1/2`}
+            className={`absolute bottom-6 left-2 p-1 pt-0 bg-apb-gray-light/60 hover:bg-apb-gray-light/90 shadow-md rounded-md grid ${legendColsString} grid-rows-2 h-[30px] max-w-1/2`}
           >
             {(hexResolution === 3 ? (colors3 ?? []) : (colors4 ?? [])).map((e, i) => (
               <>
@@ -856,26 +877,41 @@ export default function Map(props: MapProps): JSX.Element {
             </div>
           </div>
         )}
-        {mapDataMode === 'EMOD' && (
+        {(mapDataMode === 'EMOD' || combineBoth) && (
           <div
-            className={`absolute bottom-4 right-3 p-1 pt-0 bg-apb-gray-light shadow-md rounded-md grid grid-cols-[min-content_auto] max-w-1/2 gap-x-1`}
+            className={`absolute ${combineBoth ? 'bottom-[60px]' : 'bottom-6'} left-2 p-1 bg-apb-gray-light/60 shadow-md rounded-md flex flex-col max-w-1/2 gap-x-1 h-7 overflow-hidden hover:h-fit hover:bg-apb-gray-light/90`}
           >
-            <div className="col-span-2 font-bold">Production Methods</div>
+            <div
+              onClick={() => {
+                updateFilteredProductionMethods('', Object.keys(categoryColors));
+              }}
+              className="font-bold flex flex-row justify-between group cursor-pointer border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none"
+            >
+              <span>Production Methods</span>
+              <span className="font-normal hidden group-hover:block">(Add all)</span>
+            </div>
             {categoryColors &&
               Object.keys(categoryColors).map((e) => (
-                <>
+                <div
+                  onClick={() => {
+                    updateFilteredProductionMethods(e, filteredProductionMethods);
+                  }}
+                  onDoubleClick={() => {
+                    updateFilteredProductionMethods(e, []);
+                  }}
+                  className={`flex flex-row gap-1 cursor-pointer ${filteredProductionMethods.includes(e) ? 'opacity-100' : 'opacity-30'} border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none`}
+                >
                   <div
-                    className="size-2 rounded-full self-center"
+                    className="size-2 rounded-md self-center"
                     style={{ backgroundColor: categoryColors[e] }}
-                  ></div>
-                  <div>{e.replace('count_', '')}</div>
-                </>
+                  />
+                  <div>{e}</div>
+                </div>
               ))}
-            <div></div>
           </div>
         )}
       </ReactMapGL>
-      <div className="absolute top-3 right-3 p-2 bg-apb-gray-light shadow-md text-xs rounded-md flex flex-col gap-1">
+      <div className="absolute top-2 left-2 p-2 bg-apb-gray-light/60 shadow-md text-xs rounded-md flex flex-col gap-1 h-7 overflow-hidden hover:h-fit hover:bg-apb-gray-light/90">
         <b>Map Options</b>
         <div>{`${Object.keys(productSpecies).length} product species on map`}</div>
         <div>
@@ -897,7 +933,6 @@ export default function Map(props: MapProps): JSX.Element {
             </Label>
           </Field>
         </div>
-        <div className="w-full h-1 border-b border-gray-400"></div>
         <div>
           <Field className="flex items-center gap-1 cursor-pointer">
             <Checkbox
@@ -917,6 +952,16 @@ export default function Map(props: MapProps): JSX.Element {
             </Label>
           </Field>
         </div>
+        <div className="w-full flex gap-1">
+          Projection:{' '}
+          <Switch
+            value={projection}
+            setValue={setProjection}
+            firstOption={{ value: 'globe', title: 'Globe' }}
+            secondOption={{ value: 'equalEarth', title: 'Equal Earth' }}
+          />
+        </div>
+        <div className="w-full h-1 border-b border-gray-400"></div>
         <div className="flex gap-1">
           Source:{' '}
           <Switch
@@ -926,14 +971,23 @@ export default function Map(props: MapProps): JSX.Element {
             secondOption={{ value: 'GBIF', title: 'Species' }}
           />
         </div>
-        <div className="w-full flex gap-1">
-          Projection:{' '}
-          <Switch
-            value={projection}
-            setValue={setProjection}
-            firstOption={{ value: 'globe', title: 'Globe' }}
-            secondOption={{ value: 'equalEarth', title: 'Equal Earth' }}
-          />
+        <div>
+          <Field className="flex items-center gap-1 cursor-pointer">
+            <Checkbox
+              checked={combineBoth}
+              onChange={(val) => {
+                setCombineBoth(!combineBoth);
+              }}
+              className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray"
+            >
+              <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
+            </Checkbox>
+            <Label
+              className={`cursor-pointer select-none ${combineBoth ? 'text-black' : 'text-gray-400'}`}
+            >
+              Combine both
+            </Label>
+          </Field>
         </div>
       </div>
     </div>

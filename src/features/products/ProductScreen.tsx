@@ -7,7 +7,13 @@ const tabs = [
   {
     key: 'productSectorTab',
     title: 'Product Sector',
-    content: <ProductFilter />,
+    content: (
+      <div className="size-full flex flex-col gap-3">
+        <KeywordSearchBar />
+        <ProductFilter />
+        <CertificationSearchPanel />
+      </div>
+    ),
   },
   {
     key: 'productFilterTab',
@@ -23,9 +29,13 @@ const tabs = [
 
 export default function ProductScreen(): JSX.Element {
   return (
-    <TabArea
-      tabs={tabs}
-      // titleElement={<div className="flex items-center">{filteredSpecies?.length} Species</div>}
-    />
+    <div className="size-full flex flex-col gap-3">
+      <KeywordSearchBar />
+      <ProductFilter />
+      <CertificationSearchPanel />
+    </div>
+    // <TabArea
+    //   tabs={tabs}
+    // />
   );
 }

@@ -460,7 +460,10 @@ function TreeMapLevel(props) {
               />
             )}
             {rootNode.children && preview == false && (
-              <p className="absolute w-full top-[2px] left-[2px] bg-apb-gray bg-opacity-20 rounded-sm text-apb-gray-light text-shadow-md overflow-hidden text-ellipsis text-sm italic">
+              <p
+                className="absolute px-1 top-0 left-0 bg-opacity-20 rounded-sm text-white text-shadow-md text-ellipsis overflow-hidden w-full text-sm italic"
+                style={{ textShadow: '1px 1px 2px black' }}
+              >
                 {entry.data.name}
               </p>
             )}
