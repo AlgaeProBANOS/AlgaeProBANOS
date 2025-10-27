@@ -78,17 +78,8 @@ export default function ProductFilter(): JSX.Element {
   }, [selectedApplication]);
 
   return (
-    <div className="grid size-full grid-cols-1 grid-rows-[min-content_auto_1fr] p-2">
-      <div className="flex gap-2 justify-between">
-        {/* <Switch
-          value={sectionType}
-          setValue={setSectionType}
-          firstOption={{ val: 'selection', name: 'Selection' }}
-          secondOption={{ val: 'treeMap', name: 'TreeMap' }}
-          className="h-min"
-        /> */}
-      </div>
-      <div className="grid grid-cols-2 gap-3 mb-3">
+    <div className="grid size-full grid-cols-1 grid-rows-[auto_1fr] p-1">
+      <div className="grid grid-cols-2 gap-[6px] mb-1 border border-apb-gray-light rounded p-1">
         <div
           className={`border-apb-gray rounded flex h-full cursor-pointer flex-col border-l-4 transition-all px-2 hover:shadow-md select-none ${selectedApplication?.length === 6 ? 'shadow-md' : ''}`}
           style={{
@@ -102,9 +93,8 @@ export default function ProductFilter(): JSX.Element {
           <div className="flex h-full flex-col p-1">
             <div className="flex items-center">
               <ContactSupport className="mr-1" style={{ color: '#3c3c3c' }} />
-              <span className="text-sm 2xl:text-base">Select All</span>
+              <span className="text-xs 2xl:text-sm text-gray-500">{`Include all species.`}</span>
             </div>
-            <span className="text-xs 2xl:text-sm text-gray-500">{`Include all species.`}</span>
           </div>
         </div>
         <div
@@ -119,16 +109,15 @@ export default function ProductFilter(): JSX.Element {
           <div className="flex h-full flex-col p-1">
             <div className="flex items-center">
               <ContactSupport className="mr-1" style={{ color: '#3c3c3c' }} />
-              <span className="text-sm 2xl:text-base">No Application</span>
+              <span className="text-xs 2xl:text-sm text-gray-500">{`Include ${
+                filteredSpecies?.filter(
+                  (k) =>
+                    Object.keys(species[k]?.applications).filter(
+                      (ak) => species[k]?.applications[ak] != null,
+                    ).length === 0,
+                ).length
+              } species without any application`}</span>
             </div>
-            <span className="text-xs 2xl:text-sm text-gray-500">{`Include ${
-              filteredSpecies?.filter(
-                (k) =>
-                  Object.keys(species[k]?.applications).filter(
-                    (ak) => species[k]?.applications[ak] != null,
-                  ).length === 0,
-              ).length
-            } species without any application`}</span>
           </div>
         </div>
       </div>

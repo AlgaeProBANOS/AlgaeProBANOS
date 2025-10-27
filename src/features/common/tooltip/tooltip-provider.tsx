@@ -47,8 +47,8 @@ export function TooltipProvider(props: TooltipProviderProps): JSX.Element {
 
   const {
     showTooltip,
-    tooltipLeft = 0,
-    tooltipTop = 0,
+    tooltipLeft = 10,
+    tooltipTop = 10,
   } = useTooltip<TooltipData>({
     // initial tooltip state
     tooltipOpen: true,

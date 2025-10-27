@@ -95,12 +95,20 @@ export const slice = createSlice({
       switch(type) {
         case "colors":
           const oldColors = {...state.filters.colors};
-          if(oldColors != null) {
-            oldColors[cat] = val;
+          if(cat === "reset") {
+            for(const c of Object.keys(oldColors)) {
+              oldColors[c] = true;
+            }
             state.filters.colors = oldColors;
           }
           else {
-            state.filters.colors = {[cat]: val};
+            if(oldColors != null) {
+              oldColors[cat] = val;
+              state.filters.colors = oldColors;
+            }
+            else {
+              state.filters.colors = {[cat]: val};
+            }
           }
           break;
         case "name":
@@ -141,6 +149,8 @@ export const slice = createSlice({
         const newSpecies = {} as Record<Species['id'], Species>;
         for(const speciesIt of result) {
           let species = {...speciesIt};
+          console.log(species);
+          
           const newID = species.scientificName;
           if(Object.keys(newSpecies).includes(newID)) {
             console.error("Species already exists in store", newID, species);

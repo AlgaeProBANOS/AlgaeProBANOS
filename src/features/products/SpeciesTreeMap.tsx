@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import {
   resetSpeciesFilters,
   selectFilteredSpecies,
+  selectFilters,
   selectSpecies,
   selectSpeciesPhotos,
   setFilters,
@@ -43,6 +44,7 @@ export function SpeciesTreeMap() {
   const species = useAppSelector(selectSpecies);
   const filteredSpecies = useAppSelector(selectFilteredSpecies);
   const speciesPhotos = useAppSelector(selectSpeciesPhotos);
+  const filters = useAppSelector(selectFilters);
   const [selectedType, setSelectedType] = useState(null);
   const [selectedGenus, setSelectedGenus] = useState(null);
   const [selectedSpecies, setSelectedSpecies] = useState(null);
@@ -57,16 +59,22 @@ export function SpeciesTreeMap() {
         dispatch(setFilters({ type: 'species', cat: 'species', val: null }));
         dispatch(setFilters({ type: 'species', cat: 'type', val: null }));
       case 'type':
+        setSelectedType(null);
         setSelectedGenus(null);
         setSelectedSpecies(null);
         dispatch(setFilters({ type: 'species', cat: 'genus', val: null }));
         dispatch(setFilters({ type: 'species', cat: 'species', val: null }));
+        dispatch(setFilters({ type: 'species', cat: 'type', val: null }));
         break;
       case 'genus':
         setSelectedSpecies(null);
+        setSelectedGenus(null);
+        dispatch(setFilters({ type: 'species', cat: 'genus', val: null }));
         dispatch(setFilters({ type: 'species', cat: 'species', val: null }));
         break;
       case 'species':
+        setSelectedSpecies(null);
+        dispatch(setFilters({ type: 'species', cat: 'species', val: null }));
         break;
       default:
         break;
@@ -192,29 +200,31 @@ export function SpeciesTreeMap() {
     );
   }, [selectedType]);
 
+  useEffect(() => {
+    if (
+      filters.species != null &&
+      filters.species.type === null &&
+      selectedType !== null &&
+      filters.species.genus === null &&
+      filters.species.species === null
+    ) {
+      resetSelected('everything');
+    }
+  }, [filters.species]);
+
   return (
     <div className="size-full grid grid-rows-[min-content_1fr]">
       <div className="cursor-pointer">
-        <div>
+        <div className="bg-[#fafafa]">
           <div className="grid grid-cols-[min-content_min-content_min-content_min-content] p-1 gap-x-6">
             <>
-              {selectedType && (
-                <div
-                  onClick={() => {
-                    resetSelected('everything');
-                  }}
-                  className="row-span-2 items-center flex bg-apb-aubergine text-white px-2 rounded-md"
-                >
-                  Reset
-                </div>
-              )}
               <div
                 onClick={() => {
                   resetSelected('type');
                 }}
               >
-                <div className="speciesTreemapHeaderType">Type</div>
-                <div>{selectedType?.data?.name ?? ''}</div>
+                <div className="text-xs 2xl:text-sm speciesTreemapHeaderType">Type</div>
+                <div className="text-sm 2xl:text-base">{selectedType?.data?.name ?? ''}</div>
               </div>
             </>
             {selectedType && (
@@ -223,8 +233,10 @@ export function SpeciesTreeMap() {
                   resetSelected('genus');
                 }}
               >
-                <div className="speciesTreemapHeaderType">Genus</div>
-                <div className="italic">{selectedGenus?.data?.name ?? ''}</div>
+                <div className="text-xs 2xl:text-sm speciesTreemapHeaderType">Genus</div>
+                <div className="text-sm 2xl:text-base italic">
+                  {selectedGenus?.data?.name ?? ''}
+                </div>
               </div>
             )}
             {selectedGenus && (
@@ -233,17 +245,16 @@ export function SpeciesTreeMap() {
                   resetSelected('species');
                 }}
               >
-                <div className="speciesTreemapHeaderType">Species</div>
-                <div className="italic">{selectedSpecies?.data?.name ?? ''}</div>
+                <div className="text-xs 2xl:text-sm speciesTreemapHeaderType">Species</div>
+                <div className="text-sm 2xl:text-base italic">
+                  {selectedSpecies?.data?.name ?? ''}
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
-      <div
-        ref={setContainerElement}
-        className="size-full border border-apb-gray rounded-md relative overflow-hidden"
-      >
+      <div ref={setContainerElement} className="size-full rounded relative overflow-hidden">
         <TreeMapLevel
           rootNode={root}
           width={width}
@@ -381,7 +392,7 @@ function TreeMapLevel(props) {
         return (
           <div
             key={`treemap-node-genusspecies-${entry.data.name}-${entry.depth}-${showDecendants}-${preview}`}
-            className="size-full items-center flex justify-center overflow-hidden relative treeMapLevel"
+            className="size-full items-center flex justify-center overflow-hidden relative treeMapLevel rounded"
             style={{
               animation: 'fade-in .5s',
               position: 'absolute',

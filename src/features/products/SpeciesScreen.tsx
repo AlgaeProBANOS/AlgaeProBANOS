@@ -3,8 +3,9 @@ import SpeciesList from './SpeciesList';
 import { SpeciesTreeMap } from './SpeciesTreeMap';
 
 import TabArea from '../common/TabArea';
-import { useAppSelector } from '@/app/store';
-import { selectFilteredSpecies } from '@/app/store/apb.slice';
+import { useAppDispatch, useAppSelector } from '@/app/store';
+import { selectFilteredSpecies, setFilters } from '@/app/store/apb.slice';
+import NameSearchBar from './NameSearchBar';
 
 const tabs = [
   {
@@ -26,11 +27,35 @@ const tabs = [
 
 export default function SpeciesScreen(): JSX.Element {
   const filteredSpecies = useAppSelector(selectFilteredSpecies);
+  const dispatch = useAppDispatch();
 
   return (
-    <TabArea
-      tabs={tabs}
-      titleElement={<div className="flex items-center">{filteredSpecies?.length} Species</div>}
-    />
+    <div className="size-full border border-apb-gray/70 rounded">
+      <TabArea
+        tabs={tabs}
+        titleElement={
+          <div className="flex items-center gap-1">
+            <span className="font-bold">{filteredSpecies?.length}</span> Selected Species
+            <div
+              onClick={() => {
+                dispatch(setFilters({ type: 'species', cat: 'genus', val: null }));
+                dispatch(setFilters({ type: 'species', cat: 'species', val: null }));
+                dispatch(setFilters({ type: 'species', cat: 'type', val: null }));
+                dispatch(
+                  setFilters({
+                    type: 'colors',
+                    cat: 'reset',
+                    val: true,
+                  }),
+                );
+              }}
+              className="row-span-2 items-center flex hover:bg-apb-aubergine bg-apb-aubergine/50 text-white px-2 rounded-md cursor-pointer h-full"
+            >
+              Reset
+            </div>
+          </div>
+        }
+      />
+    </div>
   );
 }

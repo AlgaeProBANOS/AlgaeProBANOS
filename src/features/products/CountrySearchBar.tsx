@@ -24,8 +24,6 @@ export default function CountrySearchBar() {
     >
   >(filters.countries);
 
-  console.log(filters.countries, value);
-
   useEffect(() => {
     dispatch(
       setFilters({
@@ -39,12 +37,6 @@ export default function CountrySearchBar() {
   useEffect(() => {
     const selectedCountries = filters.countries;
     if (selectedCountries != null) {
-      console.log(
-        'CHANGED',
-        JSON.stringify(Object.keys(selectedCountries)) !== JSON.stringify(Object.keys(value)),
-        JSON.stringify(Object.keys(selectedCountries)),
-        JSON.stringify(Object.keys(value)),
-      );
     }
 
     // if (JSON.stringify(Object.keys(selectedCountries)) !== JSON.stringify(Object.keys(value))) {
@@ -144,31 +136,30 @@ export default function CountrySearchBar() {
       multiple
       id="countries-filter"
       options={countryOptions}
-      limitTags={3}
+      limitTags={2}
       value={value != null ? Object.values(value) : []}
       // loading={countriesLoading}
       renderInput={(params) => (
         <TextField
           {...params}
-          className={value ? 'filterUsed' : ''}
+          className={value != null && value.length > 0 ? 'filterUsed bg-white' : 'bg-white'}
           variant="outlined"
           // InputLabelProps={{ shrink: value != null ? true : false }}
           label="Country Search"
           placeholder="Select countries"
           size="small"
-          // sx={{
-          //   '& .MuiOutlinedInput-root': {
-          //     '&:hover fieldset': {
-          //       borderColor: '#1a4c59',
-          //     },
-          //     '&.Mui-focused fieldset': {
-          //       borderColor: '#1a4c59',
-          //     },
-          //   },
-          //   '& .MuiInputLabel-root.Mui-focused': {
-          //     color: '#1a4c59',
-          //   },
-          // }}
+          sx={{
+            '& .MuiAutocomplete-tag': {
+              height: 'fit-content',
+            },
+            '& .MuiChip-labelMedium': {
+              paddingLeft: '6px',
+              paddingRight: '4px',
+            },
+            '& .MuiChip-deleteIconMedium': {
+              margin: 0,
+            },
+          }}
         />
       )}
       renderOption={(props, option) => {
@@ -197,7 +188,7 @@ export default function CountrySearchBar() {
       onChange={(event, newValue) => {
         setValue(Object.fromEntries(newValue.map((e) => [e.title, e])));
       }}
-      sx={{ width: 350 }}
+      sx={{ width: '100%', zIndex: 50, backgroundColor: 'lime' }}
     />
   );
 }

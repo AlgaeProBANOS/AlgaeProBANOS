@@ -59,7 +59,7 @@ export interface Species {
   microMacro: string;
   nutritionalProfile: string;
   optimalTemp: string;
-  risks: string | null;
+  risks: Record<string, string | null> | null;
   salinity: string;
   species: string | null;
   genus: string;

@@ -117,7 +117,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
           </div>
         )}
         <div className="flex flex-row items-center justify-center py-4">
-          <Popover className="relative flex items-center">
+          {/* <Popover className="relative flex items-center">
             <PopoverButton>
               <GlobeAltIcon className="size-7 text-white" />
             </PopoverButton>
@@ -139,7 +139,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
                 );
               }}
             </PopoverPanel>
-          </Popover>
+          </Popover> */}
         </div>
       </div>
     </div>

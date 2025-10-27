@@ -5,7 +5,7 @@ import {
   selectSpecies,
   setFilters,
 } from '@/app/store/apb.slice';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ResponsiveContainer, BarChart, Bar, Cell, XAxis } from 'recharts';
 import { algaeColors } from './utils';
 
@@ -28,6 +28,18 @@ export function ColorSelectionBarChart() {
     setColorSelection(tmpColorSelection);
   };
 
+  useEffect(() => {
+    console.log(colorFilters, colorSelection);
+
+    if (colorFilters != null) {
+      // for (const c of Object.keys(colorFilters)) {
+      if (JSON.stringify(colorSelection) !== JSON.stringify(colorFilters)) {
+        setColorSelection(colorFilters);
+      }
+      // }
+    }
+  }, [colorFilters]);
+
   const colorBarChartData = useMemo(() => {
     return Object.values(algaeColors).map((col) => {
       const colSpecies = filteredSpecies?.filter((spec) =>
@@ -44,8 +56,7 @@ export function ColorSelectionBarChart() {
   }, [filteredSpecies]);
 
   return (
-    <div className="flex flex-col my-1">
-      <div className="font-bold whitespace-nowrap mb-1">Algae Colors</div>
+    <div className="flex flex-col my-1 size-full p-2">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           width={150}
@@ -58,7 +69,7 @@ export function ColorSelectionBarChart() {
             bottom: 1,
           }}
         >
-          <Bar dataKey="num" fill="#8884d8" barSize={30} minPointSize={5}>
+          <Bar dataKey="num" fill="#8884d8" barSize={'10%'} minPointSize={5}>
             {colorBarChartData.map((entry, index) => {
               return (
                 <Cell
@@ -87,7 +98,7 @@ export function ColorSelectionBarChart() {
           </Bar>
           <XAxis
             dataKey="name"
-            angle={45}
+            angle={0}
             fontSize={12}
             onClick={(e) => {
               const col = e.value.toLowerCase();
@@ -106,34 +117,6 @@ export function ColorSelectionBarChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      {/* <div className="text-lg font-bold whitespace-nowrap mb-1">Algae Colors</div>
-          {Object.values(algaeColors).map((color) => {
-            const colorVariants = {
-              green:
-                'group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-[#33a02c] focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#33a02c]',
-              brown:
-                'group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-[#b15928] focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#b15928]',
-              red: 'group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-[#e31a1c] focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-[#e31a1c]',
-            };
-
-            return (
-              <Field className="flex items-center gap-2 cursor-pointer" key={color.value}>
-                <Checkbox
-                  key={`checkbox-${color.value}`}
-                  checked={colorSelection[color.value]}
-                  onChange={(val) => {
-                    dispatch(setFilters({ type: 'colors', cat: color.value, val: val }));
-                    updateColorSelection(color.value, val);
-                  }}
-                  defaultChecked
-                  className={colorVariants[color.value]}
-                >
-                  <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
-                </Checkbox>
-                <Label className={'cursor-pointer select-none'}>{color.name}</Label>
-              </Field>
-            );
-          })}*/}
     </div>
   );
 }

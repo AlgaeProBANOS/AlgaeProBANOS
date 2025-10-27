@@ -566,12 +566,6 @@
                 "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/400911943/original.jpg"
             },
             {
-                "license": "http://creativecommons.org/publicdomain/zero/1.0/",
-                "rightsHolder": "David Bird",
-                "title": "Arthrospira major",
-                "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/400914301/original.gif"
-            },
-            {
                 "license": "http://creativecommons.org/licenses/by/4.0/",
                 "rightsHolder": "zookanthos",
                 "title": "Arthrospira major",
@@ -4075,12 +4069,6 @@
             }
         ],
         "images": [
-            {
-                "license": "http://creativecommons.org/licenses/by-nc/4.0/",
-                "rightsHolder": "Alex Doyle",
-                "title": "Dunaliella salina",
-                "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/352463110/original.gif"
-            },
             {
                 "license": "http://creativecommons.org/licenses/by-nc/4.0/",
                 "rightsHolder": "Alex Doyle",

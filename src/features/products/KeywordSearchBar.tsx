@@ -46,7 +46,7 @@ export default function KeywordSearchBar() {
     return tmpSearchOptions;
   }, [[]]);
 
-  const label = 'Keyword Search';
+  const label = 'Product Search';
 
   function highlightText(text, searchTerm) {
     if (!searchTerm) return text;

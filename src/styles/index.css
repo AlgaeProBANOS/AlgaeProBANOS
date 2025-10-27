@@ -130,3 +130,13 @@ a.mapbox-improve-map {
 a.mapboxgl-ctrl-logo {
   transform: scale(.7) translate(-10px, 10px);
 }
+
+.filterUsed {
+  border-color: purple !important;
+  border-width: 2px !important;
+}
+
+.filterUsed .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: purple !important;
+  border-width: 2px !important;
+}

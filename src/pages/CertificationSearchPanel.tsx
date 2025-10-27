@@ -80,71 +80,71 @@ export default function CertificationSearchPanel(): JSX.Element {
 
   return (
     <div className="grid grid-cols-2 px-2 border rounded-md">
-      <span className="col-span-2">Certifications & Market Status</span>
-      <Field className="flex items-center gap-1 cursor-pointer">
+      {/* <span className="col-span-2">Certifications & Market Status</span> */}
+      <Field className="flex items-center gap-1 cursor-pointer group">
         <Checkbox
           checked={onMarket}
           onChange={(val) => {
             setOnMarket(!onMarket);
           }}
           defaultChecked
-          className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray"
+          className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray group-hover:bg-slate-200"
         >
           <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
         </Checkbox>
         <Label
-          className={`text-sm cursor-pointer select-none ${onMarket ? 'text-black' : 'text-gray-400'}`}
+          className={`text-sm cursor-pointer select-none ${onMarket ? 'text-black' : 'text-gray-400'} group-hover:text-black`}
         >
           Already on market
         </Label>
       </Field>{' '}
-      <Field className="flex items-center gap-1 cursor-pointer">
+      <Field className="flex items-center gap-1 cursor-pointer group">
         <Checkbox
           checked={novelFood}
           onChange={(val) => {
             setNovelFood(!novelFood);
           }}
           defaultChecked
-          className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray"
+          className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray group-hover:bg-slate-200"
         >
           <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
         </Checkbox>
         <Label
-          className={`text-sm cursor-pointer select-none ${novelFood ? 'text-black' : 'text-gray-400'}`}
+          className={`text-sm cursor-pointer select-none ${novelFood ? 'text-black' : 'text-gray-400'} group-hover:text-black`}
         >
           Listed in EU Novel Food Catalogue
         </Label>
       </Field>{' '}
-      <Field className="flex items-center gap-1 cursor-pointer">
+      <Field className="flex items-center gap-1 cursor-pointer group">
         <Checkbox
           checked={foodList}
           onChange={(val) => {
             setFoodList(!foodList);
           }}
           defaultChecked
-          className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray"
+          className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray group-hover:bg-slate-200"
         >
           <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
         </Checkbox>
         <Label
-          className={`text-sm cursor-pointer select-none ${foodList ? 'text-black' : 'text-gray-400'}`}
+          className={`text-sm cursor-pointer select-none ${foodList ? 'text-black' : 'text-gray-400'} group-hover:text-black`}
         >
           In Union Novel Food List
         </Label>
       </Field>{' '}
-      <Field className="flex items-center gap-1 cursor-pointer">
+      <Field className="flex items-center gap-1 cursor-pointer group">
         <Checkbox
           checked={polyCulture}
           onChange={(val) => {
             setPolyCulture(!polyCulture);
           }}
           defaultChecked
-          className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray"
+          className="group size-4 rounded border bg-white dark:bg-white/5 data-[checked]:border-transparent data-[checked]:bg-apb-gray focus:outline-none data-[focus]:outline-2 data-[focus]:outline-offset-2 data-[focus]:outline-apb-gray group-hover:bg-slate-200"
         >
           <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
         </Checkbox>
         <Label
-          className={`text-sm cursor-pointer select-none ${polyCulture ? 'text-black' : 'text-gray-400'}`}
+          className={`text-sm cursor-pointer select-none ${polyCulture ? 'text-black' : 'text-gray-400'} group-hover:text-black`}
         >
           Can be grown in polyculture
         </Label>

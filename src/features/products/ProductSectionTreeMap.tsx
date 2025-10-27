@@ -113,7 +113,7 @@ export function ProductSectionTreeMap() {
   const root = d3
     .treemap()
     .size([width, height])
-    .paddingInner(8)
+    .paddingInner(6)
     .paddingTop(4)
     .paddingLeft(4)
     .tile(tile)(hierarchy);
@@ -123,7 +123,7 @@ export function ProductSectionTreeMap() {
   return (
     <div
       ref={setContainerElement}
-      className="size-full border border-apb-gray p-1 rounded-md relative"
+      className="size-full border border-apb-gray-light rounded relative p-1"
     >
       {root.children!.map((entry) => {
         const isSelected = selectedApplication?.includes(entry.data.name);
@@ -176,7 +176,7 @@ export function ProductSectionTreeMap() {
                 {entry.data.description}
               </div>
             </div>
-            <div className="absolute bottom-1 right-1">{entry.children?.length}</div>
+            <div className="absolute bottom-1 right-1 text-sm">{entry.children?.length}</div>
           </div>
         );
       })}

@@ -225,7 +225,7 @@ function createDonutChart(props, dataKeys, colors) {
   return (
     <svg
       onClick={(e) => {
-        console.log(props);
+        e.stopPropagation();
       }}
       width={`${w}`}
       height={`${w}`}
@@ -284,7 +284,7 @@ export default function Map(props: MapProps): JSX.Element {
   const [focusSpecies] = useState(props.focusSpecies ?? null);
   const dispatch = useAppDispatch();
   const [isClustering, setIsClustering] = useState(true);
-  const [combineBoth, setCombineBoth] = useState(false);
+  const [combineBoth, setCombineBoth] = useState(focusSpecies != null ? true : false);
   const countryFilters = useAppSelector(selectFilters).countries ?? {};
   const mapDataMode = useAppSelector(selectProductMapMode);
   const { updateTooltip } = useTooltipState();
@@ -320,8 +320,6 @@ export default function Map(props: MapProps): JSX.Element {
     countryFilter != null ? Object.values(countryFilter).map((e: Country) => e.iso3) : null;
 
   const filteredAndSelectedSpecies = useMemo(() => {
-    // console.log('HERE!');
-
     if (focusSpecies != null && focusSpecies.length > 0) {
       return Object.keys(species).filter((item) => focusSpecies.includes(item));
     } else {
@@ -499,18 +497,18 @@ export default function Map(props: MapProps): JSX.Element {
   const [lastBounds, setLastBounds] = useState(null);
 
   useEffect(() => {
-    if (mapDataMode === 'EMOD') {
-      const bounds = getBoundsForPoints(mapMarkers);
-      if (bounds != null) {
-        mapRef.current?.fitBounds(bounds);
-      }
-    } else {
+    if (mapDataMode === 'GBIF' || combineBoth) {
       const hexagonGeoJson = hexResolution === 3 ? hexagonGeoJson3 : hexagonGeoJson4;
       if (hexagonGeoJson != null) {
         const bounds = getBoundsForHexagons(hexagonGeoJson.features);
         if (bounds != null) {
           mapRef.current?.fitBounds(bounds);
         }
+      }
+    } else {
+      const bounds = getBoundsForPoints(mapMarkers);
+      if (bounds != null) {
+        mapRef.current?.fitBounds(bounds);
       }
     }
   }, [filteredSpecies, mapDataMode, hexagonGeoJson3, hexagonGeoJson4, lastBounds]);
@@ -551,7 +549,9 @@ export default function Map(props: MapProps): JSX.Element {
   }, [categoryColors]);
 
   return (
-    <div className="size-full relative">
+    <div
+      className={`size-full relative ${focusSpecies != null ? 'rounded-md overflow-hidden' : ''}`}
+    >
       <ReactMapGL
         ref={mapRef}
         initialViewState={{
@@ -559,6 +559,14 @@ export default function Map(props: MapProps): JSX.Element {
           latitude: 54,
           zoom: 3,
         }}
+        // fog={{
+        //   range: [0.8, 8],
+        //   color: 'rgb(100,100,106)',
+        //   'horizon-blend': 0.2,
+        //   'high-color': 'rgb(200,200,206)',
+        //   'space-color': '#000000',
+        //   'star-intensity': 0.15,
+        // }}
         minZoom={0}
         maxZoom={20}
         projection={projection}
@@ -610,7 +618,7 @@ export default function Map(props: MapProps): JSX.Element {
             );
           }
         }}
-        interactiveLayerIds={['geojson-fill']}
+        interactiveLayerIds={['country-fill']}
       >
         <Source
           id="bathymetry-source"
@@ -885,13 +893,13 @@ export default function Map(props: MapProps): JSX.Element {
               onClick={() => {
                 updateFilteredProductionMethods('', Object.keys(categoryColors));
               }}
-              className="font-bold flex flex-row justify-between group cursor-pointer border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none"
+              className="font-bold flex flex-row justify-between group cursor-pointer border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none gap-1"
             >
               <span>Production Methods</span>
               <span className="font-normal hidden group-hover:block">(Add all)</span>
             </div>
             {categoryColors &&
-              Object.keys(categoryColors).map((e) => (
+              Object.keys(clusterProperties).map((e) => (
                 <div
                   onClick={() => {
                     updateFilteredProductionMethods(e, filteredProductionMethods);

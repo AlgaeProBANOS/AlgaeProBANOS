@@ -14,11 +14,14 @@ import {
 import { MapPinIcon } from '@heroicons/react/24/solid';
 import { useTooltipState } from '../common/tooltip/tooltip-provider';
 import { algaeColors, applicationCategories } from './utils';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
 export const getStaticProps = withDictionaries(['common']);
 
 export default function SpeciesList(): JSX.Element {
-  const [selectedSpecies, setSelectedSpecies] = useState<Species>(null);
+  const [selectedSpecies, setSelectedSpecies] = useState<Species | null>(null);
+
   const { t } = useI18n<'common'>();
   const dispatch = useAppDispatch();
   const filteredSpecies = useAppSelector(selectFilteredSpecies) ?? [];
@@ -33,14 +36,20 @@ export default function SpeciesList(): JSX.Element {
     return Object.fromEntries(applicationCategories.map((e) => [e.key, e.color]));
   }, [applicationCategories]);
 
+  const selSpecies = useCallback((spec: Species) => {
+    dispatch(setFilters({ type: 'species', cat: 'genus', val: spec?.genus ?? null }));
+    dispatch(setFilters({ type: 'species', cat: 'species', val: spec?.species ?? null }));
+    dispatch(setFilters({ type: 'species', cat: 'type', val: spec?.microMacro ?? null }));
+  }, []);
+
   useEffect(() => {
-    dispatch(setFilters({ type: 'species', cat: 'genus', val: selectedSpecies?.genus ?? null }));
-    dispatch(
-      setFilters({ type: 'species', cat: 'species', val: selectedSpecies?.species ?? null }),
-    );
-    dispatch(
-      setFilters({ type: 'species', cat: 'type', val: selectedSpecies?.microMacro ?? null }),
-    );
+    // dispatch(setFilters({ type: 'species', cat: 'genus', val: selectedSpecies?.genus ?? null }));
+    // dispatch(
+    //   setFilters({ type: 'species', cat: 'species', val: selectedSpecies?.species ?? null }),
+    // );
+    // dispatch(
+    //   setFilters({ type: 'species', cat: 'type', val: selectedSpecies?.microMacro ?? null }),
+    // );
   }, [selectedSpecies]);
 
   useEffect(() => {
@@ -154,47 +163,50 @@ export default function SpeciesList(): JSX.Element {
 
   const genListEntry = useCallback(
     (algae: Species, selected: boolean, selectedSpecies, isGenus) => {
+      // console.log(algae.scientificName, selected);
       return (
         <div
-          className={`${selected ? 'bg-gray-200' : 'bg-transparent'} ${isGenus ? '' : 'pl-5'} cursor-pointer grid grid-cols-[20px_auto] py-[1px] items-center w-full border-apb-gray-light border-t hover:bg-gray-200`}
+          className={`${selected ? 'bg-gray-200' : 'bg-transparent'} ${isGenus ? '' : 'pl-5'} cursor-pointer grid grid-cols-[auto] py-[1px] items-center w-full border-apb-gray-light border-t hover:bg-gray-200`}
           key={`species-entry-${algae.scientificName.replaceAll(' ', '_')}`}
           onClick={() => {
-            setSelectedSpecies(algae);
-          }}
-          onMouseOver={() => {
-            updateTooltip(<div>{genEntryDetailPanel(algae)}</div>);
-          }}
-          onMouseLeave={() => {
-            updateTooltip(null);
+            if (selectedSpecies != null) {
+              if (algae.scientificName !== selectedSpecies.scientificName) {
+                setSelectedSpecies(algae);
+              } else {
+                setSelectedSpecies(null);
+              }
+            } else {
+              setSelectedSpecies(algae);
+            }
           }}
         >
-          <div className="flex gap-[1px]">
-            {algae != null &&
-              Object.values(algaeColors)
-                .filter((col) => algae.color.includes(col.value))
-                .map((col, i) => {
-                  return (
-                    <div
-                      className="h-3 w-1 shrink-0"
-                      key={`color-bar-${i}-${algae.species}`}
-                      style={{ backgroundColor: col.color }}
-                    />
-                  );
-                })}
-          </div>
-          <div className="flex gap-1 flex-row w-full items-center justify-between">
+          <div className="flex gap-1 flex-row w-full items-center justify-between text-nowrap overflow-hidden">
             <span className="flex flex-row items-center gap-1">
-              <span className={`italic ${isGenus ? 'font-bold' : ''}`}>
+              <span className={`italic mr-1 ${isGenus ? 'font-bold' : ''}`}>
                 {algae.scientificName}
                 {/* {isGenus && !algae.scientificName.trim().endsWith('p.') && <span> spp.</span>} */}
               </span>
+              <div className="flex gap-[1px]">
+                {algae != null &&
+                  Object.values(algaeColors)
+                    .filter((col) => algae.color.includes(col.value))
+                    .map((col, i) => {
+                      return (
+                        <div
+                          className="h-3 w-1 shrink-0"
+                          key={`color-bar-${i}-${algae.species}`}
+                          style={{ backgroundColor: col.color }}
+                        />
+                      );
+                    })}
+              </div>
               {algae?.emodnet_points && <MapPinIcon className="size-4 text-apb-gray" />}
               {speciesWithOccurrences != null &&
                 speciesWithOccurrences.includes(algae.scientificName) && (
                   <div
                     style={{
-                      width: '15px',
-                      height: '15px',
+                      width: '12px',
+                      height: '12px',
                       '-webkit-clip-path':
                         'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
                       clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
@@ -203,19 +215,38 @@ export default function SpeciesList(): JSX.Element {
                   ></div>
                 )}
             </span>
-            <span className="p-1">
-              {selected && (
-                <a
-                  className="border rounded-md border-apb-gray text-sm px-0.5 hover:bg-apb-gray hover:text-white"
-                  href={`/species/${algae.scientificName}`}
-                >
-                  Read More
-                </a>
+            <span className="max-w-[50%] overflow-hidden flex flex-row items-center gap-1">
+              {selected ? (
+                <>
+                  <div
+                    className="border rounded-md border-apb-gray text-sm px-0.5 hover:bg-apb-gray hover:text-white"
+                    onClick={() => {
+                      selSpecies(algae);
+                    }}
+                  >
+                    Select Species
+                  </div>
+                  <Link
+                    className="border rounded-md border-apb-gray text-sm px-0.5 hover:bg-apb-gray hover:text-white"
+                    href={`/species/${algae.scientificName}`}
+                  >
+                    Read More
+                  </Link>
+                </>
+              ) : (
+                <>
+                  {algae.commonName !== 'No common name' && (
+                    <span className="text-apb-gray/80 text-sm text-ellipsis overflow-hidden">
+                      {algae?.commonName}
+                    </span>
+                  )}
+                  {/* <div className="text-apb-gray">&#9432;</div> */}
+                </>
               )}
             </span>
           </div>
           {selected && (
-            <div className="col-start-2 grid grid-cols-2 gap-1 w-full">
+            <div className="grid grid-cols-2 gap-1 w-full">
               <div className="col-span-2">
                 {algae.commonName && algae.commonName !== 'No common name'
                   ? `(${algae.commonName})`
@@ -268,7 +299,7 @@ export default function SpeciesList(): JSX.Element {
   );
 
   return (
-    <div className="grid grid-cols-1 grid-rows-1 size-full p-4">
+    <div className="grid grid-cols-1 grid-rows-1 size-full p-2">
       {/* <div className="font-bold">{`${Object.keys(filteredSpecies).length} species filtered`}</div> */}
       <div className="relative">
         <div className="flex flex-col absolute overflow-hidden overflow-y-scroll size-full font-sans">
@@ -307,8 +338,8 @@ export default function SpeciesList(): JSX.Element {
                         return genListEntry(
                           algae,
                           selectedSpecies != null &&
-                            algae.scientificName === selectedSpecies.scientificName &&
-                            Object.keys(filteredSpecies).length === 1,
+                            algae.scientificName === selectedSpecies.scientificName /* &&
+                            Object.keys(filteredSpecies).length === 1 */,
                           selectedSpecies,
                           false,
                         );

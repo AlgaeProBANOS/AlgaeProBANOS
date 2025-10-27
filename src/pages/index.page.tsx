@@ -16,6 +16,7 @@ import Map from '@/features/products/Map';
 import ProductScreen from '@/features/products/ProductScreen';
 import SpeciesScreen from '@/features/products/SpeciesScreen';
 import { useApplyFilters } from '@/lib/get-filtered-species';
+import KeywordSearchBar from '@/features/products/KeywordSearchBar';
 // import { useTestResponseType } from '@/features/common/data/use-data';
 
 export const getStaticProps = withDictionaries(['common']);
@@ -73,21 +74,26 @@ export default function HomePage(): JSX.Element {
 
   return (
     <Fragment>
-      <div className="grid size-full grid-rows-[1fr_1fr] grid-cols-2 gap-1">
+      <div className="grid size-full grid-rows-[auto_1fr_1fr] grid-cols-2 gap-1">
         <PageMetadata title={metadata.title} titleTemplate={titleTemplate} />
-        <div className="row-span-2 grid grid-cols-1 grid-rows-[50px_1fr]">
+        <div className="col-span-2 grid grid-cols-1 grid-rows-[50px_1fr] p-1">
           {/* <TestMap key="product-page-map" /> */}
-          <div className="grid grid-cols-3 grid-rows-1 gap-1 p-2">
-            <div className="flex items-center justify-center">
+          <div className="grid grid-cols-4 grid-rows-1 gap-1 p-2">
+            <div className="flex">
               <AreaSearchBar />
             </div>
-            <div className="flex items-center justify-center">
+            <div className="flex">
               <CountrySearchBar />
             </div>
-            <div className="flex items-center justify-center">
+            <div className="flex">
               <NameSearchBar />
             </div>
+            <div className="flex">
+              <KeywordSearchBar />
+            </div>
           </div>
+        </div>
+        <div className="row-span-2">
           <Map key="product-page-map" />
         </div>
         <div className="relative size-full overflow-hidden">
