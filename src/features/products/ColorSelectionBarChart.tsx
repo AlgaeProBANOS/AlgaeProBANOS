@@ -29,8 +29,6 @@ export function ColorSelectionBarChart() {
   };
 
   useEffect(() => {
-    console.log(colorFilters, colorSelection);
-
     if (colorFilters != null) {
       // for (const c of Object.keys(colorFilters)) {
       if (JSON.stringify(colorSelection) !== JSON.stringify(colorFilters)) {

@@ -149,8 +149,6 @@ export const slice = createSlice({
         const newSpecies = {} as Record<Species['id'], Species>;
         for(const speciesIt of result) {
           let species = {...speciesIt};
-          console.log(species);
-          
           const newID = species.scientificName;
           if(Object.keys(newSpecies).includes(newID)) {
             console.error("Species already exists in store", newID, species);
@@ -213,8 +211,6 @@ export const slice = createSlice({
       (state, action) => {
         //then execute the reducer with state and action
         const result = action.payload; //result of the API call aka data
-        
-        console.log('result', result);
         
         // state.species = newSpecies;
       },

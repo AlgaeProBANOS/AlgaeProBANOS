@@ -41,21 +41,6 @@ export default function HomePage(): JSX.Element {
     fetch('/data/species.json')
       .then((res) => res.json())
       .then(function (json) {
-        // for (const test of Object.values(json)) {
-        //   if (test.speciesKey != null) console.log(test.speciesKey);
-        // }
-        console.log(
-          Object.values(json)
-            .filter((e) => e.speciesKey != null)
-            .map((e) => e.speciesKey),
-        );
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch('/data/species.json')
-      .then((res) => res.json())
-      .then(function (json) {
         const tmpPhotos: Record<Species['id'], string | null> = {};
         for (const spec of Object.keys(json)) {
           const photo =
@@ -67,7 +52,6 @@ export default function HomePage(): JSX.Element {
 
           tmpPhotos[spec] = photo;
         }
-
         dispatch(setSpeciesPhotos(tmpPhotos));
       });
   }, []);
