@@ -134,8 +134,6 @@ export default function AreaSearchBar() {
         return option.title;
       }}
       onChange={(event, newValue) => {
-        console.log('HERE', newValue);
-
         setValue(newValue);
         // setValue(Object.fromEntries(newValue.map((e) => [e.title, e])));
       }}

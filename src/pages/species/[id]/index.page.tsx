@@ -30,17 +30,11 @@ export default function SpeciesDetails(): JSX.Element {
       .then(function (json) {
         setExtraData(json);
       });
-  }, []);
-
-  useEffect(() => {
     fetch('/data/producers.json')
       .then((res) => res.json())
       .then(function (json) {
         setProducers(json);
       });
-  }, []);
-
-  useEffect(() => {
     fetch('/data/companies.json')
       .then((res) => res.json())
       .then(function (json) {

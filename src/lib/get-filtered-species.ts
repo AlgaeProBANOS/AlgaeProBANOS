@@ -57,9 +57,9 @@ export function useApplyFilters() {
   const includeNonApplications = filters.includeNonApplications;
 
   currentSpecies = currentSpecies.filter((spec: Species['id']) => {
-    const speciesApplications = (
-      Object.keys(species[spec]?.applications) as Array<ApplicationType>
-    ).filter((key: ApplicationType) => species[spec]?.applications[key] != null);
+    const speciesApplications = species != null && species[spec] != null ? (
+      Object.keys(species[spec].applications) as Array<ApplicationType>
+    ).filter((key: ApplicationType) => species[spec]?.applications[key] != null) : [];
 
     if (speciesApplications.length > 0) {
       if (applicationFilter != null) {

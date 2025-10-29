@@ -589,14 +589,10 @@ export default function Map(props: MapProps): JSX.Element {
           }
         }}
         onRender={() => {
-          // if (isClustering) {
           updateDonutClusterMarkers();
-          // }
         }}
         onClick={(e) => {
           const feature = e.features?.[0];
-          console.log('Feature', e, feature);
-
           if (feature && feature.layer.id === 'country-fill') {
             const oldFilters = { ...countryFilters } as Record<Country['title'], Country>;
             if (Object.keys(oldFilters).includes(feature.properties.ROMNAM)) {
@@ -899,8 +895,9 @@ export default function Map(props: MapProps): JSX.Element {
               <span className="font-normal hidden group-hover:block">(Add all)</span>
             </div>
             {categoryColors &&
-              Object.keys(clusterProperties).map((e) => (
+              Object.keys(clusterProperties).map((e, i) => (
                 <div
+                  key={`productionLegendEntry-${i}`}
                   onClick={() => {
                     updateFilteredProductionMethods(e, filteredProductionMethods);
                   }}

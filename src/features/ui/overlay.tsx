@@ -6,8 +6,6 @@ export default function Overlay(): JSX.Element {
   // const { t } = useI18n<'common'>();
   const { overlay, updateOverlay } = useOverlayState();
 
-  console.log(overlay);
-
   if (overlay != null) {
     return (
       <div

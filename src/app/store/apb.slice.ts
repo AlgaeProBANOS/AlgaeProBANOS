@@ -90,6 +90,73 @@ export const slice = createSlice({
       const photos = action.payload;
       state.speciesPhotos = photos;
     },
+    setSpecies: (state, action) => {
+      const species = action.payload;
+
+      console.log("FIRST", species);
+
+      const clusterProperties = {};
+      const newSpecies = {} as Record<Species['id'], Species>;
+      for(const speciesIt of Object.values(species)) {
+        let species = {...speciesIt};
+        const newID = species.scientificName;
+        if(Object.keys(newSpecies).includes(newID)) {
+          console.error("Species already exists in store", newID, species);
+        }
+        else {
+          // if(newID.endsWith("sp.") || newID.endsWith("spp.")) {
+          //   const splitArray = newID.split(" ");
+          //   const genus = splitArray[0] as string;
+          //   const speciesName = "";
+          //   species.genus = genus;
+          //   species.species = speciesName;
+          //   species.scientificName = newID;
+          // }
+          // else if(newID.includes(" ")) {
+          //   const splitArray = newID.split(" ");
+          //   const genus = splitArray[0] as string;
+          //   const speciesName = splitArray.slice(1).join(" ");
+          //   const scientificName = genus + " " + speciesName;
+          //   species.genus = genus;
+          //   species.species = speciesName;
+          //   species.scientificName = scientificName;
+          // }
+          
+          let newEmodPoints = null;
+          if(species.emodnet_points != null) {
+            newEmodPoints = [];
+            for (const dot of species.emodnet_points) {
+              const newMethods = [];
+              for (const meth of dot.production_method.split(',')) {
+                const propKey = `${meth.trim()}`;
+                newMethods.push(propKey);
+                if (!Object.keys(clusterProperties).includes(propKey)) {
+                  clusterProperties[propKey] = [
+                    '+',
+                    ['case', ['>=', ['index-of', meth.trim(), ['get', 'production_method']], 0], 1, 0],
+                  ];
+                }
+              }
+              const newDot = {...dot, production_method_array: newMethods}
+              newEmodPoints.push(newDot);
+            }
+          }
+
+          newSpecies[newID] = {...species, emodnet_points: newEmodPoints};
+
+        }
+      }
+
+      const categoryColors = {};
+      const sortedKeys = Object.keys(clusterProperties).sort();
+      for (const [i, key] of sortedKeys.entries()) {
+        categoryColors[key] = all_colors[i];
+      }
+      console.log("HERE", newSpecies);
+      
+      state.species = newSpecies;
+      state.categoryColors = categoryColors;
+    },
     setFilters: (state, action) => {
       const {type, cat, val} = action.payload;
       switch(type) {
@@ -351,7 +418,7 @@ export const selectFragmentContentForDocumentByID = createSelector(
   },
 );
 
-export const { clearSearchResults, setFilteredSpecies, setFilters, resetSpeciesFilters, setSpeciesPhotos, setProductMapMode } = slice.actions;
+export const { clearSearchResults, setFilteredSpecies, setFilters, resetSpeciesFilters, setSpeciesPhotos, setProductMapMode, setSpecies } = slice.actions;
 
 /* export const {
   addLocalEntity,

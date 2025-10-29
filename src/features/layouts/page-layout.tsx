@@ -10,7 +10,7 @@ import { AppBar } from '@/features/ui/app-bar';
 
 import Overlay from '../ui/overlay';
 import { useRequestAllSpeciesProducts } from '../products/useRequestAllSpeciesProducts';
-import { selectSpecies } from '@/app/store/apb.slice';
+import { selectSpecies, setSpecies } from '@/app/store/apb.slice';
 import { useSearchSpeciesQuery } from '@/api/apb.service';
 
 export interface PageLayoutProps {
@@ -26,7 +26,17 @@ export function PageLayout(props: PageLayoutProps): JSX.Element {
     return Object.keys(species).length === 194;
   }, [species]);
 
-  dispatch((state) => useSearchSpeciesQuery({ q: 'allspecies' }, { skip }));
+  // dispatch((state) => useSearchSpeciesQuery({ q: 'allspecies' }, { skip }));
+
+  useEffect(() => {
+    if (skip === false) {
+      fetch('/data/allSpecies.json')
+        .then((res) => res.json())
+        .then(function (json) {
+          dispatch(setSpecies(json));
+        });
+    }
+  }, [skip]);
 
   return (
     <div className="relative grid h-screen max-h-screen grid-rows-[48px_1fr] bg-neutral-50 m-0">

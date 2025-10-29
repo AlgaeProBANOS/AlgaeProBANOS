@@ -207,8 +207,7 @@ export default function SpeciesList(): JSX.Element {
                     style={{
                       width: '12px',
                       height: '12px',
-                      '-webkit-clip-path':
-                        'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
+                      WebkitClipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
                       clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
                     }}
                     className="bg-apb-gray"
