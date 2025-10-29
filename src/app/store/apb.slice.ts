@@ -93,8 +93,6 @@ export const slice = createSlice({
     setSpecies: (state, action) => {
       const species = action.payload;
 
-      console.log("FIRST", species);
-
       const clusterProperties = {};
       const newSpecies = {} as Record<Species['id'], Species>;
       for(const speciesIt of Object.values(species)) {
@@ -152,8 +150,6 @@ export const slice = createSlice({
       for (const [i, key] of sortedKeys.entries()) {
         categoryColors[key] = all_colors[i];
       }
-      console.log("HERE", newSpecies);
-      
       state.species = newSpecies;
       state.categoryColors = categoryColors;
     },

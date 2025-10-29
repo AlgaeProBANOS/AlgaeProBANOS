@@ -232,7 +232,7 @@ function createDonutChart(props, dataKeys, colors) {
       viewBox={`0 0 ${w} ${w}`}
       textAnchor="middle"
     >
-      <circle cx={r} cy={r} r={r} fill="white" stroke={'none'}></circle>
+      <circle cx={r} cy={r} r={r} fill="white" fillOpacity={0.65} stroke={'none'}></circle>
       <g transform={'translate(1, 1)'}>
         {sortedGroupedKeys.map((item, index) => {
           return donutSegment(
@@ -338,8 +338,14 @@ export default function Map(props: MapProps): JSX.Element {
   ]);
 
   const [filteredProductionMethods, setFilteredProductionMethods] = useState<Array<string>>(
-    Object.keys(categoryColors),
+    Object.keys(categoryColors ?? []),
   );
+
+  useEffect(() => {
+    if (Object.keys(categoryColors).length !== filteredProductionMethods.length) {
+      setFilteredProductionMethods(Object.keys(categoryColors));
+    }
+  }, [categoryColors]);
 
   const updateFilteredProductionMethods = useCallback(
     (element, filteredProductionMethods) => {
@@ -548,202 +554,208 @@ export default function Map(props: MapProps): JSX.Element {
     setDonutClusterMarkers(newMarkers);
   }, [categoryColors]);
 
+  /*   if (mapRef.current != null && mapRef.current.getStyle() != null) {
+    console.log('ALL Layers', mapRef.current?.getStyle()?.layers);
+  } */
+
   return (
     <div
       className={`size-full relative ${focusSpecies != null ? 'rounded-md overflow-hidden' : ''}`}
     >
-      <ReactMapGL
-        ref={mapRef}
-        initialViewState={{
-          longitude: 8,
-          latitude: 54,
-          zoom: 3,
-        }}
-        // fog={{
-        //   range: [0.8, 8],
-        //   color: 'rgb(100,100,106)',
-        //   'horizon-blend': 0.2,
-        //   'high-color': 'rgb(200,200,206)',
-        //   'space-color': '#000000',
-        //   'star-intensity': 0.15,
-        // }}
-        minZoom={0}
-        maxZoom={20}
-        projection={projection}
-        onZoomEnd={(e) => {
-          const zoomLevel = e.viewState.zoom;
-          if (zoomLevel > 4 && hexResolution !== 4) {
-            setHexResolution(4);
-          } else if (zoomLevel <= 4 && hexResolution !== 3) {
-            setHexResolution(3);
-          }
-        }}
-        style={{ width: '100%', height: '100%', position: 'relative' }}
-        // mapStyle="https://api.maptiler.com/maps/019864da-bd1a-77a6-8cb4-b2fb2323302f/style.json?key=JryEbN305oNyHUvClr79"
-        mapStyle="mapbox://styles/mapbox/light-v11?optimize=true"
-        mapboxAccessToken="pk.eyJ1IjoiamFrb2JrdXNuaWNrIiwiYSI6ImNsYTAzYjQ2NjBrdnQzcWx0d2EyajFzbHQifQ.LQN-NvTn6PbHEbXHJO0CTw"
-        onLoad={() => {
-          // console.log('----- Map and Layers loaded! ----- ', mapRef.current?.getStyle().layers);
-          if (mapRef.current) {
-            mapRef.current.getMap().setPaintProperty('Water', 'fill-color', '#f0fbff');
-          }
-        }}
-        onRender={() => {
-          updateDonutClusterMarkers();
-        }}
-        onClick={(e) => {
-          const feature = e.features?.[0];
-          if (feature && feature.layer.id === 'country-fill') {
-            const oldFilters = { ...countryFilters } as Record<Country['title'], Country>;
-            if (Object.keys(oldFilters).includes(feature.properties.ROMNAM)) {
-              delete oldFilters[feature.properties.ROMNAM];
-            } else {
-              oldFilters[feature.properties.ROMNAM] = {
-                title: feature.properties.ROMNAM,
-                value: feature.properties.ROMNAM,
-                iso3: feature.properties.ISO3CD,
-              };
+      {myMapStyle != null && (
+        <ReactMapGL
+          ref={mapRef}
+          initialViewState={{
+            longitude: 8,
+            latitude: 54,
+            zoom: 3,
+          }}
+          // fog={{
+          //   range: [0.8, 8],
+          //   color: 'rgb(100,100,106)',
+          //   'horizon-blend': 0.2,
+          //   'high-color': 'rgb(200,200,206)',
+          //   'space-color': '#000000',
+          //   'star-intensity': 0.15,
+          // }}
+          minZoom={0}
+          maxZoom={20}
+          projection={projection}
+          onZoomEnd={(e) => {
+            const zoomLevel = e.viewState.zoom;
+            if (zoomLevel > 4 && hexResolution !== 4) {
+              setHexResolution(4);
+            } else if (zoomLevel <= 4 && hexResolution !== 3) {
+              setHexResolution(3);
             }
+          }}
+          style={{ width: '100%', height: '100%', position: 'relative' }}
+          // mapStyle="https://api.maptiler.com/maps/019864da-bd1a-77a6-8cb4-b2fb2323302f/style.json?key=JryEbN305oNyHUvClr79"
+          mapStyle="mapbox://styles/mapbox/light-v11?optimize=true"
+          mapboxAccessToken="pk.eyJ1IjoiamFrb2JrdXNuaWNrIiwiYSI6ImNsYTAzYjQ2NjBrdnQzcWx0d2EyajFzbHQifQ.LQN-NvTn6PbHEbXHJO0CTw"
+          // mapStyle={myMapStyle}
+          onLoad={() => {
+            console.log('----- Map and Layers loaded! ----- ', mapRef.current?.getStyle().layers);
+            if (mapRef.current) {
+              mapRef.current.getMap().setPaintProperty('water', 'fill-color', '#46afff');
+            }
+          }}
+          onRender={() => {
+            updateDonutClusterMarkers();
+          }}
+          onClick={(e) => {
+            const feature = e.features?.[0];
+            if (feature && feature.layer.id === 'country-fill') {
+              const oldFilters = { ...countryFilters } as Record<Country['title'], Country>;
+              if (Object.keys(oldFilters).includes(feature.properties.ROMNAM)) {
+                delete oldFilters[feature.properties.ROMNAM];
+              } else {
+                oldFilters[feature.properties.ROMNAM] = {
+                  title: feature.properties.ROMNAM,
+                  value: feature.properties.ROMNAM,
+                  iso3: feature.properties.ISO3CD,
+                };
+              }
 
-            dispatch(
-              setFilters({
-                type: 'countries',
-                cat: 'countries',
-                val: oldFilters,
-              }),
-            );
-          }
-        }}
-        interactiveLayerIds={['country-fill']}
-      >
-        <Source
-          id="bathymetry-source"
-          type="vector"
-          bounds={outerMapBounds}
-          url="https://api.maptiler.com/tiles/ocean/tiles.json?key=JryEbN305oNyHUvClr79"
+              dispatch(
+                setFilters({
+                  type: 'countries',
+                  cat: 'countries',
+                  val: oldFilters,
+                }),
+              );
+            }
+          }}
+          interactiveLayerIds={['country-fill']}
         >
-          <Layer
-            id="bathymetry-layer"
-            source="bathymetry-source"
-            source-layer="contour"
-            type="fill"
-            paint={{
-              'fill-color': [
-                'step',
-                ['get', 'depth'],
-                '#00527e', // 11
-                -6000,
-                '#075a89', // 10
-                -4000,
-                '#0f6294', // 9
-                -2000,
-                '#166a9f', // 8
-                -1000,
-                '#1c72ab', // 7
-                -500,
-                '#237bb7', // 6
-                -300,
-                '#2983c2', // 5
-                -200,
-                '#2f8cce', // 4
-                -150,
-                '#3494da', // 3
-                -100,
-                '#3a9de6', // 2
-                -50,
-                '#40a6f3', // 1
-                -10,
-                '#46afff',
-              ],
-            }}
-            beforeId="state-label"
-          />
-        </Source>
-        {countryData && (
-          <Source type="geojson" data={countryData}>
+          <Source
+            id="bathymetry-source"
+            type="vector"
+            bounds={outerMapBounds}
+            url="https://api.maptiler.com/tiles/ocean/tiles.json?key=JryEbN305oNyHUvClr79"
+          >
             <Layer
-              beforeId="state-label"
-              id="country-fill"
+              id="bathymetry-layer"
+              source="bathymetry-source"
+              source-layer="contour"
               type="fill"
               paint={{
-                'fill-color': 'transparent',
-                //   'fill-opacity': 0.8,
-              }}
-            />
-            <Layer
-              beforeId="state-label"
-              id="country-line"
-              type="line"
-              paint={{
-                'line-color': 'purple',
-                'line-width': 2,
-                'line-opacity': [
-                  'case',
-                  ['in', ['get', 'ISO3CD'], ['literal', filteredCountryIsos]],
-                  1.0,
-                  0.0,
+                'fill-color': [
+                  'step',
+                  ['get', 'depth'],
+                  '#00527e', // 11
+                  -6000,
+                  '#075a89', // 10
+                  -4000,
+                  '#0f6294', // 9
+                  -2000,
+                  '#166a9f', // 8
+                  -1000,
+                  '#1c72ab', // 7
+                  -500,
+                  '#237bb7', // 6
+                  -300,
+                  '#2983c2', // 5
+                  -200,
+                  '#2f8cce', // 4
+                  -150,
+                  '#3494da', // 3
+                  -100,
+                  '#3a9de6', // 2
+                  -50,
+                  '#40a6f3', // 1
+                  -10,
+                  '#46afff',
                 ],
               }}
+              beforeId="land-structure-polygon"
             />
           </Source>
-        )}
-        {(mapDataMode === 'GBIF' || combineBoth) && hexagonGeoJson3 != null && (
-          <Source type="geojson" id="hexagonsource3" data={hexagonGeoJson3}>
-            <Layer
-              beforeId="state-label"
-              {...{
-                // beforeId: 'state-label',
-                id: 'hexagons3',
-                source: 'hexagonsource3',
-                layout: {
-                  visibility: hexResolution === 3 ? 'visible' : 'none',
-                },
-                ...{
-                  paint: {
-                    'fill-color': [
-                      'interpolate',
-                      ['linear'],
-                      ['get', 'speciesCount'],
-                      ...colors3.flat(),
-                    ],
-                    'fill-opacity': 0.8,
-                    'fill-outline-color': 'transparent',
+          {countryData && (
+            <Source type="geojson" data={countryData}>
+              <Layer
+                beforeId="state-label"
+                id="country-fill"
+                type="fill"
+                paint={{
+                  'fill-color': 'transparent',
+                  //   'fill-opacity': 0.8,
+                }}
+              />
+              <Layer
+                beforeId="state-label"
+                id="country-line"
+                type="line"
+                paint={{
+                  'line-color': 'purple',
+                  'line-width': 2,
+                  'line-opacity': [
+                    'case',
+                    ['in', ['get', 'ISO3CD'], ['literal', filteredCountryIsos]],
+                    1.0,
+                    0.0,
+                  ],
+                }}
+              />
+            </Source>
+          )}
+          {(mapDataMode === 'GBIF' || combineBoth) && hexagonGeoJson3 != null && (
+            <Source type="geojson" id="hexagonsource3" data={hexagonGeoJson3}>
+              <Layer
+                beforeId="state-label"
+                {...{
+                  // beforeId: 'state-label',
+                  id: 'hexagons3',
+                  source: 'hexagonsource3',
+                  layout: {
+                    visibility: hexResolution === 3 ? 'visible' : 'none',
                   },
-                  type: 'fill',
-                },
-              }}
-            />
-          </Source>
-        )}
-        {(mapDataMode === 'GBIF' || combineBoth) && hexagonGeoJson4 != null && (
-          <Source type="geojson" id="hexagonsource4" data={hexagonGeoJson4}>
-            <Layer
-              beforeId="state-label"
-              {...{
-                // beforeId: 'state-label',
-                id: 'hexagons4',
-                source: 'hexagonsource4',
-                layout: {
-                  visibility: hexResolution === 4 ? 'visible' : 'none',
-                },
-                ...{
-                  paint: {
-                    'fill-color': [
-                      'interpolate',
-                      ['linear'],
-                      ['get', 'speciesCount'],
-                      ...colors4.flat(),
-                    ],
-                    'fill-opacity': 0.8,
-                    'fill-outline-color': 'transparent',
+                  ...{
+                    paint: {
+                      'fill-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'speciesCount'],
+                        ...colors3.flat(),
+                      ],
+                      'fill-opacity': 0.8,
+                      'fill-outline-color': 'transparent',
+                    },
+                    type: 'fill',
                   },
-                  type: 'fill',
-                },
-              }}
-            />
-          </Source>
-        )}
-        {/* {mapDataMode === 'GBIF' && hexagonGeoJson5 != null && (
+                }}
+              />
+            </Source>
+          )}
+          {(mapDataMode === 'GBIF' || combineBoth) && hexagonGeoJson4 != null && (
+            <Source type="geojson" id="hexagonsource4" data={hexagonGeoJson4}>
+              <Layer
+                beforeId="state-label"
+                {...{
+                  // beforeId: 'state-label',
+                  id: 'hexagons4',
+                  source: 'hexagonsource4',
+                  layout: {
+                    visibility: hexResolution === 4 ? 'visible' : 'none',
+                  },
+                  ...{
+                    paint: {
+                      'fill-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'speciesCount'],
+                        ...colors4.flat(),
+                      ],
+                      'fill-opacity': 0.8,
+                      'fill-outline-color': 'transparent',
+                    },
+                    type: 'fill',
+                  },
+                }}
+              />
+            </Source>
+          )}
+          {/* {mapDataMode === 'GBIF' && hexagonGeoJson5 != null && (
           <Source type="geojson" id="hexagonsource5" data={hexagonGeoJson5}>
             <Layer
               beforeId="waterway"
@@ -771,41 +783,41 @@ export default function Map(props: MapProps): JSX.Element {
             />
           </Source>
         )} */}
-        <Source id="bbox-rect" type="geojson" data={rectangle}>
-          <Layer {...lineStyle} />
-        </Source>
-        {(mapDataMode === 'EMOD' || combineBoth) && (
-          <Source
-            id="micro-source"
-            data={{
-              type: 'FeatureCollection',
-              features: mapMarkers,
-            }}
-            type="geojson"
-            key={`geojson-marker-source-${isClustering}`}
-            generateId={true}
-            cluster={isClustering ? true : false}
-            clusterMaxZoom={14}
-            clusterRadius={50}
-            clusterProperties={{
-              ...clusterProperties,
-              sites: ['concat', ['concat', ' ', ['get', 'site_id']]],
-            }}
-          >
-            {/* {isClustering && ( */}
-            <>
-              {donutClusterMarkers}
-              <Layer
-                id="geojson-fill"
-                key={`geojson-fill-${isClustering}`}
-                type="circle"
-                filter={['!', ['has', 'point_count']]}
-                paint={{ 'circle-radius': 0 }}
-                source="micro-source"
-              />
-            </>
-            {/* )} */}
-            {/* {isClustering && (
+          <Source id="bbox-rect" type="geojson" data={rectangle}>
+            <Layer {...lineStyle} />
+          </Source>
+          {(mapDataMode === 'EMOD' || combineBoth) && (
+            <Source
+              id="micro-source"
+              data={{
+                type: 'FeatureCollection',
+                features: mapMarkers,
+              }}
+              type="geojson"
+              key={`geojson-marker-source-${isClustering}`}
+              generateId={true}
+              cluster={isClustering ? true : false}
+              clusterMaxZoom={14}
+              clusterRadius={50}
+              clusterProperties={{
+                ...clusterProperties,
+                sites: ['concat', ['concat', ' ', ['get', 'site_id']]],
+              }}
+            >
+              {/* {isClustering && ( */}
+              <>
+                {donutClusterMarkers}
+                <Layer
+                  id="geojson-fill"
+                  key={`geojson-fill-${isClustering}`}
+                  type="circle"
+                  filter={['!', ['has', 'point_count']]}
+                  paint={{ 'circle-radius': 0 }}
+                  source="micro-source"
+                />
+              </>
+              {/* )} */}
+              {/* {isClustering && (
               <Layer
                 id="clusters"
                 type="circle"
@@ -827,95 +839,96 @@ export default function Map(props: MapProps): JSX.Element {
                 }} 
               ></Layer>
             )}*/}
-          </Source>
-        )}
-        {(mapDataMode === 'GBIF' || combineBoth) && (
-          <div
-            className={`absolute bottom-6 left-2 p-1 pt-0 bg-apb-gray-light/60 hover:bg-apb-gray-light/90 shadow-md rounded-md grid ${legendColsString} grid-rows-2 h-[30px] max-w-1/2`}
-          >
-            {(hexResolution === 3 ? (colors3 ?? []) : (colors4 ?? [])).map((e, i) => (
-              <>
-                <div
-                  key={`legend-entry-number-${i}`}
-                  className="row-start-1 text-xs items-start justify-center flex select-none"
-                  onMouseEnter={(event) => {
-                    updateTooltip(
-                      <div className="p-1 size-2 flex items-center justify-center">{e[0]}</div>,
-                    );
-                  }}
-                  onMouseLeave={(event) => {
-                    updateTooltip(null);
-                  }}
-                >
-                  {e[0]}
-                </div>
-                <div
-                  key={`legend-entry-${i}`}
-                  style={{ backgroundColor: e[1] }}
-                  className="row-start-2 rounded min-w-6"
-                  onMouseEnter={(event) => {
-                    updateTooltip(
-                      <div className="p-1 size-2 flex items-center justify-center">{e[0]}</div>,
-                    );
-                  }}
-                  onMouseLeave={(event) => {
-                    updateTooltip(null);
-                  }}
-                ></div>
-              </>
-            ))}
-            <div className="row-start-1 text-xs items-start justify-center flex whitespace-nowrap">
-              Species /
-            </div>
-            <div className="row-start-2 items-start justify-center flex">
-              <div
-                style={{
-                  width: '15px',
-                  height: '15px',
-                  '-webkit-clip-path':
-                    'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
-                  clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
-                }}
-                className="bg-apb-gray"
-              ></div>
-            </div>
-          </div>
-        )}
-        {(mapDataMode === 'EMOD' || combineBoth) && (
-          <div
-            className={`absolute ${combineBoth ? 'bottom-[60px]' : 'bottom-6'} left-2 p-1 bg-apb-gray-light/60 shadow-md rounded-md flex flex-col max-w-1/2 gap-x-1 h-7 overflow-hidden hover:h-fit hover:bg-apb-gray-light/90`}
-          >
+            </Source>
+          )}
+          {(mapDataMode === 'GBIF' || combineBoth) && (
             <div
-              onClick={() => {
-                updateFilteredProductionMethods('', Object.keys(categoryColors));
-              }}
-              className="font-bold flex flex-row justify-between group cursor-pointer border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none gap-1"
+              className={`absolute bottom-6 left-2 p-1 pt-0 bg-apb-gray-light/60 hover:bg-apb-gray-light/90 shadow-md rounded-md grid ${legendColsString} grid-rows-2 h-[30px] max-w-1/2`}
             >
-              <span>Production Methods</span>
-              <span className="font-normal hidden group-hover:block">(Add all)</span>
-            </div>
-            {categoryColors &&
-              Object.keys(clusterProperties).map((e, i) => (
-                <div
-                  key={`productionLegendEntry-${i}`}
-                  onClick={() => {
-                    updateFilteredProductionMethods(e, filteredProductionMethods);
-                  }}
-                  onDoubleClick={() => {
-                    updateFilteredProductionMethods(e, []);
-                  }}
-                  className={`flex flex-row gap-1 cursor-pointer ${filteredProductionMethods.includes(e) ? 'opacity-100' : 'opacity-30'} border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none`}
-                >
+              {(hexResolution === 3 ? (colors3 ?? []) : (colors4 ?? [])).map((e, i) => (
+                <>
                   <div
-                    className="size-2 rounded-md self-center"
-                    style={{ backgroundColor: categoryColors[e] }}
-                  />
-                  <div>{e}</div>
-                </div>
+                    key={`legend-entry-number-${i}`}
+                    className="row-start-1 text-xs items-start justify-center flex select-none"
+                    onMouseEnter={(event) => {
+                      updateTooltip(
+                        <div className="p-1 size-2 flex items-center justify-center">{e[0]}</div>,
+                      );
+                    }}
+                    onMouseLeave={(event) => {
+                      updateTooltip(null);
+                    }}
+                  >
+                    {e[0]}
+                  </div>
+                  <div
+                    key={`legend-entry-${i}`}
+                    style={{ backgroundColor: e[1] }}
+                    className="row-start-2 rounded min-w-6"
+                    onMouseEnter={(event) => {
+                      updateTooltip(
+                        <div className="p-1 size-2 flex items-center justify-center">{e[0]}</div>,
+                      );
+                    }}
+                    onMouseLeave={(event) => {
+                      updateTooltip(null);
+                    }}
+                  ></div>
+                </>
               ))}
-          </div>
-        )}
-      </ReactMapGL>
+              <div className="row-start-1 text-xs items-start justify-center flex whitespace-nowrap">
+                Species /
+              </div>
+              <div className="row-start-2 items-start justify-center flex">
+                <div
+                  style={{
+                    width: '15px',
+                    height: '15px',
+                    '-webkit-clip-path':
+                      'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
+                    clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
+                  }}
+                  className="bg-apb-gray"
+                ></div>
+              </div>
+            </div>
+          )}
+          {(mapDataMode === 'EMOD' || combineBoth) && (
+            <div
+              className={`absolute ${combineBoth ? 'bottom-[60px]' : 'bottom-6'} left-2 p-1 bg-apb-gray-light/60 shadow-md rounded-md flex flex-col max-w-1/2 gap-x-1 h-7 overflow-hidden hover:h-fit hover:bg-apb-gray-light/90`}
+            >
+              <div
+                onClick={() => {
+                  updateFilteredProductionMethods('', Object.keys(categoryColors));
+                }}
+                className="font-bold flex flex-row justify-between group cursor-pointer border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none gap-1"
+              >
+                <span>Production Methods</span>
+                <span className="font-normal hidden group-hover:block">(Add all)</span>
+              </div>
+              {categoryColors &&
+                Object.keys(clusterProperties).map((e, i) => (
+                  <div
+                    key={`productionLegendEntry-${i}`}
+                    onClick={() => {
+                      updateFilteredProductionMethods(e, filteredProductionMethods);
+                    }}
+                    onDoubleClick={() => {
+                      updateFilteredProductionMethods(e, []);
+                    }}
+                    className={`flex flex-row gap-1 cursor-pointer ${filteredProductionMethods.includes(e) ? 'opacity-100' : 'opacity-30'} border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none`}
+                  >
+                    <div
+                      className="size-2 rounded-md self-center"
+                      style={{ backgroundColor: categoryColors[e] }}
+                    />
+                    <div>{e}</div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </ReactMapGL>
+      )}
       <div className="absolute top-2 left-2 p-2 bg-apb-gray-light/60 shadow-md text-xs rounded-md flex flex-col gap-1 h-7 overflow-hidden hover:h-fit hover:bg-apb-gray-light/90">
         <b>Map Options</b>
         <div>{`${Object.keys(productSpecies).length} product species on map`}</div>
