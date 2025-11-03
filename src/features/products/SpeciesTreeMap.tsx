@@ -14,6 +14,11 @@ import { useElementRef } from '@/lib/use-element-ref';
 import * as d3 from 'd3';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTooltipState } from '../common/tooltip/tooltip-provider';
+import Link from 'next/link';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import SpeciesDetailsPanel from '../common/AlgaeDetailsPanel';
+
+const offline = false;
 
 function flattenObj(obj) {
   // console.log('Flatten OBJ', obj);
@@ -91,8 +96,9 @@ export function SpeciesTreeMap() {
   const [containerElement, setContainerElement] = useElementRef();
   const containerSize = useElementDimensions({ element: containerElement });
 
-  const microMacro = useMemo(() => {
+  const [microMacro, singleSpeies] = useMemo(() => {
     const tmpMicroMacro = {};
+    let singleSpeies = null;
 
     if (filteredSpecies != null) {
       for (const spec of filteredSpecies) {
@@ -138,13 +144,20 @@ export function SpeciesTreeMap() {
           };
         }
       }
+
+      if (filteredSpecies.length === 1 && species != null) {
+        singleSpeies = species[filteredSpecies[0]];
+      }
     }
 
-    return {
-      name: 'MicroMacro',
-      children: tmpMicroMacro,
-    };
-  }, [species, filteredSpecies]);
+    return [
+      {
+        name: 'MicroMacro',
+        children: tmpMicroMacro,
+      },
+      singleSpeies,
+    ];
+  }, [filteredSpecies]);
 
   // Specify the chart’s dimensions.
   const width = containerSize?.width ?? 500;
@@ -212,6 +225,8 @@ export function SpeciesTreeMap() {
     }
   }, [filters.species]);
 
+  const { updateTooltip } = useTooltipState();
+
   return (
     <div className="size-full grid grid-rows-[min-content_1fr]">
       <div className="cursor-pointer">
@@ -222,15 +237,27 @@ export function SpeciesTreeMap() {
                 onClick={() => {
                   resetSelected('type');
                 }}
+                onMouseEnter={() => {
+                  updateTooltip(<div>Reset Type</div>);
+                }}
+                onMouseLeave={() => {
+                  updateTooltip(null);
+                }}
               >
                 <div className="text-xs 2xl:text-sm speciesTreemapHeaderType">Type</div>
-                <div className="text-sm 2xl:text-base">{selectedType?.data?.name ?? ''}</div>
+                <div className="text-sm 2xl:text-base h-4">{selectedType?.data?.name ?? ''}</div>
               </div>
             </>
             {selectedType && (
               <div
                 onClick={() => {
                   resetSelected('genus');
+                }}
+                onMouseEnter={() => {
+                  updateTooltip(<div>Reset Genus</div>);
+                }}
+                onMouseLeave={() => {
+                  updateTooltip(null);
                 }}
               >
                 <div className="text-xs 2xl:text-sm speciesTreemapHeaderType">Genus</div>
@@ -243,6 +270,12 @@ export function SpeciesTreeMap() {
               <div
                 onClick={() => {
                   resetSelected('species');
+                }}
+                onMouseEnter={() => {
+                  updateTooltip(<div>Reset Species</div>);
+                }}
+                onMouseLeave={() => {
+                  updateTooltip(null);
                 }}
               >
                 <div className="text-xs 2xl:text-sm speciesTreemapHeaderType">Species</div>
@@ -279,10 +312,11 @@ export function SpeciesTreeMap() {
         />
         <TreeMapLevel
           rootNode={selectedSpecies}
-          sel={null}
+          sel={selectedSpecies}
           width={width}
           height={height}
           onClick={() => {}}
+          singleSpecies={singleSpeies}
         />
         {/* {sel != null && sel.depth > 0 && renderTreeMapLevel(sel)} */}
       </div>
@@ -299,6 +333,7 @@ function TreeMapLevel(props) {
     sel,
     showDecendants = false,
     preview = false,
+    singleSpecies = null,
   } = props;
   const { updateTooltip } = useTooltipState();
 
@@ -374,6 +409,8 @@ function TreeMapLevel(props) {
     [width, height],
   );
 
+  const [isSelected, setIsSelected] = useState<boolean>(false);
+
   return rootNode != null ? (
     <div
       style={{
@@ -389,10 +426,13 @@ function TreeMapLevel(props) {
     >
       {(rootNode.children != null ? rootNode.children : [rootNode]).map((entry, i) => {
         const photo = getPhotoUrl(entry);
+        // if (photo == null) {
+        //   console.log('no photo', entry.data.name);
+        // }
         return (
           <div
             key={`treemap-node-genusspecies-${entry.data.name}-${entry.depth}-${showDecendants}-${preview}`}
-            className="size-full items-center flex justify-center overflow-hidden relative treeMapLevel rounded"
+            className={`size-full items-center flex justify-center overflow-hidden relative ${preview ? 'none' : singleSpecies ? 'border-2 border-apb-aubergine' : 'border-2'} hover:border-apb-aubergine cursor-pointer`}
             style={{
               animation: 'fade-in .5s',
               position: 'absolute',
@@ -402,8 +442,8 @@ function TreeMapLevel(props) {
               height: y(entry.y1) - y(entry.y0),
               overflow: 'hidden',
               backgroundColor: 'lightgray',
-              cursor: rootNode.children ? 'pointer' : '',
-              border: preview ? 'none' : '2px solid white',
+              // cursor: rootNode.children ? 'pointer' : '',
+              // border: preview ? 'none' : '2px solid white',
             }}
             onPointerEnter={
               preview == false
@@ -431,18 +471,23 @@ function TreeMapLevel(props) {
             }
             onClick={
               preview == false
-                ? (e) => {
+                ? () => {
                     if (rootNode.children) {
                       const { tx, ty, scale } = getZoomTransform(entry);
                       setView({ tx, ty, scale });
                       updateTooltip(null);
                       myOnClick(entry);
+                    } else {
+                      if (singleSpecies) {
+                        setIsSelected(!isSelected);
+                      }
                     }
                   }
                 : undefined
             }
           >
-            {photo != null && (
+            {photo != null &&
+              isSelected != true &&
               // <div
               //   style={{
               //     backgroundImage: `url("${photo.url}")`,
@@ -450,16 +495,22 @@ function TreeMapLevel(props) {
               //     height: '100px',
               //   }}
               // ></div>
-              <img
-                src={photo.url}
-                alt=""
-                // width={100}
-                // height={100}
-                loading="lazy"
-                decoding="async" /*  */
-                className={entry.depth > 2 ? 'size-full object-cover' : 'size-full'}
-              />
-            )}
+              offline != true && (
+                <img
+                  src={photo.url}
+                  alt=""
+                  onError={(e) => {
+                    // console.log(entry.data.name);
+                    e.target?.classList?.add('error');
+                  }}
+                  // width={100}
+                  // height={100}
+                  loading="lazy"
+                  decoding="async" /*  */
+                  className={entry.depth > 2 ? 'size-full object-cover' : 'size-full'}
+                />
+              )}
+            {isSelected && singleSpecies && <SpeciesDetailsPanel species={singleSpecies} />}
             {showDecendants && rootNode.children && (
               <TreeMapLevel
                 rootNode={entry}
@@ -477,6 +528,15 @@ function TreeMapLevel(props) {
               >
                 {entry.data.name}
               </p>
+            )}
+            {singleSpecies && (
+              <Link
+                className="h-[22px] absolute top-1 right-1 group flex gap-1 transition-size max-w-6 hover:max-w-36 hover:border rounded-md border-apb-gray text-sm px-0.5 hover:bg-apb-gray hover:text-white"
+                href={`/species/${singleSpecies.scientificName}`}
+              >
+                <span className="hidden group-hover:flex">Read More</span>
+                <ArrowTopRightOnSquareIcon className="size-5" />{' '}
+              </Link>
             )}
           </div>
         );

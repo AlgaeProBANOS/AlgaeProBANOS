@@ -93,7 +93,7 @@ export default function CertificationSearchPanel(): JSX.Element {
           <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
         </Checkbox>
         <Label
-          className={`text-sm cursor-pointer select-none ${onMarket ? 'text-black' : 'text-gray-400'} group-hover:text-black`}
+          className={`text-sm cursor-pointer select-none ${onMarket ? 'text-black' : 'text-gray-700'} group-hover:text-black`}
         >
           Already on market
         </Label>
@@ -110,7 +110,7 @@ export default function CertificationSearchPanel(): JSX.Element {
           <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
         </Checkbox>
         <Label
-          className={`text-sm cursor-pointer select-none ${novelFood ? 'text-black' : 'text-gray-400'} group-hover:text-black`}
+          className={`text-sm cursor-pointer select-none ${novelFood ? 'text-black' : 'text-gray-700'} group-hover:text-black`}
         >
           Listed in EU Novel Food Catalogue
         </Label>
@@ -127,7 +127,7 @@ export default function CertificationSearchPanel(): JSX.Element {
           <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
         </Checkbox>
         <Label
-          className={`text-sm cursor-pointer select-none ${foodList ? 'text-black' : 'text-gray-400'} group-hover:text-black`}
+          className={`text-sm cursor-pointer select-none ${foodList ? 'text-black' : 'text-gray-700'} group-hover:text-black`}
         >
           In Union Novel Food List
         </Label>
@@ -144,7 +144,7 @@ export default function CertificationSearchPanel(): JSX.Element {
           <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
         </Checkbox>
         <Label
-          className={`text-sm cursor-pointer select-none ${polyCulture ? 'text-black' : 'text-gray-400'} group-hover:text-black`}
+          className={`text-sm cursor-pointer select-none ${polyCulture ? 'text-black' : 'text-gray-700'} group-hover:text-black`}
         >
           Can be grown in polyculture
         </Label>

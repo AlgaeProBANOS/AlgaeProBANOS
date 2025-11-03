@@ -14,8 +14,9 @@ import {
 import { MapPinIcon } from '@heroicons/react/24/solid';
 import { useTooltipState } from '../common/tooltip/tooltip-provider';
 import { algaeColors, applicationCategories } from './utils';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowTopRightOnSquareIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import SpeciesDetailsPanel from '../common/AlgaeDetailsPanel';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -226,10 +227,11 @@ export default function SpeciesList(): JSX.Element {
                     Select Species
                   </div>
                   <Link
-                    className="border rounded-md border-apb-gray text-sm px-0.5 hover:bg-apb-gray hover:text-white"
+                    className="group flex gap-1 transition-size max-w-6 hover:max-w-36 hover:border rounded-md border-apb-gray text-sm px-0.5 hover:bg-apb-gray hover:text-white"
                     href={`/species/${algae.scientificName}`}
                   >
-                    Read More
+                    <span className="hidden group-hover:flex">Read More</span>
+                    <ArrowTopRightOnSquareIcon className="size-5" />{' '}
                   </Link>
                 </>
               ) : (
@@ -244,7 +246,8 @@ export default function SpeciesList(): JSX.Element {
               )}
             </span>
           </div>
-          {selected && (
+          {selected && <SpeciesDetailsPanel species={algae} />}
+          {/* {selected && (
             <div className="grid grid-cols-2 gap-1 w-full">
               <div className="col-span-2">
                 {algae.commonName && algae.commonName !== 'No common name'
@@ -290,7 +293,7 @@ export default function SpeciesList(): JSX.Element {
                 })}
               </div>
             </div>
-          )}
+          )} */}
         </div>
       );
     },

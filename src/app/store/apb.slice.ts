@@ -97,6 +97,8 @@ export const slice = createSlice({
       const newSpecies = {} as Record<Species['id'], Species>;
       for(const speciesIt of Object.values(species)) {
         let species = {...speciesIt};
+        console.log(species);
+        
         const newID = species.scientificName;
         if(Object.keys(newSpecies).includes(newID)) {
           console.error("Species already exists in store", newID, species);

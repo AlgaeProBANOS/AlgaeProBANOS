@@ -142,7 +142,7 @@ export default function CountrySearchBar() {
       renderInput={(params) => (
         <TextField
           {...params}
-          className={value != null && value.length > 0 ? 'filterUsed bg-white' : 'bg-white'}
+          className={value != null && value.length > 0 ? 'filterUsed bg-[#fafafa]' : 'bg-[#fafafa]'}
           variant="outlined"
           // InputLabelProps={{ shrink: value != null ? true : false }}
           label="Country Search"

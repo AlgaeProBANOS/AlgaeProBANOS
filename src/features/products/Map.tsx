@@ -20,13 +20,15 @@ import * as d3 from 'd3';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTooltipState } from '../common/tooltip/tooltip-provider';
 
-import ReactMapGL, { AttributionControl, Layer, Marker, Source } from 'react-map-gl';
+import ReactMapGL, { AttributionControl, Layer, Marker, Popup, Source } from 'react-map-gl';
 import { Switch } from './Switch';
 import { nanoid } from '@reduxjs/toolkit';
 
 const outerMapBounds: [number, number, number, number] = [
   -26.942848249874004, 31.43581990686755, 65.1077179732153, 73.33119246537285,
 ];
+
+const offline = false;
 
 const [minLng, minLat, maxLng, maxLat] = outerMapBounds;
 
@@ -128,6 +130,7 @@ const setupHexagonJSON = (
   hexCounts: Record<string, number>,
   geojson: any,
   filteredAndSelectedSpecies: any,
+  focusSpecies: Array<string> | null,
 ) => {
   const hexSums = {};
   const hexSpecies = {};
@@ -147,7 +150,7 @@ const setupHexagonJSON = (
     }
   }
   const vals = Object.values(hexSpecies).map((e) => e.length);
-  const hexSumMax = Math.max(...vals);
+  const hexSumMax = focusSpecies ? Math.max(...Object.values(hexSums)) : Math.max(...vals);
 
   // Create a linear scale from 0 → 1
   const colorScale = d3.scaleLinear().domain([0, hexSumMax]).range(['#e5f5f9', '#00441b']);
@@ -214,6 +217,10 @@ function createDonutChart(props, dataKeys, colors) {
     total = total + grouped[group];
   }
 
+  if (total === 0) {
+    return <></>;
+  }
+
   const fontSize = total >= 1000 ? 22 : total >= 100 ? 20 : total >= 10 ? 18 : 16;
   let r = total >= 1000 ? 50 : total >= 100 ? 32 : total >= 10 ? 24 : 18;
   if (props.point_count == null || props.point_count <= 1) {
@@ -223,15 +230,7 @@ function createDonutChart(props, dataKeys, colors) {
   const w = r * 2;
 
   return (
-    <svg
-      onClick={(e) => {
-        e.stopPropagation();
-      }}
-      width={`${w}`}
-      height={`${w}`}
-      viewBox={`0 0 ${w} ${w}`}
-      textAnchor="middle"
-    >
+    <svg width={`${w}`} height={`${w}`} viewBox={`0 0 ${w} ${w}`} textAnchor="middle">
       <circle cx={r} cy={r} r={r} fill="white" fillOpacity={0.65} stroke={'none'}></circle>
       <g transform={'translate(1, 1)'}>
         {sortedGroupedKeys.map((item, index) => {
@@ -469,13 +468,23 @@ export default function Map(props: MapProps): JSX.Element {
 
   const [hexagonGeoJson3, colors3, legendColsString] = useMemo(() => {
     if (hexCounts3 != null) {
-      return setupHexagonJSON(hexCounts3, hexagonGeoJsonOriginal3, filteredAndSelectedSpecies);
+      return setupHexagonJSON(
+        hexCounts3,
+        hexagonGeoJsonOriginal3,
+        filteredAndSelectedSpecies,
+        focusSpecies,
+      );
     } else return [null, null];
   }, [filteredAndSelectedSpecies, hex3Init]);
 
   const [hexagonGeoJson4, colors4] = useMemo(() => {
     if (hexCounts4 != null) {
-      return setupHexagonJSON(hexCounts4, hexagonGeoJsonOriginal4, filteredAndSelectedSpecies);
+      return setupHexagonJSON(
+        hexCounts4,
+        hexagonGeoJsonOriginal4,
+        filteredAndSelectedSpecies,
+        focusSpecies,
+      );
     } else {
       return [null, null];
     }
@@ -491,6 +500,7 @@ export default function Map(props: MapProps): JSX.Element {
   }, [filteredAndSelectedSpecies, hex5Init, hexResolution]); */
 
   const [showBathymetry, setShowBathymetry] = useState(true);
+  const [popupInfo, setPopupInfo] = useState(null);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -542,6 +552,10 @@ export default function Map(props: MapProps): JSX.Element {
             longitude={feat.geometry.coordinates[0]}
             latitude={feat.geometry.coordinates[1]}
             anchor="center"
+            onClick={(e) => {
+              e.originalEvent.stopPropagation();
+              setPopupInfo(feat);
+            }}
           >
             {createDonutChart(feat.properties, clusterPropertiesKey, categoryColors)}
           </Marker>,
@@ -578,7 +592,7 @@ export default function Map(props: MapProps): JSX.Element {
         //   'star-intensity': 0.15,
         // }}
         minZoom={0}
-        maxZoom={20}
+        maxZoom={15}
         projection={projection}
         onZoomEnd={(e) => {
           const zoomLevel = e.viewState.zoom;
@@ -590,7 +604,7 @@ export default function Map(props: MapProps): JSX.Element {
         }}
         style={{ width: '100%', height: '100%', position: 'relative' }}
         // mapStyle="https://api.maptiler.com/maps/019864da-bd1a-77a6-8cb4-b2fb2323302f/style.json?key=JryEbN305oNyHUvClr79"
-        mapStyle="mapbox://styles/mapbox/light-v11?optimize=true"
+        mapStyle={offline ? undefined : 'mapbox://styles/mapbox/light-v11?optimize=true'}
         mapboxAccessToken="pk.eyJ1IjoiamFrb2JrdXNuaWNrIiwiYSI6ImNsYTAzYjQ2NjBrdnQzcWx0d2EyajFzbHQifQ.LQN-NvTn6PbHEbXHJO0CTw"
         // mapStyle={myMapStyle}
         onLoad={() => {
@@ -667,13 +681,13 @@ export default function Map(props: MapProps): JSX.Element {
                 '#46afff',
               ],
             }}
-            beforeId="land-structure-polygon"
+            beforeId={offline ? undefined : 'land-structure-polygon'}
           />
         </Source>
         {countryData && (
           <Source type="geojson" data={countryData}>
             <Layer
-              beforeId="state-label"
+              beforeId={offline ? undefined : 'state-label'}
               id="country-fill"
               type="fill"
               paint={{
@@ -682,7 +696,7 @@ export default function Map(props: MapProps): JSX.Element {
               }}
             />
             <Layer
-              beforeId="state-label"
+              beforeId={offline ? undefined : 'state-label'}
               id="country-line"
               type="line"
               paint={{
@@ -701,7 +715,7 @@ export default function Map(props: MapProps): JSX.Element {
         {(mapDataMode === 'GBIF' || combineBoth) && hexagonGeoJson3 != null && (
           <Source type="geojson" id="hexagonsource3" data={hexagonGeoJson3}>
             <Layer
-              beforeId="state-label"
+              beforeId={offline ? undefined : 'state-label'}
               {...{
                 // beforeId: 'state-label',
                 id: 'hexagons3',
@@ -714,7 +728,7 @@ export default function Map(props: MapProps): JSX.Element {
                     'fill-color': [
                       'interpolate',
                       ['linear'],
-                      ['get', 'speciesCount'],
+                      ['get', focusSpecies ? 'occCount' : 'speciesCount'],
                       ...colors3.flat(),
                     ],
                     'fill-opacity': 0.8,
@@ -729,7 +743,7 @@ export default function Map(props: MapProps): JSX.Element {
         {(mapDataMode === 'GBIF' || combineBoth) && hexagonGeoJson4 != null && (
           <Source type="geojson" id="hexagonsource4" data={hexagonGeoJson4}>
             <Layer
-              beforeId="state-label"
+              beforeId={offline ? undefined : 'state-label'}
               {...{
                 // beforeId: 'state-label',
                 id: 'hexagons4',
@@ -742,7 +756,7 @@ export default function Map(props: MapProps): JSX.Element {
                     'fill-color': [
                       'interpolate',
                       ['linear'],
-                      ['get', 'speciesCount'],
+                      ['get', focusSpecies ? 'occCount' : 'speciesCount'],
                       ...colors4.flat(),
                     ],
                     'fill-opacity': 0.8,
@@ -842,6 +856,7 @@ export default function Map(props: MapProps): JSX.Element {
         )}
         {(mapDataMode === 'GBIF' || combineBoth) && (
           <div
+            key={'gbifLegend'}
             className={`absolute bottom-6 left-2 p-1 pt-0 bg-apb-gray-light/60 hover:bg-apb-gray-light/90 shadow-md rounded-md grid ${legendColsString} grid-rows-2 h-[30px] max-w-1/2`}
           >
             {(hexResolution === 3 ? (colors3 ?? []) : (colors4 ?? [])).map((e, i) => (
@@ -876,15 +891,14 @@ export default function Map(props: MapProps): JSX.Element {
               </>
             ))}
             <div className="row-start-1 text-xs items-start justify-center flex whitespace-nowrap">
-              Species /
+              {focusSpecies ? 'Sightings' : 'Species /'}
             </div>
             <div className="row-start-2 items-start justify-center flex">
               <div
                 style={{
                   width: '15px',
                   height: '15px',
-                  '-webkit-clip-path':
-                    'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
+                  WebkitClipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
                   clipPath: 'polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)',
                 }}
                 className="bg-apb-gray"
@@ -926,6 +940,17 @@ export default function Map(props: MapProps): JSX.Element {
               ))}
           </div>
         )}
+        {/* {popupInfo && (
+          <Popup
+            anchor="top"
+            offset={10}
+            longitude={popupInfo.geometry.coordinates[0]}
+            latitude={popupInfo.geometry.coordinates[1]}
+            onClose={() => setPopupInfo(null)}
+          >
+            <div>Insert Infos here!</div>
+          </Popup>
+        )} */}
       </ReactMapGL>
       <div className="absolute top-2 left-2 p-2 bg-apb-gray-light/60 shadow-md text-xs rounded-md flex flex-col gap-1 h-7 overflow-hidden hover:h-fit hover:bg-apb-gray-light/90">
         <b>Map Options</b>
@@ -943,7 +968,7 @@ export default function Map(props: MapProps): JSX.Element {
               <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
             </Checkbox>
             <Label
-              className={`cursor-pointer select-none ${isClustering ? 'text-black' : 'text-gray-400'}`}
+              className={`cursor-pointer select-none ${isClustering ? 'text-black' : 'text-gray-700'}`}
             >
               Cluster Markers
             </Label>
@@ -962,7 +987,7 @@ export default function Map(props: MapProps): JSX.Element {
               <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
             </Checkbox>
             <Label
-              className={`cursor-pointer select-none ${showBathymetry ? 'text-black' : 'text-gray-400'}`}
+              className={`cursor-pointer select-none ${showBathymetry ? 'text-black' : 'text-gray-700'}`}
             >
               Show Bathymetry
             </Label>
@@ -999,7 +1024,7 @@ export default function Map(props: MapProps): JSX.Element {
               <CheckIcon className="hidden size-4 fill-white group-data-[checked]:block" />
             </Checkbox>
             <Label
-              className={`cursor-pointer select-none ${combineBoth ? 'text-black' : 'text-gray-400'}`}
+              className={`cursor-pointer select-none ${combineBoth ? 'text-black' : 'text-gray-700'}`}
             >
               Combine both
             </Label>

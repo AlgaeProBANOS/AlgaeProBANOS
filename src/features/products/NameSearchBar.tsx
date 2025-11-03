@@ -90,7 +90,7 @@ export default function NameSearchBar() {
     return tmpNameOptions;
   }, [sortedGenusKeys, groupedGenusSpecies, filteredSpecies]);
 
-  const label = 'Name Search';
+  const label = 'Species Search';
 
   useEffect(() => {
     dispatch(setFilters({ type: 'name', cat: '', val: value !== '' ? value : null }));
