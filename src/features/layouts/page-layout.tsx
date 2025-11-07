@@ -42,7 +42,7 @@ export function PageLayout(props: PageLayoutProps): JSX.Element {
     <div className="relative grid h-screen max-h-screen grid-rows-[48px_1fr] bg-neutral-50 m-0">
       <AppBar maintenanceMode />
       <main>{children}</main>
-      <Overlay></Overlay>
+      <Overlay />
     </div>
   );
 }

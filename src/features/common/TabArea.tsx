@@ -34,7 +34,7 @@ export default function TabArea(props: TabAreaProps): JSX.Element {
           {tabs.map((e) => (
             <div
               key={e.key}
-              className={`size-full absolute bg-white ${selectedTab === e.key ? 'z-50' : 'z-0'}`}
+              className={`size-full absolute bg-neutral-50 ${selectedTab === e.key ? 'z-50' : 'z-0'}`}
             >
               {e.content}
             </div>

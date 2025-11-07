@@ -8,6 +8,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { ResponsiveContainer, BarChart, Bar, Cell, XAxis } from 'recharts';
 import { algaeColors } from './utils';
+import { useTooltipState } from '../common/tooltip/tooltip-provider';
 
 export function ColorSelectionBarChart() {
   const dispatch = useAppDispatch();
@@ -15,6 +16,8 @@ export function ColorSelectionBarChart() {
   const species = useAppSelector(selectSpecies);
   const filters = useAppSelector(selectFilters);
   const colorFilters = filters.colors;
+
+  const { updateTooltip } = useTooltipState();
 
   const [colorSelection, setColorSelection] = useState<Record<string, boolean> | null>(
     colorFilters,
@@ -89,6 +92,17 @@ export function ColorSelectionBarChart() {
                       }),
                     );
                     updateColorSelection(entry.value, !(colorSelection![entry.value] as boolean));
+                  }}
+                  onMouseEnter={() => {
+                    updateTooltip(
+                      <p className="italic">
+                        Click to {(colorSelection![entry.value] as boolean) ? 'deselect' : 'select'}{' '}
+                        {entry.name}
+                      </p>,
+                    );
+                  }}
+                  onMouseLeave={() => {
+                    updateTooltip(null);
                   }}
                 />
               );

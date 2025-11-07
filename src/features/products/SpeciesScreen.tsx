@@ -6,6 +6,8 @@ import TabArea from '../common/TabArea';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { selectFilteredSpecies, setFilters } from '@/app/store/apb.slice';
 import NameSearchBar from './NameSearchBar';
+import { MicroIcon } from './MicroIcon';
+import { MacroIcon } from './MacroIcon';
 
 const tabs = [
   {
@@ -35,7 +37,10 @@ export default function SpeciesScreen(): JSX.Element {
         tabs={tabs}
         titleElement={
           <div className="flex items-center gap-1">
-            <span className="font-bold">{filteredSpecies?.length}</span> Selected Species
+            <span className="font-bold">{filteredSpecies?.length}</span>
+            <MicroIcon size={20} />
+            <MacroIcon size={20} />
+            Selected Species
             <div
               onClick={() => {
                 dispatch(setFilters({ type: 'species', cat: 'genus', val: null }));

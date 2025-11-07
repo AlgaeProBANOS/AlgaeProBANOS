@@ -202,7 +202,7 @@ function groupBy(xs, key) {
   }, {});
 }
 
-function createDonutChart(props, dataKeys, colors) {
+function createDonutChart(props, dataKeys, colors, onMouseEnter, onMouseLeave) {
   const offsets = [];
 
   const grouped = Object.fromEntries(
@@ -230,26 +230,28 @@ function createDonutChart(props, dataKeys, colors) {
   const w = r * 2;
 
   return (
-    <svg width={`${w}`} height={`${w}`} viewBox={`0 0 ${w} ${w}`} textAnchor="middle">
-      <circle cx={r} cy={r} r={r} fill="white" fillOpacity={0.65} stroke={'none'}></circle>
-      <g transform={'translate(1, 1)'}>
-        {sortedGroupedKeys.map((item, index) => {
-          return donutSegment(
-            offsets[index] / total,
-            (offsets[index] + grouped[item]) / total,
-            r - 1,
-            r0,
-            colors[item],
-            `donut-segment-${index}-${nanoid()}`,
-          );
-        })}
-      </g>
-      {props.point_count > 1 && (
-        <text dominantBaseline="central" transform={`translate(${r}, ${r})`}>
-          {total.toLocaleString()}
-        </text>
-      )}
-    </svg>
+    <div className="hover:scale-150" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <svg width={`${w}`} height={`${w}`} viewBox={`0 0 ${w} ${w}`} textAnchor="middle">
+        <circle cx={r} cy={r} r={r} fill="white" fillOpacity={0.65} stroke={'none'}></circle>
+        <g transform={'translate(1, 1)'}>
+          {sortedGroupedKeys.map((item, index) => {
+            return donutSegment(
+              offsets[index] / total,
+              (offsets[index] + grouped[item]) / total,
+              r - 1,
+              r0,
+              colors[item],
+              `donut-segment-${index}-${nanoid()}`,
+            );
+          })}
+        </g>
+        {props.point_count > 1 && (
+          <text dominantBaseline="central" transform={`translate(${r}, ${r})`}>
+            {total.toLocaleString()}
+          </text>
+        )}
+      </svg>
+    </div>
   );
 }
 
@@ -283,7 +285,7 @@ export default function Map(props: MapProps): JSX.Element {
   const [focusSpecies] = useState(props.focusSpecies ?? null);
   const dispatch = useAppDispatch();
   const [isClustering, setIsClustering] = useState(true);
-  const [combineBoth, setCombineBoth] = useState(focusSpecies != null ? true : false);
+  const [combineBoth, setCombineBoth] = useState(focusSpecies != null ? true : true);
   const countryFilters = useAppSelector(selectFilters).countries ?? {};
   const mapDataMode = useAppSelector(selectProductMapMode);
   const { updateTooltip } = useTooltipState();
@@ -545,6 +547,42 @@ export default function Map(props: MapProps): JSX.Element {
       for (const feat of features) {
         const markerKey = `marker-${index}`;
 
+        const onMouseLeave = () => {
+          updateTooltip(null);
+        };
+
+        const onMouseEnter = () => {
+          const splitSites = feat.properties.sites?.trim().split(' ');
+          updateTooltip(
+            <div className="flex flex-col text-xs max-w-56">
+              <span className="font-bold">Production Methods</span>
+              <div>
+                {Object.keys(categoryColors)
+                  .filter((e) => feat.properties[e] > 0)
+                  .map((e) => {
+                    return (
+                      <div className="flex gap-1">
+                        <div
+                          className="size-2 rounded-md self-center"
+                          style={{ backgroundColor: categoryColors[e] }}
+                        />
+                        <>
+                          {e}: {feat.properties[e]}
+                        </>
+                      </div>
+                    );
+                  })}
+              </div>
+              <span className="font-bold">Sites</span>
+              <div className="">
+                {splitSites.length > 20
+                  ? `${splitSites.slice(0, 20).join(', ')} +${splitSites.length - 20} more`
+                  : splitSites.join(', ')}
+              </div>
+            </div>,
+          );
+        };
+
         // if (feat.properties.point_count > 0) {
         newMarkers.push(
           <Marker
@@ -557,7 +595,13 @@ export default function Map(props: MapProps): JSX.Element {
               setPopupInfo(feat);
             }}
           >
-            {createDonutChart(feat.properties, clusterPropertiesKey, categoryColors)}
+            {createDonutChart(
+              feat.properties,
+              clusterPropertiesKey,
+              categoryColors,
+              onMouseEnter,
+              onMouseLeave,
+            )}
           </Marker>,
         );
         index = index + 1;
@@ -908,7 +952,7 @@ export default function Map(props: MapProps): JSX.Element {
         )}
         {(mapDataMode === 'EMOD' || combineBoth) && (
           <div
-            className={`absolute ${combineBoth ? 'bottom-[60px]' : 'bottom-6'} left-2 p-1 bg-apb-gray-light/60 shadow-md rounded-md flex flex-col max-w-1/2 gap-x-1 h-7 overflow-hidden hover:h-fit hover:bg-apb-gray-light/90`}
+            className={`absolute ${combineBoth ? 'bottom-[60px]' : 'bottom-6'} left-2 p-1 bg-apb-gray-light/60 shadow-md rounded-md flex flex-col max-w-1/2 gap-x-1 h-7 2xl:h-fit overflow-hidden hover:h-fit hover:bg-apb-gray-light/90`}
           >
             <div
               onClick={() => {
@@ -940,7 +984,7 @@ export default function Map(props: MapProps): JSX.Element {
               ))}
           </div>
         )}
-        {/* {popupInfo && (
+        {popupInfo && (
           <Popup
             anchor="top"
             offset={10}
@@ -948,11 +992,26 @@ export default function Map(props: MapProps): JSX.Element {
             latitude={popupInfo.geometry.coordinates[1]}
             onClose={() => setPopupInfo(null)}
           >
-            <div>Insert Infos here!</div>
+            <div className="flex flex-col text-xs">
+              <span className="font-bold">Sites</span>
+              <span>{popupInfo.properties.sites.trim()}</span>
+              <span className="font-bold">Production Methods</span>
+              <div>
+                {Object.keys(categoryColors)
+                  .filter((e) => popupInfo.properties[e] > 0)
+                  .map((e) => {
+                    return (
+                      <div>
+                        {e}: {popupInfo.properties[e]}
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
           </Popup>
-        )} */}
+        )}
       </ReactMapGL>
-      <div className="absolute top-2 left-2 p-2 bg-apb-gray-light/60 shadow-md text-xs rounded-md flex flex-col gap-1 h-7 overflow-hidden hover:h-fit hover:bg-apb-gray-light/90">
+      <div className="absolute top-2 left-2 p-2 bg-apb-gray-light/60 shadow-md text-xs rounded-md flex flex-col gap-1 h-7 2xl:h-fit overflow-hidden hover:h-fit hover:bg-apb-gray-light/90">
         <b>Map Options</b>
         <div>{`${Object.keys(productSpecies).length} product species on map`}</div>
         <div>
@@ -1004,10 +1063,11 @@ export default function Map(props: MapProps): JSX.Element {
         </div>
         <div className="w-full h-1 border-b border-gray-400"></div>
         <div className="flex gap-1">
-          Source:{' '}
+          <span className={combineBoth ? 'text-gray-600' : ''}>Source: </span>
           <Switch
             value={mapSource}
             setValue={setMapSource}
+            disabled={combineBoth}
             firstOption={{ value: 'EMOD', title: 'Products' }}
             secondOption={{ value: 'GBIF', title: 'Species' }}
           />

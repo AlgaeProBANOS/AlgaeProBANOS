@@ -5,7 +5,9 @@ import { useAppSelector } from '@/app/store';
 import { selectSpecies } from '@/app/store/apb.slice';
 import { ImageCarousel } from '@/features/common/ImageCarousel';
 import { useTooltipState } from '@/features/common/tooltip/tooltip-provider';
+import { MacroIcon } from '@/features/products/MacroIcon';
 import Map from '@/features/products/Map';
+import { MicroIcon } from '@/features/products/MicroIcon';
 import { algaeColors, applicationCategories } from '@/features/products/utils';
 import { useElementDimensions } from '@/lib/use-element-dimensions';
 import { useElementRef } from '@/lib/use-element-ref';
@@ -379,7 +381,11 @@ export default function SpeciesDetails(): JSX.Element {
               <div className="px-2 rounded bg-apb-blue-100">{algae.division}</div>
             )}
             {algae != null && algae.microMacro != null && (
-              <div className="px-2 rounded bg-apb-blue-100">{algae.microMacro}</div>
+              <div className="px-2 rounded bg-apb-blue-100 flex gap-1 items-center">
+                {algae.microMacro}
+                {algae.microMacro === 'Macro' && <MacroIcon size={20} fill={'black'} />}
+                {algae.microMacro === 'Mico' && <MicroIcon size={20} fill={'black'} />}
+              </div>
             )}
             {algae != null && algae.invasive != null && (
               <div

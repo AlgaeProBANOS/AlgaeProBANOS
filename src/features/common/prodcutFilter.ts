@@ -224,13 +224,7 @@ export interface MatchResult {
   matchReasons: string[];
 }
 
-export function getMatchingSpecies(
-  speciesList: Species[],
-  productQuery: string
-): MatchResult[] {
-  const query = (productQuery || "").toLowerCase().trim();
-
-  const productCriteria: Record<
+export const productCriteria: Record<
     string,
     { keywords: string[]; applications: (keyof Applications)[]; properties: string[] }
   > = {
@@ -310,6 +304,12 @@ export function getMatchingSpecies(
     },
   };
 
+export function getMatchingSpecies(
+  speciesList: Species[],
+  productQuery: string
+): MatchResult[] {
+  const query = (productQuery || "").toLowerCase().trim();
+  
   const hasText = (v: any): boolean =>
     v !== null && v !== undefined && String(v).trim().length > 0;
 

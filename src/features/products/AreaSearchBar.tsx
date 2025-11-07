@@ -93,8 +93,6 @@ export default function AreaSearchBar() {
   const [value, setValue] = useState<Region | null>(null);
 
   useEffect(() => {
-    console.log('CHANGE', value);
-
     dispatch(
       setFilters({
         type: 'region',
@@ -137,7 +135,7 @@ export default function AreaSearchBar() {
         setValue(newValue);
         // setValue(Object.fromEntries(newValue.map((e) => [e.title, e])));
       }}
-      sx={{ width: 350 }}
+      sx={{ width: '100%' }}
     />
   );
 }

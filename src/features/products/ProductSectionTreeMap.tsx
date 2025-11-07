@@ -13,6 +13,8 @@ import * as d3 from 'd3';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTooltipState } from '../common/tooltip/tooltip-provider';
 import { applicationCategories } from './utils';
+import { MicroIcon } from './MicroIcon';
+import { MacroIcon } from './MacroIcon';
 
 export function ProductSectionTreeMap() {
   const { t } = useI18n<'common'>();
@@ -146,6 +148,7 @@ export function ProductSectionTreeMap() {
                 <div className="p-1 w-full overflow-hidden">
                   <span className="font-bold">{t(['common', 'products', entry.data.name])}: </span>
                   {entry.data.description}
+                  <p className="italic mt-1 text-end">Click to filter!</p>
                 </div>,
               );
             }}
@@ -176,7 +179,11 @@ export function ProductSectionTreeMap() {
                 {entry.data.description}
               </div>
             </div>
-            <div className="absolute bottom-1 right-1 text-sm">{entry.children?.length}</div>
+            <div className="absolute bottom-1 right-1 text-sm flex items-center gap-[2px] text-gray-500">
+              {entry.children?.length}
+              <MicroIcon size={15} fill={entry.data.color} />
+              <MacroIcon size={15} fill={entry.data.color} />
+            </div>
           </div>
         );
       })}

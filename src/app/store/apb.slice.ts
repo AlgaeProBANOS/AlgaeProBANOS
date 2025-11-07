@@ -54,17 +54,19 @@ export interface APBState {
   categoryColors: Record<string, string>;
 }
 
-//Constructor
-const initialState: APBState = {
-  species: {},
-  filteredSpecies: null,
-  filters: {region: null, colors: {'green': true, 'brown': true, 'red': true, 'purple': true, 'unknown': true}, name: null, species: {'species': null, 'genus': null, 'type': null}, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'],
+export const EmptyFilters = {region: null, colors: {'green': true, 'brown': true, 'red': true, 'purple': true, 'unknown': true}, name: null, species: {'species': null, 'genus': null, 'type': null}, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'] as Array<ApplicationType>,
   includeNonApplications: true, countries: null, certifications: {
   onMarket: false,
   novelFood: false,
   foodList: false,
   polyCulture: false,
-}, keyword: null},
+}, keyword: null};
+
+//Constructor
+const initialState: APBState = {
+  species: {},
+  filteredSpecies: null,
+  filters: EmptyFilters,
   speciesPhotos: {},
   productMapMode: "EMOD",
   categoryColors: {}
@@ -83,12 +85,15 @@ export const slice = createSlice({
     setProductMapMode: (state, action) => {
       state.productMapMode = action.payload;
     },
-    resetSpeciesFilters: (state, acion) => {
+    resetSpeciesFilters: (state) => {
       state.filters.species = {species: null, genus: null, type: null}
     },
     setSpeciesPhotos: (state, action) =>{
       const photos = action.payload;
       state.speciesPhotos = photos;
+    },
+    resetAllFilters: (state) => { 
+      state.filters = EmptyFilters;
     },
     setSpecies: (state, action) => {
       const species = action.payload;
@@ -416,7 +421,7 @@ export const selectFragmentContentForDocumentByID = createSelector(
   },
 );
 
-export const { clearSearchResults, setFilteredSpecies, setFilters, resetSpeciesFilters, setSpeciesPhotos, setProductMapMode, setSpecies } = slice.actions;
+export const { clearSearchResults, setFilteredSpecies, setFilters, resetSpeciesFilters, setSpeciesPhotos, setProductMapMode, setSpecies, resetAllFilters } = slice.actions;
 
 /* export const {
   addLocalEntity,

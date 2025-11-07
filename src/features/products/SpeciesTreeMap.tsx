@@ -17,6 +17,8 @@ import { useTooltipState } from '../common/tooltip/tooltip-provider';
 import Link from 'next/link';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import SpeciesDetailsPanel from '../common/AlgaeDetailsPanel';
+import { MicroIcon } from './MicroIcon';
+import { MacroIcon } from './MacroIcon';
 
 const offline = false;
 
@@ -181,7 +183,7 @@ export function SpeciesTreeMap() {
       .sum((d) => d.value)
       .sort((a, b) => a.value - b.value);
     return d3.treemap().size([width, height]).tile(tile)(hierarchy);
-  }, [microMacro]);
+  }, [microMacro, width, height]);
 
   useEffect(() => {
     dispatch(
@@ -452,10 +454,16 @@ function TreeMapLevel(props) {
                       updateTooltip(
                         <div className="p-1">
                           Species: {sel.data.name} {entry.data.name}
+                          <p className="mt-1 text-end italic">Click to reveal info!</p>
                         </div>,
                       );
                     } else {
-                      updateTooltip(<div className="p-1">{getNodeTooltip(entry)}</div>);
+                      updateTooltip(
+                        <div className="p-1">
+                          {getNodeTooltip(entry)}
+                          <p className="mt-1 text-end italic">Click to filter!</p>
+                        </div>,
+                      );
                     }
                     e.preventDefault();
                   }
@@ -523,10 +531,12 @@ function TreeMapLevel(props) {
             )}
             {rootNode.children && preview == false && (
               <p
-                className="absolute px-1 top-0 left-0 bg-opacity-20 rounded-sm text-white text-shadow-md text-ellipsis overflow-hidden w-full text-sm italic"
+                className="flex gap-1 absolute px-1 top-[2px] left-0 bg-opacity-20 rounded-sm text-white text-shadow-md text-ellipsis overflow-hidden w-full text-sm italic"
                 style={{ textShadow: '1px 1px 2px black' }}
               >
-                {entry.data.name}
+                {entry.data.name === 'Micro' && <MicroIcon size={20} fill={'white'} />}
+                {entry.data.name === 'Macro' && <MacroIcon size={20} fill={'white'} />}
+                <span className={entry.depth === 1 ? 'font-bold' : ''}>{entry.data.name}</span>
               </p>
             )}
             {singleSpecies && (

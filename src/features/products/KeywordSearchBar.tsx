@@ -9,6 +9,7 @@ import {
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useEffect, useMemo, useState } from 'react';
+import { productCriteria } from '../common/prodcutFilter';
 // import { getFlagEmoji, langUnicode } from "./Tooltip";
 
 export interface NameSearchEntry {
@@ -42,9 +43,22 @@ export default function KeywordSearchBar() {
     let tmpSearchOptions: Array<{
       title: string;
       value: string;
+      type: string;
     }> = [];
+
+    for (const categoryKey of Object.keys(productCriteria)) {
+      tmpSearchOptions.push({ title: categoryKey, value: categoryKey, type: 'category' });
+      tmpSearchOptions.push(
+        ...productCriteria[categoryKey]?.keywords.map((e) => {
+          return { title: e, value: e, type: 'keyword' };
+        }),
+      );
+    }
+
     return tmpSearchOptions;
   }, [[]]);
+
+  console.log('searchOptions', searchOptions);
 
   const label = 'Product Search';
 
@@ -65,20 +79,22 @@ export default function KeywordSearchBar() {
     );
   }
 
+  const [currentValue, setCurrentValue] = useState<string | null>();
+
   return (
     <Autocomplete
       value={value != null ? value : null}
       onChange={(event, newValue) => {
-        setValue(newValue);
+        setValue(newValue?.value);
       }}
-      // onInputChange={(e, v) => {
-      //   setCurrentValue(v);
-      // }}
-      //   filterOptions={(options, params) => {
-      //     const { inputValue } = params;
+      onInputChange={(e, v) => {
+        setCurrentValue(v);
+      }}
+      // filterOptions={(options, params) => {
+      //   const { inputValue } = params;
 
-      //     return true;
-      //   }}
+      //   return true;
+      // }}
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
@@ -94,12 +110,18 @@ export default function KeywordSearchBar() {
         }
 
         // Regular option
+
         return option.title;
       }}
       renderOption={(props, option) => {
         return (
           <li {...props} key={props.key}>
-            {option.title}
+            <span
+              className={`${option.type === 'keyword' ? 'pl-3' : 'font-bold'}`}
+              // style={{ backgroundColor: categor }}
+            >
+              {highlightText(option.title, currentValue)}
+            </span>
           </li>
         );
       }}
