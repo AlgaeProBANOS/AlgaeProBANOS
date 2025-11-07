@@ -54,7 +54,7 @@ export default function SpeciesScreen(): JSX.Element {
                   }),
                 );
               }}
-              className="row-span-2 items-center flex hover:bg-apb-aubergine bg-apb-aubergine/50 text-white px-2 rounded-md cursor-pointer h-full"
+              className="row-span-2 items-center flex hover:bg-apb-aubergine bg-apb-aubergine/80 text-white px-2 rounded-md cursor-pointer h-full"
             >
               Reset
             </div>

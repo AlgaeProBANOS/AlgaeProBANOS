@@ -85,7 +85,7 @@ export default function SpeciesDetails(): JSX.Element {
     const gridElements = [];
 
     gridElements.push(
-      <div className="details-card">
+      <div className="details-card" key="map-details">
         <div className="size-full grid grid-rows-[400px_auto]">
           <Map
             key={`map-focus-${algae.scientificName.replaceAll(' ', '_')}`}
@@ -102,7 +102,7 @@ export default function SpeciesDetails(): JSX.Element {
     );
 
     gridElements.push(
-      <div className="details-card">
+      <div className="details-card" key="taxonomy-details">
         <span className="text-xl">Taxonomic Classification</span>
         {extraData != null && (
           <>
@@ -130,7 +130,7 @@ export default function SpeciesDetails(): JSX.Element {
     );
 
     gridElements.push(
-      <div className="details-card">
+      <div className="details-card" key="info-details">
         <span className="text-xl">General Information</span>
         <div className="grid w-full grid-cols-2">
           <span className="text-sm">Water Type</span>
@@ -144,7 +144,7 @@ export default function SpeciesDetails(): JSX.Element {
     );
 
     gridElements.push(
-      <div className="details-card">
+      <div className="details-card" key="growth-details">
         <span className="text-xl">Growth Requirements</span>
         <div className="grid w-full grid-cols-2">
           <span className="text-sm">Water Temperature</span>
@@ -159,7 +159,7 @@ export default function SpeciesDetails(): JSX.Element {
       </div>,
     );
     gridElements.push(
-      <div className="details-card flex flex-col gap-2">
+      <div className="details-card flex flex-col gap-2" key="certs-details">
         <span className="text-xl">Certifications & Market Status</span>
         <div className="flex w-full justify-between">
           <span>Already on market</span>
@@ -214,7 +214,7 @@ export default function SpeciesDetails(): JSX.Element {
 
     if (Object.values(algae.applications).filter((e) => e != null).length > 0) {
       gridElements.push(
-        <div className="details-card flex gap-2 flex-col">
+        <div className="details-card flex gap-2 flex-col" key="applications-details">
           <span className="text-xl">Application & Uses</span>
           {applicationCategories.map((entry, i) => {
             if (algae.applications[entry.key] == null) {
@@ -245,13 +245,17 @@ export default function SpeciesDetails(): JSX.Element {
 
     if (algaeCompanies.length > 0) {
       gridElements.push(
-        <div className="details-card">
+        <div className="details-card" key="companies-details">
           <span className="text-xl text-[#2196f3] flex items-center gap-1">
             <BusinessOutlined /> Algae Producers ({algaeCompanies.length})
           </span>
           <div className="w-full max-h-64 overflow-hidden overflow-y-scroll">
-            {algaeCompanies.map((comp) => (
-              <Link href={comp.Website} className="p-1 w-min text-nowrap inline-block">
+            {algaeCompanies.map((comp, i) => (
+              <Link
+                href={comp.Website}
+                key={`complink-${i}`}
+                className="p-1 w-min text-nowrap inline-block"
+              >
                 <div
                   className="flex items-center gap-1 text-sm rounded-md bg-slate-200 hover:bg-slate-300 px-1"
                   onMouseEnter={() => {
@@ -303,7 +307,7 @@ export default function SpeciesDetails(): JSX.Element {
 
     if (algae.nutritionalProfile != null) {
       gridElements.push(
-        <div className="details-card">
+        <div className="details-card" key="nutritional-details">
           <span className="text-xl flex items-center gap-1" style={{ color: '#ff9800' }}>
             <RestaurantIcon />
             Nutritional Profile
@@ -315,7 +319,7 @@ export default function SpeciesDetails(): JSX.Element {
 
     if (algae.risks != null) {
       gridElements.push(
-        <div className="details-card">
+        <div className="details-card" key="risks-details">
           <span className="text-xl flex items-center gap-1" style={{ color: '#f44336' }}>
             <WarningOutlined />
             Risks

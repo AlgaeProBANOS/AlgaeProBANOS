@@ -468,6 +468,10 @@ export default function Map(props: MapProps): JSX.Element {
     return [markers, clusterProperties];
   }, [productSpecies, isClustering, filteredProductionMethods]);
 
+  console.log('mapMarkers', mapMarkers);
+  console.log('productSpecies', productSpecies);
+  console.log('productSpecies', clusterProperties);
+
   const [hexagonGeoJson3, colors3, legendColsString] = useMemo(() => {
     if (hexCounts3 != null) {
       return setupHexagonJSON(
@@ -552,16 +556,20 @@ export default function Map(props: MapProps): JSX.Element {
         };
 
         const onMouseEnter = () => {
-          const splitSites = feat.properties.sites?.trim().split(' ');
+          let splitSites = feat.properties.sites?.trim().split(' ');
+          if (splitSites == null) {
+            splitSites = [feat.properties.site_id];
+          }
+
           updateTooltip(
             <div className="flex flex-col text-xs max-w-56">
               <span className="font-bold">Production Methods</span>
               <div>
                 {Object.keys(categoryColors)
                   .filter((e) => feat.properties[e] > 0)
-                  .map((e) => {
+                  .map((e, i) => {
                     return (
-                      <div className="flex gap-1">
+                      <div className="flex gap-1" key={`prodmethod-tooltip-${i}`}>
                         <div
                           className="size-2 rounded-md self-center"
                           style={{ backgroundColor: categoryColors[e] }}
@@ -615,6 +623,8 @@ export default function Map(props: MapProps): JSX.Element {
   /*   if (mapRef.current != null && mapRef.current.getStyle() != null) {
     console.log('ALL Layers', mapRef.current?.getStyle()?.layers);
   } */
+
+  const [highlightCountry, setHighlightedCountry] = useState<string | null>(null);
 
   return (
     <div
@@ -683,7 +693,27 @@ export default function Map(props: MapProps): JSX.Element {
             );
           }
         }}
-        interactiveLayerIds={['country-fill']}
+        onMouseMove={(e) => {
+          const features = e?.features;
+          if (features != null) {
+            // console.log('feats', features);
+            const feat = features.find((entry) => entry.layer.id === 'country-fill');
+            // console.log('feat', feat);
+            if (feat?.properties.ISO3CD !== highlightCountry) {
+              setHighlightedCountry(feat?.properties.ISO3CD);
+            }
+          }
+        }}
+        onMouseLeave={(e) => {
+          const features = e?.features;
+          if (features != null) {
+            // console.log('feats', features);
+            const feat = features.find((entry) => entry.layer.id === 'country-fill');
+            // console.log('feat', feat);
+            setHighlightedCountry(null);
+          }
+        }}
+        interactiveLayerIds={['country-fill', 'country-line']}
       >
         <Source
           id="bathymetry-source"
@@ -743,11 +773,14 @@ export default function Map(props: MapProps): JSX.Element {
               beforeId={offline ? undefined : 'state-label'}
               id="country-line"
               type="line"
+              // key={`country-line-layer-${highlightCountry}`}
               paint={{
                 'line-color': 'purple',
                 'line-width': 2,
                 'line-opacity': [
                   'case',
+                  ['==', ['get', 'ISO3CD'], highlightCountry],
+                  1.0,
                   ['in', ['get', 'ISO3CD'], ['literal', filteredCountryIsos]],
                   1.0,
                   0.0,
@@ -904,7 +937,7 @@ export default function Map(props: MapProps): JSX.Element {
             className={`absolute bottom-6 left-2 p-1 pt-0 bg-apb-gray-light/60 hover:bg-apb-gray-light/90 shadow-md rounded-md grid ${legendColsString} grid-rows-2 h-[30px] max-w-1/2`}
           >
             {(hexResolution === 3 ? (colors3 ?? []) : (colors4 ?? [])).map((e, i) => (
-              <>
+              <Fragment key={`legends-${i}`}>
                 <div
                   key={`legend-entry-number-${i}`}
                   className="row-start-1 text-xs items-start justify-center flex select-none"
@@ -932,7 +965,7 @@ export default function Map(props: MapProps): JSX.Element {
                     updateTooltip(null);
                   }}
                 ></div>
-              </>
+              </Fragment>
             ))}
             <div className="row-start-1 text-xs items-start justify-center flex whitespace-nowrap">
               {focusSpecies ? 'Sightings' : 'Species /'}
@@ -999,9 +1032,9 @@ export default function Map(props: MapProps): JSX.Element {
               <div>
                 {Object.keys(categoryColors)
                   .filter((e) => popupInfo.properties[e] > 0)
-                  .map((e) => {
+                  .map((e, i) => {
                     return (
-                      <div>
+                      <div key={`popup-method-${i}`}>
                         {e}: {popupInfo.properties[e]}
                       </div>
                     );

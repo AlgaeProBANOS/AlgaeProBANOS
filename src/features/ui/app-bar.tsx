@@ -152,7 +152,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
         )}
         <div className="flex flex-row items-center justify-center py-4 gap-2">
           <button
-            className="rounded-md bg-apb-aubergine text-white px-3 h-7"
+            className="rounded-md hover:bg-apb-aubergine bg-apb-aubergine/80 text-white px-3 h-7"
             onClick={() => {
               dispatch(resetAllFilters());
             }}

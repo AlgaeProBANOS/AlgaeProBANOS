@@ -58,8 +58,6 @@ export default function KeywordSearchBar() {
     return tmpSearchOptions;
   }, [[]]);
 
-  console.log('searchOptions', searchOptions);
-
   const label = 'Product Search';
 
   function highlightText(text, searchTerm) {
