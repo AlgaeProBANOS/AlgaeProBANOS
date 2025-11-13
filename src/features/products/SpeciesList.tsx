@@ -247,7 +247,7 @@ export default function SpeciesList(): JSX.Element {
               )}
             </span>
           </div>
-          {selected && <SpeciesDetailsPanel species={algae} />}
+          {selected && <SpeciesDetailsPanel species={algae} hideSpeciesName />}
           {/* {selected && (
             <div className="grid grid-cols-2 gap-1 w-full">
               <div className="col-span-2">

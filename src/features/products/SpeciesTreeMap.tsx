@@ -436,13 +436,14 @@ function TreeMapLevel(props) {
     >
       {(rootNode.children != null ? rootNode.children : [rootNode]).map((entry, i) => {
         const photo = getPhotoUrl(entry);
+
         // if (photo == null) {
         //   console.log('no photo', entry.data.name);
         // }
         return (
           <div
             key={`treemap-node-genusspecies-${entry.data.name}-${entry.depth}-${showDecendants}-${preview}`}
-            className={`size-full items-center flex justify-center overflow-hidden relative ${preview ? 'none' : singleSpecies ? 'border-2 border-apb-aubergine' : 'border-2'} hover:border-apb-aubergine cursor-pointer`}
+            className={`size-full items-center flex justify-center overflow-hidden relative ${preview ? 'none' : singleSpecies ? 'border-2 border-apb-aubergine' : 'border-2'} hover:border-apb-aubergine cursor-pointer ${photo != null ? 'bg-neutral-50' : 'bg-gray-400'}`}
             style={{
               animation: 'fade-in .5s',
               position: 'absolute',
@@ -451,29 +452,32 @@ function TreeMapLevel(props) {
               width: x(entry.x1) - x(entry.x0),
               height: y(entry.y1) - y(entry.y0),
               overflow: 'hidden',
-              backgroundColor: 'lightgray',
               // cursor: rootNode.children ? 'pointer' : '',
               // border: preview ? 'none' : '2px solid white',
             }}
             onPointerEnter={
               preview == false
                 ? (e) => {
-                    if (sel != null) {
-                      updateTooltip(
-                        <div className="p-1">
-                          Species: {sel.data.name} {entry.data.name}
-                          <p className="mt-1 text-end italic">Click to reveal info!</p>
-                        </div>,
-                      );
-                    } else {
-                      updateTooltip(
-                        <div className="p-1">
-                          {getNodeTooltip(entry)}
-                          <p className="mt-1 text-end italic">Click to filter!</p>
-                        </div>,
-                      );
+                    if (!isSelected) {
+                      if (sel != null) {
+                        updateTooltip(
+                          <div className="p-1">
+                            <span className="italic">
+                              Species: {sel.parent.data.name} {entry.data.name}
+                            </span>
+                            <p className="mt-1 text-end italic">Click to reveal info!</p>
+                          </div>,
+                        );
+                      } else {
+                        updateTooltip(
+                          <div className="p-1">
+                            {getNodeTooltip(entry)}
+                            <p className="mt-1 text-end italic">Click to filter!</p>
+                          </div>,
+                        );
+                      }
+                      e.preventDefault();
                     }
-                    e.preventDefault();
                   }
                 : undefined
             }
@@ -502,31 +506,26 @@ function TreeMapLevel(props) {
                 : undefined
             }
           >
-            {photo != null &&
-              isSelected != true &&
-              // <div
-              //   style={{
-              //     backgroundImage: `url("${photo.url}")`,
-              //     width: '100px',
-              //     height: '100px',
-              //   }}
-              // ></div>
-              offline !== true && (
-                <img
-                  src={photo.url}
-                  alt=""
-                  onError={(e) => {
-                    // console.log(entry.data.name);
-                    e.target?.classList?.add('error');
-                  }}
-                  // width={100}
-                  // height={100}
-                  loading="lazy"
-                  decoding="async" /*  */
-                  className={entry.depth > 2 ? 'size-full object-cover' : 'size-full'}
-                />
-              )}
-            {isSelected && singleSpecies && <SpeciesDetailsPanel species={singleSpecies} />}
+            {photo != null && !offline && (
+              <img
+                src={photo.url}
+                alt=""
+                onError={(e) => {
+                  // console.log(entry.data.name);
+                  e.target?.classList?.add('error');
+                }}
+                // width={100}
+                // height={100}
+                loading="lazy"
+                decoding="async" /*  */
+                className={entry.depth > 2 ? 'size-full object-cover' : 'size-full'}
+              />
+            )}
+            {isSelected && singleSpecies && (
+              <div className="absolute top-0 left-0 size-full bg-neutral-50 bg-opacity-75 p-2 overflow-hidden overflow-y-scroll">
+                <SpeciesDetailsPanel species={singleSpecies} />
+              </div>
+            )}
             {showDecendants && rootNode.children && (
               <TreeMapLevel
                 rootNode={entry}
