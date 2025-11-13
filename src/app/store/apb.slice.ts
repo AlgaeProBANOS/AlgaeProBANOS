@@ -52,6 +52,7 @@ export interface APBState {
   speciesPhotos: Record<Species['id'], string | null>;
   productMapMode: MapDataSourceType;
   categoryColors: Record<string, string>;
+  timeStamp: string | null;
 }
 
 export const EmptyFilters = {region: null, colors: {'green': true, 'brown': true, 'red': true, 'purple': true, 'unknown': true}, name: null, species: {'species': null, 'genus': null, 'type': null}, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'] as Array<ApplicationType>,
@@ -69,15 +70,22 @@ const initialState: APBState = {
   filters: EmptyFilters,
   speciesPhotos: {},
   productMapMode: "EMOD",
-  categoryColors: {}
+  categoryColors: {},
+  timeStamp: null
 };
 
 export const slice = createSlice({
   name: 'apb',
   initialState,
   reducers: {
+    resetState: (state) => {
+      state = initialState;
+    },
     clearSearchResults: (state) => {
       state.species = {};
+    },
+    setTimeStamp: (state, action) => {
+      state.timeStamp = action.payload;
     },
     setFilteredSpecies: (state, action) => {
       state.filteredSpecies = action.payload;
@@ -102,7 +110,6 @@ export const slice = createSlice({
       const newSpecies = {} as Record<Species['id'], Species>;
       for(const speciesIt of Object.values(species)) {
         let species = {...speciesIt};
-        console.log(species);
         
         const newID = species.scientificName;
         if(Object.keys(newSpecies).includes(newID)) {
@@ -157,7 +164,7 @@ export const slice = createSlice({
       for (const [i, key] of sortedKeys.entries()) {
         categoryColors[key] = all_colors[i];
       }
-      state.species = newSpecies;
+      state.species = {...newSpecies};
       state.categoryColors = categoryColors;
     },
     setFilters: (state, action) => {
@@ -292,6 +299,10 @@ export function selectSpecies(state: RootState) {
   return state.apb.species;
 }
 
+export function selectTimeStamp(state: RootState) {
+  return state.apb.timeStamp;
+}
+
 export function selectFilters(state: RootState) {
   return state.apb.filters;
 }
@@ -421,7 +432,7 @@ export const selectFragmentContentForDocumentByID = createSelector(
   },
 );
 
-export const { clearSearchResults, setFilteredSpecies, setFilters, resetSpeciesFilters, setSpeciesPhotos, setProductMapMode, setSpecies, resetAllFilters } = slice.actions;
+export const { clearSearchResults, setFilteredSpecies, setFilters, resetSpeciesFilters, setSpeciesPhotos, setProductMapMode, setSpecies, resetAllFilters, resetState, setTimeStamp } = slice.actions;
 
 /* export const {
   addLocalEntity,

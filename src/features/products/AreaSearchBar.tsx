@@ -5,9 +5,11 @@ import Autocomplete from '@mui/material/Autocomplete';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import { isEmojiSupported } from 'is-emoji-supported';
+import { title } from 'process';
 import React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { ReactCountryFlag } from 'react-country-flag';
+import { useTooltipState } from '../common/tooltip/tooltip-provider';
 // import { getFlagEmoji, langUnicode } from "./Tooltip";
 
 export interface Region {
@@ -16,7 +18,7 @@ export interface Region {
   zoom: number;
 }
 
-export const regionOptions = [
+/* export const regionOptions = [
   { title: 'North Sea', center: [55.0, 3.0], zoom: 6 },
   { title: 'Baltic Sea', center: [58.0, 20.0], zoom: 6 },
   { title: 'Mediterranean', center: [38.0, 15.0], zoom: 5 },
@@ -24,9 +26,82 @@ export const regionOptions = [
   { title: 'Adriatic Sea', center: [43.0, 16.0], zoom: 7 },
   { title: 'White Sea', center: [65.5, 37.5], zoom: 6 },
   { title: 'North Atlantic', center: [45.0, -20.0], zoom: 4 },
-];
+]; */
 
 export const regionCountries: { [key: string]: string[] } = {
+  'North Sea': [
+    'Belgium',
+    'Denmark',
+    'France',
+    'Germany',
+    'Netherlands',
+    'Norway',
+    'United Kingdom',
+  ],
+  'Baltic Sea': [
+    'Denmark',
+    'Estonia',
+    'Finland',
+    'Germany',
+    'Latvia',
+    'Lithuania',
+    'Poland',
+    'Russia',
+    'Sweden',
+  ],
+  'Mediterranean Sea': [
+    'Albania',
+    'Croatia',
+    'Cyprus',
+    'France',
+    'Greece',
+    'Italy',
+    'Malta',
+    'Monaco',
+    'Montenegro',
+    'Slovenia',
+    'Spain',
+    'Turkey',
+  ],
+  'Adriatic Sea': [
+    'Albania',
+    'Bosnia and Herzegovina',
+    'Croatia',
+    'Italy',
+    'Montenegro',
+    'Slovenia',
+  ],
+  'Aegean Sea': ['Greece', 'Turkey'],
+  'Ionian Sea': ['Italy', 'Albania', 'Greece'],
+  'Tyrrhenian Sea': ['Italy', 'France', 'Monaco'],
+  'Ligurian Sea': ['Italy', 'France', 'Monaco'],
+  'Black Sea': ['Bulgaria', 'Romania', 'Ukraine', 'Russia', 'Georgia', 'Turkey'],
+  'Irish Sea': ['Ireland', 'United Kingdom'],
+  'Celtic Sea': ['Ireland', 'United Kingdom'],
+  'English Channel': ['United Kingdom', 'France'],
+  'Norwegian Sea': ['Norway', 'Iceland'],
+  'Barents Sea': ['Norway', 'Russia'],
+  'White Sea': ['Russia'],
+  'North Atlantic': [
+    'Belgium',
+    'Denmark',
+    'France',
+    'Germany',
+    'Iceland',
+    'Ireland',
+    'Netherlands',
+    'Norway',
+    'Portugal',
+    'Spain',
+    'United Kingdom',
+  ],
+};
+
+const regionOptions = Object.keys(regionCountries).map((e) => {
+  return { title: e };
+});
+
+/* {
   'North Sea': [
     'Belgium',
     'Denmark',
@@ -85,7 +160,7 @@ export const regionCountries: { [key: string]: string[] } = {
     'Spain',
     'United Kingdom',
   ],
-};
+}; */
 
 export default function AreaSearchBar() {
   const dispatch = useAppDispatch();
@@ -104,6 +179,8 @@ export default function AreaSearchBar() {
 
   const label = 'Region Search';
 
+  const { updateTooltip } = useTooltipState();
+
   return (
     <Autocomplete
       id="countries-filter"
@@ -111,6 +188,12 @@ export default function AreaSearchBar() {
       limitTags={3}
       value={value}
       // loading={countriesLoading}
+      onMouseEnter={() => {
+        updateTooltip(<div>Search for areas with their neighbouring countries.</div>);
+      }}
+      onMouseLeave={() => {
+        updateTooltip(null);
+      }}
       renderInput={(params) => (
         <TextField
           {...params}

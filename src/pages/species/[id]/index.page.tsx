@@ -254,6 +254,7 @@ export default function SpeciesDetails(): JSX.Element {
               <Link
                 href={comp.Website}
                 key={`complink-${i}`}
+                target="_blank"
                 className="p-1 w-min text-nowrap inline-block"
               >
                 <div
@@ -405,7 +406,7 @@ export default function SpeciesDetails(): JSX.Element {
           </div>
           <div className="flex gap-2">
             {algaeLinks['wikipedia'] != null && (
-              <Link href={algaeLinks['wikipedia']}>
+              <Link href={algaeLinks['wikipedia']} target="_blank">
                 <div className="px-2 rounded bg-slate-200 hover:bg-slate-300 flex items-center gap-1">
                   <ArrowTopRightOnSquareIcon className="size-4" />
                   Wikipedia
@@ -413,7 +414,7 @@ export default function SpeciesDetails(): JSX.Element {
               </Link>
             )}
             {algaeLinks['algaeBase'] != null && (
-              <Link href={algaeLinks['algaeBase']}>
+              <Link href={algaeLinks['algaeBase']} target="_blank">
                 <div className="px-2 rounded bg-slate-200 hover:bg-slate-300 flex items-center gap-1">
                   <ArrowTopRightOnSquareIcon className="size-4" />
                   Algae Base

@@ -228,6 +228,7 @@ export default function SpeciesList(): JSX.Element {
                   </div>
                   <Link
                     className="group flex gap-1 transition-size max-w-6 hover:max-w-36 hover:border rounded-md border-apb-gray text-sm px-0.5 hover:bg-apb-gray hover:text-white"
+                    target="_blank"
                     href={`/species/${algae.scientificName}`}
                   >
                     <span className="hidden group-hover:flex">Read More</span>

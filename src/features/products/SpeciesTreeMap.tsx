@@ -159,7 +159,7 @@ export function SpeciesTreeMap() {
       },
       singleSpeies,
     ];
-  }, [filteredSpecies]);
+  }, [filteredSpecies, speciesPhotos]);
 
   // Specify the chart’s dimensions.
   const width = containerSize?.width ?? 500;
@@ -233,7 +233,7 @@ export function SpeciesTreeMap() {
     <div className="size-full grid grid-rows-[min-content_1fr]">
       <div className="cursor-pointer">
         <div className="bg-[#fafafa]">
-          <div className="grid grid-cols-[min-content_min-content_min-content_min-content] p-1 gap-x-6">
+          <div className="grid grid-cols-[min-content_min-content_min-content_min-content] p-1 gap-x-1">
             <>
               <div
                 onClick={() => {
@@ -247,7 +247,11 @@ export function SpeciesTreeMap() {
                 }}
               >
                 <div className="text-xs 2xl:text-sm speciesTreemapHeaderType">Type</div>
-                <div className="text-sm 2xl:text-base h-4">{selectedType?.data?.name ?? ''}</div>
+                <div
+                  className={`text-sm 2xl:text-base rounded-sm text-nowrap ${selectedType != null ? 'border-2 border-purple-800 px-1 hover:bg-purple-800 hover:text-white' : ''}`}
+                >
+                  {selectedType?.data?.name ?? ''}
+                </div>
               </div>
             </>
             {selectedType && (
@@ -263,7 +267,9 @@ export function SpeciesTreeMap() {
                 }}
               >
                 <div className="text-xs 2xl:text-sm speciesTreemapHeaderType">Genus</div>
-                <div className="text-sm 2xl:text-base italic">
+                <div
+                  className={`text-sm 2xl:text-base italic rounded-sm text-nowrap ${selectedGenus != null ? 'border-2 border-purple-800 px-1 hover:bg-purple-800 hover:text-white' : ''}`}
+                >
                   {selectedGenus?.data?.name ?? ''}
                 </div>
               </div>
@@ -281,7 +287,9 @@ export function SpeciesTreeMap() {
                 }}
               >
                 <div className="text-xs 2xl:text-sm speciesTreemapHeaderType">Species</div>
-                <div className="text-sm 2xl:text-base italic">
+                <div
+                  className={`text-sm 2xl:text-base italic rounded-sm text-nowrap ${selectedSpecies != null ? 'border-2 border-purple-800 px-1 hover:bg-purple-800 hover:text-white' : ''}`}
+                >
                   {selectedSpecies?.data?.name ?? ''}
                 </div>
               </div>
@@ -503,7 +511,7 @@ function TreeMapLevel(props) {
               //     height: '100px',
               //   }}
               // ></div>
-              offline != true && (
+              offline !== true && (
                 <img
                   src={photo.url}
                   alt=""
@@ -541,10 +549,11 @@ function TreeMapLevel(props) {
             )}
             {singleSpecies && (
               <Link
-                className="h-[22px] absolute top-1 right-1 group flex gap-1 transition-size max-w-6 hover:max-w-36 hover:border rounded-md border-apb-gray text-sm px-0.5 hover:bg-apb-gray hover:text-white"
+                className="h-[22px] absolute top-1 right-1 group flex gap-1 transition-size max-w-6 hover:max-w-36 hover:border rounded-md border-apb-gray text-sm px-0.5 bg-apb-gray text-white"
                 href={`/species/${singleSpecies.scientificName}`}
+                target="_blank"
               >
-                <span className="hidden group-hover:flex">Read More</span>
+                <span className="hidden group-hover:flex text-nowrap">Read More</span>
                 <ArrowTopRightOnSquareIcon className="size-5" />{' '}
               </Link>
             )}

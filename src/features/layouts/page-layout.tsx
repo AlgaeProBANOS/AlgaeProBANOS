@@ -8,10 +8,15 @@ import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { AppBar } from '@/features/ui/app-bar';
 
+import {
+  resetState,
+  selectSpecies,
+  selectTimeStamp,
+  setSpecies,
+  setTimeStamp,
+} from '@/app/store/apb.slice';
+import allSpecies from '@/data/allSpecies.json';
 import Overlay from '../ui/overlay';
-import { useRequestAllSpeciesProducts } from '../products/useRequestAllSpeciesProducts';
-import { selectSpecies, setSpecies } from '@/app/store/apb.slice';
-import { useSearchSpeciesQuery } from '@/api/apb.service';
 
 export interface PageLayoutProps {
   children?: ReactNode;
@@ -21,7 +26,26 @@ export function PageLayout(props: PageLayoutProps): JSX.Element {
   const { children } = props;
   const dispatch = useAppDispatch();
 
+  const timeStamp = useAppSelector(selectTimeStamp);
+
   const species = useAppSelector(selectSpecies);
+
+  useEffect(() => {
+    if (!timeStamp) return;
+
+    const lastDate = new Date(timeStamp);
+    if (isNaN(lastDate.getTime())) return;
+
+    const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+    if (Date.now() - lastDate.getTime() > ONE_DAY_MS) {
+      // reset species in the store when the timestamp is older than one day
+      dispatch(resetState());
+    }
+  }, [timeStamp]);
+
+  const currentTime = new Date().toISOString();
+  dispatch(setTimeStamp(currentTime));
+
   const skip = useMemo(() => {
     return Object.keys(species).length === 194;
   }, [species]);
@@ -29,18 +53,14 @@ export function PageLayout(props: PageLayoutProps): JSX.Element {
   // dispatch((state) => useSearchSpeciesQuery({ q: 'allspecies' }, { skip }));
 
   useEffect(() => {
-    if (skip === false) {
-      fetch('/data/allSpecies.json')
-        .then((res) => res.json())
-        .then(function (json) {
-          dispatch(setSpecies(json));
-        });
+    if (skip === false && allSpecies) {
+      dispatch(setSpecies(allSpecies));
     }
-  }, [skip]);
+  }, []);
 
   return (
     <div className="relative grid h-screen max-h-screen grid-rows-[48px_1fr] bg-neutral-50 m-0">
-      <AppBar maintenanceMode />
+      <AppBar />
       <main>{children}</main>
       <Overlay />
     </div>

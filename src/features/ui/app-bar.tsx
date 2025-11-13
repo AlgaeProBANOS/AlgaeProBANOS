@@ -41,15 +41,25 @@ export function Sidepanel(props): JSX.Element {
             <div className="font-bold mb-2">
               Welcome to the AlgaeProBANOS Farming and Product Dashboard
             </div>
-            <div>
+            <div className="mb-4">
               This dashboard gives an overview of algae farming in Europe. It lets you explore where
               different species are cultivated, compare production methods, and look at potential
               contributions to nutrient removal and carbon sequestration. You can filter by species,
               products, and farm characteristics to find the information most relevant to your work.
             </div>
-            <div className="m-2 bg-gray-400 text-white h-24 flex items-center justify-center">
+            <iframe
+              width="100%"
+              height="315"
+              src="https://www.youtube.com/embed/pZfuq4QyVFA?si=V4KPW1prjMSELcY3"
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+            {/* <div className="m-2 bg-gray-400 text-white h-24 flex items-center justify-center">
               YouTube video here ...
-            </div>
+            </div> */}
           </div>
         </div>
       )}
@@ -122,7 +132,7 @@ export function AppBar(props: AppBarProps): JSX.Element {
             </Link>
           </div>
           <div
-            className="relative h-10 w-24 flex items-center"
+            className="relative h-10 w-24 flex items-center gap-2"
             onMouseEnter={() => {
               updateTooltip(
                 <div className="p-1">
@@ -143,6 +153,10 @@ export function AppBar(props: AppBarProps): JSX.Element {
               width={45}
               height={26}
             />
+            <div className="text-[10px] text-nowrap">
+              Co-funded by the <br />
+              European Union
+            </div>
           </div>
         </div>
         {maintenanceMode === true && (

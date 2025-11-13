@@ -9,6 +9,7 @@ import React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { ReactCountryFlag } from 'react-country-flag';
 import { regionCountries } from './AreaSearchBar';
+import { useTooltipState } from '../common/tooltip/tooltip-provider';
 // import { getFlagEmoji, langUnicode } from "./Tooltip";
 
 export default function CountrySearchBar() {
@@ -137,6 +138,8 @@ export default function CountrySearchBar() {
     }
   }, [filters.region]);
 
+  const { updateTooltip } = useTooltipState();
+
   return (
     <Autocomplete
       multiple
@@ -144,6 +147,12 @@ export default function CountrySearchBar() {
       options={countryOptions}
       limitTags={2}
       value={value != null ? Object.values(value) : []}
+      onMouseEnter={() => {
+        updateTooltip(<div>Countries with producers located in them.</div>);
+      }}
+      onMouseLeave={() => {
+        updateTooltip(null);
+      }}
       // loading={countriesLoading}
       renderInput={(params) => (
         <TextField

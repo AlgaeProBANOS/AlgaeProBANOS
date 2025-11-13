@@ -10,6 +10,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useEffect, useMemo, useState } from 'react';
 import { productCriteria } from '../common/prodcutFilter';
+import { useTooltipState } from '../common/tooltip/tooltip-provider';
 // import { getFlagEmoji, langUnicode } from "./Tooltip";
 
 export interface NameSearchEntry {
@@ -79,6 +80,8 @@ export default function KeywordSearchBar() {
 
   const [currentValue, setCurrentValue] = useState<string | null>();
 
+  const { updateTooltip } = useTooltipState();
+
   return (
     <Autocomplete
       value={value != null ? value : null}
@@ -93,6 +96,12 @@ export default function KeywordSearchBar() {
 
       //   return true;
       // }}
+      onMouseEnter={() => {
+        updateTooltip(<div>Search for product keywords to find matching species.</div>);
+      }}
+      onMouseLeave={() => {
+        updateTooltip(null);
+      }}
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys

@@ -23,6 +23,7 @@ import { useTooltipState } from '../common/tooltip/tooltip-provider';
 import ReactMapGL, { AttributionControl, Layer, Marker, Popup, Source } from 'react-map-gl';
 import { Switch } from './Switch';
 import { nanoid } from '@reduxjs/toolkit';
+import { purple } from '@mui/material/colors';
 
 const outerMapBounds: [number, number, number, number] = [
   -26.942848249874004, 31.43581990686755, 65.1077179732153, 73.33119246537285,
@@ -202,7 +203,7 @@ function groupBy(xs, key) {
   }, {});
 }
 
-function createDonutChart(props, dataKeys, colors, onMouseEnter, onMouseLeave) {
+function createDonutChart(props, dataKeys, colors, onMouseEnter, onMouseLeave, id) {
   const offsets = [];
 
   const grouped = Object.fromEntries(
@@ -230,7 +231,14 @@ function createDonutChart(props, dataKeys, colors, onMouseEnter, onMouseLeave) {
   const w = r * 2;
 
   return (
-    <div className="hover:scale-150" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <div
+      className="hover:scale-150"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onMouseMove={onMouseEnter}
+      id={id}
+      key={id}
+    >
       <svg width={`${w}`} height={`${w}`} viewBox={`0 0 ${w} ${w}`} textAnchor="middle">
         <circle cx={r} cy={r} r={r} fill="white" fillOpacity={0.65} stroke={'none'}></circle>
         <g transform={'translate(1, 1)'}>
@@ -331,6 +339,7 @@ export default function Map(props: MapProps): JSX.Element {
         : Object.keys(species);
     }
   }, [
+    species,
     filteredSpecies,
     speciesFilter.genus,
     speciesFilter.species,
@@ -429,6 +438,7 @@ export default function Map(props: MapProps): JSX.Element {
   const [mapMarkers, clusterProperties] = useMemo(() => {
     const clusterProperties = {};
     const markers = [];
+    let index = 0;
     for (const speciesName of productSpecies) {
       const spec = species[speciesName];
       for (const dot of spec.emodnet_points) {
@@ -446,6 +456,7 @@ export default function Map(props: MapProps): JSX.Element {
 
         const newMarker = {
           type: 'Feature',
+          id: `marker-${index}`,
           properties: {
             site_id: dot.site_id,
             production_details: dot.production_details,
@@ -462,15 +473,12 @@ export default function Map(props: MapProps): JSX.Element {
         if (dot.production_method_array?.some((e) => filteredProductionMethods.includes(e))) {
           markers.push(newMarker);
         }
+        index = index + 1;
       }
     }
 
     return [markers, clusterProperties];
   }, [productSpecies, isClustering, filteredProductionMethods]);
-
-  console.log('mapMarkers', mapMarkers);
-  console.log('productSpecies', productSpecies);
-  console.log('productSpecies', clusterProperties);
 
   const [hexagonGeoJson3, colors3, legendColsString] = useMemo(() => {
     if (hexCounts3 != null) {
@@ -519,7 +527,7 @@ export default function Map(props: MapProps): JSX.Element {
   const [lastBounds, setLastBounds] = useState(null);
 
   useEffect(() => {
-    if (mapDataMode === 'GBIF' || combineBoth) {
+    if (mapDataMode === 'GBIF' || focusSpecies) {
       const hexagonGeoJson = hexResolution === 3 ? hexagonGeoJson3 : hexagonGeoJson4;
       if (hexagonGeoJson != null) {
         const bounds = getBoundsForHexagons(hexagonGeoJson.features);
@@ -548,14 +556,17 @@ export default function Map(props: MapProps): JSX.Element {
       const clusterPropertiesKey = Object.keys(clusterProperties);
 
       let index = 0;
+      const clusteredIDs = [];
       for (const feat of features) {
         const markerKey = `marker-${index}`;
+        // console.log(markerKey);
 
         const onMouseLeave = () => {
           updateTooltip(null);
+          setHighlightedCluster(null);
         };
 
-        const onMouseEnter = () => {
+        const onMouseEnter = (e) => {
           let splitSites = feat.properties.sites?.trim().split(' ');
           if (splitSites == null) {
             splitSites = [feat.properties.site_id];
@@ -589,46 +600,117 @@ export default function Map(props: MapProps): JSX.Element {
               </div>
             </div>,
           );
+          setHighlightedCountry(null);
+          setHighlightedHexagon(null);
+          setHighlightedCluster(feat.properties.cluster_id);
         };
 
-        // if (feat.properties.point_count > 0) {
-        newMarkers.push(
-          <Marker
-            key={markerKey}
-            longitude={feat.geometry.coordinates[0]}
-            latitude={feat.geometry.coordinates[1]}
-            anchor="center"
-            onClick={(e) => {
-              e.originalEvent.stopPropagation();
-              setPopupInfo(feat);
-            }}
-          >
-            {createDonutChart(
-              feat.properties,
-              clusterPropertiesKey,
-              categoryColors,
-              onMouseEnter,
-              onMouseLeave,
-            )}
-          </Marker>,
-        );
+        if (
+          feat.properties.cluster_id == null ||
+          !clusteredIDs.includes(feat.properties.cluster_id)
+        ) {
+          newMarkers.push(
+            <Marker
+              key={markerKey}
+              longitude={feat.geometry.coordinates[0]}
+              latitude={feat.geometry.coordinates[1]}
+              anchor="center"
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                if (feat && feat.properties) {
+                  const sitesArray = [...new Set(feat.properties.sites.split(' '))];
+                  const newSitesText =
+                    sitesArray.length > 20
+                      ? `${sitesArray.slice(0, 20).join(', ')} +${sitesArray.length - 20} more`
+                      : sitesArray.join(', ');
+
+                  feat.propoerties.sitesText = newSitesText;
+                  setPopupInfo(feat);
+                }
+              }}
+            >
+              {createDonutChart(
+                feat.properties,
+                clusterPropertiesKey,
+                categoryColors,
+                onMouseEnter,
+                onMouseLeave,
+                markerKey,
+              )}
+            </Marker>,
+          );
+          clusteredIDs.push(feat.properties.cluster_id);
+        }
         index = index + 1;
-        // }
       }
     }
 
     setDonutClusterMarkers(newMarkers);
-  }, [categoryColors]);
+  }, [categoryColors, mapRef.current]);
 
   /*   if (mapRef.current != null && mapRef.current.getStyle() != null) {
     console.log('ALL Layers', mapRef.current?.getStyle()?.layers);
   } */
 
+  const [highlightedCluster, setHighlightedCluster] = useState<string | null>(null);
   const [highlightCountry, setHighlightedCountry] = useState<string | null>(null);
+  const [highlightedHexagon, setHighlightedHexagon] = useState<string | null>(null);
+
+  const mouseMoveCallback = useCallback(
+    (e) => {
+      const features = e?.features;
+
+      if (features != null && highlightedCluster == null) {
+        const hexagonFeat = features.find(
+          (entry) => entry.layer.id === 'hexagons3' || entry.layer.id === 'hexagons4',
+        ); // in case it is a country
+        if (hexagonFeat) {
+          if (hexagonFeat.properties.HexagonID != highlightedHexagon) {
+            setHighlightedHexagon(hexagonFeat.properties.HexagonID);
+          }
+          updateTooltip(
+            <div className="grid grid-cols-2 content-between w-full">
+              <div>Hexagon ID:</div>
+              <div>{hexagonFeat.properties.HexagonID}</div>
+              <div>Species Count:</div>
+              <div>{hexagonFeat.properties.speciesCount}</div>
+              <div>Sightings Count:</div>
+              <div>{hexagonFeat.properties.occCount}</div>
+              <div>Area:</div>
+              <div>{Math.floor(hexagonFeat.properties.Shape_Area)}</div>
+            </div>,
+          );
+          setHighlightedCountry(null);
+          e.originalEvent.stopPropagation();
+          return;
+        }
+
+        const countryFeat = features.find((entry) => entry.layer.id === 'country-fill'); // in case it is a country
+        // console.log('feat', feat);
+        if (countryFeat) {
+          if (countryFeat?.properties.ISO3CD !== highlightCountry) {
+            setHighlightedCountry(countryFeat?.properties.ISO3CD);
+          }
+          setHighlightedHexagon(null);
+          e.originalEvent.stopPropagation();
+          return;
+        }
+      } else {
+        setHighlightedHexagon(null);
+        setHighlightedCountry(null);
+      }
+    },
+    [highlightedCluster, highlightCountry, highlightedHexagon],
+  );
 
   return (
     <div
       className={`size-full relative ${focusSpecies != null ? 'rounded-md overflow-hidden' : ''}`}
+      onMouseLeave={(e) => {
+        setHighlightedCluster(null);
+        setHighlightedCountry(null);
+        setHighlightedHexagon(null);
+      }}
     >
       <ReactMapGL
         ref={mapRef}
@@ -693,27 +775,12 @@ export default function Map(props: MapProps): JSX.Element {
             );
           }
         }}
-        onMouseMove={(e) => {
-          const features = e?.features;
-          if (features != null) {
-            // console.log('feats', features);
-            const feat = features.find((entry) => entry.layer.id === 'country-fill');
-            // console.log('feat', feat);
-            if (feat?.properties.ISO3CD !== highlightCountry) {
-              setHighlightedCountry(feat?.properties.ISO3CD);
-            }
-          }
-        }}
+        onMouseMove={mouseMoveCallback}
         onMouseLeave={(e) => {
-          const features = e?.features;
-          if (features != null) {
-            // console.log('feats', features);
-            const feat = features.find((entry) => entry.layer.id === 'country-fill');
-            // console.log('feat', feat);
-            setHighlightedCountry(null);
-          }
+          setHighlightedCountry(null);
+          setHighlightedHexagon(null);
         }}
-        interactiveLayerIds={['country-fill', 'country-line']}
+        interactiveLayerIds={['country-fill', 'country-line', 'hexagons3', 'hexagons4']}
       >
         <Source
           id="bathymetry-source"
@@ -809,7 +876,12 @@ export default function Map(props: MapProps): JSX.Element {
                       ...colors3.flat(),
                     ],
                     'fill-opacity': 0.8,
-                    'fill-outline-color': 'transparent',
+                    'fill-outline-color': [
+                      'case',
+                      ['==', ['get', 'HexagonID'], highlightedHexagon],
+                      'purple',
+                      'transparent',
+                    ],
                   },
                   type: 'fill',
                 },
@@ -837,7 +909,12 @@ export default function Map(props: MapProps): JSX.Element {
                       ...colors4.flat(),
                     ],
                     'fill-opacity': 0.8,
-                    'fill-outline-color': 'transparent',
+                    'fill-outline-color': [
+                      'case',
+                      ['==', ['get', 'HexagonID'], highlightedHexagon],
+                      'purple',
+                      'transparent',
+                    ],
                   },
                   type: 'fill',
                 },
@@ -1026,8 +1103,6 @@ export default function Map(props: MapProps): JSX.Element {
             onClose={() => setPopupInfo(null)}
           >
             <div className="flex flex-col text-xs">
-              <span className="font-bold">Sites</span>
-              <span>{popupInfo.properties.sites.trim()}</span>
               <span className="font-bold">Production Methods</span>
               <div>
                 {Object.keys(categoryColors)
@@ -1040,6 +1115,12 @@ export default function Map(props: MapProps): JSX.Element {
                     );
                   })}
               </div>
+              <span className="font-bold">Sites</span>
+              <span>
+                {popupInfo.properties.sitesText != null
+                  ? popupInfo.properties.sitesText
+                  : popupInfo.properties.site_id}
+              </span>
             </div>
           </Popup>
         )}

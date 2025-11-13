@@ -3,7 +3,9 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import { selectFilteredSpecies, selectSpecies, setFilters } from '@/app/store/apb.slice';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import { useTooltipPosition } from '@visx/tooltip';
 import { useEffect, useMemo, useState } from 'react';
+import { useTooltipState } from '../common/tooltip/tooltip-provider';
 // import { getFlagEmoji, langUnicode } from "./Tooltip";
 
 export interface NameSearchEntry {
@@ -115,6 +117,8 @@ export default function NameSearchBar() {
     );
   }
 
+  const { updateTooltip } = useTooltipState();
+
   return (
     <Autocomplete
       value={value != null ? value : null}
@@ -123,6 +127,12 @@ export default function NameSearchBar() {
       }}
       onInputChange={(e, v) => {
         setCurrentValue(v);
+      }}
+      onMouseEnter={() => {
+        updateTooltip(<div>Search for genus, species names and their common trade names.</div>);
+      }}
+      onMouseLeave={() => {
+        updateTooltip(null);
       }}
       filterOptions={(options, params) => {
         const { inputValue } = params;
