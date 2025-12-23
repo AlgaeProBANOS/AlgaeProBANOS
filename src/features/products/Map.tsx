@@ -513,16 +513,21 @@ export default function Map(props: MapProps): JSX.Element {
     }
   }, [filteredAndSelectedSpecies, hex5Init, hexResolution]); */
 
-  const [showBathymetry, setShowBathymetry] = useState(true);
+  const [showBathymetry, setShowBathymetry] = useState(false);
   const [popupInfo, setPopupInfo] = useState(null);
 
   useEffect(() => {
-    if (mapRef.current) {
+    setShowBathymetry(mapDataMode === 'EMOD' && combineBoth === false);
+    /* if (mapRef.current) {
       mapRef.current
         .getMap()
-        .setLayoutProperty('bathymetry-layer', 'visibility', showBathymetry ? 'visible' : 'none');
-    }
-  }, [showBathymetry]);
+        .setLayoutProperty(
+          'bathymetry-layer',
+          'visibility',
+          showBathymetry && mapDataMode === 'EMOD' && combineBoth === false ? 'visible' : 'none',
+        );
+    } */
+  }, [combineBoth, mapDataMode]);
 
   const [lastBounds, setLastBounds] = useState(null);
 
@@ -719,14 +724,14 @@ export default function Map(props: MapProps): JSX.Element {
           latitude: 54,
           zoom: 3,
         }}
-        // fog={{
-        //   range: [0.8, 8],
-        //   color: 'rgb(100,100,106)',
-        //   'horizon-blend': 0.2,
-        //   'high-color': 'rgb(200,200,206)',
-        //   'space-color': '#000000',
-        //   'star-intensity': 0.15,
-        // }}
+        fog={{
+          range: [0.8, 8],
+          color: 'rgb(230,230,236)',
+          'horizon-blend': 0.2,
+          'high-color': 'rgb(230,230,236)',
+          'space-color': '#ffffff',
+          'star-intensity': 0.15,
+        }}
         minZoom={0}
         maxZoom={15}
         projection={projection}
@@ -746,7 +751,7 @@ export default function Map(props: MapProps): JSX.Element {
         onLoad={() => {
           console.log('----- Map and Layers loaded! ----- ', mapRef.current?.getStyle().layers);
           if (mapRef.current) {
-            mapRef.current.getMap().setPaintProperty('water', 'fill-color', '#46afff');
+            mapRef.current.getMap().setPaintProperty('water', 'fill-color', '#92cefc');
           }
         }}
         onRender={() => {
@@ -754,25 +759,31 @@ export default function Map(props: MapProps): JSX.Element {
         }}
         onClick={(e) => {
           const feature = e.features?.[0];
-          if (feature && feature.layer.id === 'country-fill') {
-            const oldFilters = { ...countryFilters } as Record<Country['title'], Country>;
-            if (Object.keys(oldFilters).includes(feature.properties.ROMNAM)) {
-              delete oldFilters[feature.properties.ROMNAM];
-            } else {
-              oldFilters[feature.properties.ROMNAM] = {
-                title: feature.properties.ROMNAM,
-                value: feature.properties.ROMNAM,
-                iso3: feature.properties.ISO3CD,
-              };
-            }
-
+          if (feature && ['hexagons3', 'hexagons4'].includes(feature.layer.id)) {
             dispatch(
-              setFilters({
-                type: 'countries',
-                cat: 'countries',
-                val: oldFilters,
-              }),
+              setFilters({ type: 'hexagon', cat: 'hexagon', val: feature.properties.HexagonID }),
             );
+          } else {
+            if (feature && feature.layer.id === 'country-fill') {
+              const oldFilters = { ...countryFilters } as Record<Country['title'], Country>;
+              if (Object.keys(oldFilters).includes(feature.properties.ROMNAM)) {
+                delete oldFilters[feature.properties.ROMNAM];
+              } else {
+                oldFilters[feature.properties.ROMNAM] = {
+                  title: feature.properties.ROMNAM,
+                  value: feature.properties.ROMNAM,
+                  iso3: feature.properties.ISO3CD,
+                };
+              }
+
+              dispatch(
+                setFilters({
+                  type: 'countries',
+                  cat: 'countries',
+                  val: oldFilters,
+                }),
+              );
+            }
           }
         }}
         onMouseMove={mouseMoveCallback}
@@ -822,6 +833,7 @@ export default function Map(props: MapProps): JSX.Element {
                 '#46afff',
               ],
             }}
+            layout={{ visibility: showBathymetry ? 'visible' : 'none' }}
             beforeId={offline ? undefined : 'land-structure-polygon'}
           />
         </Source>

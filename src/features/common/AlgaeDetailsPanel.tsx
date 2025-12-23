@@ -116,7 +116,7 @@ export default function SpeciesDetailsPanel(props: SpeciesDetailsPanelProps) {
       {applicationFilter && (
         <div
           key={`species-apps-${speciesKey}`}
-          className="col-start-2 row-start-3 flex gap-1.5 flex-col text-xs"
+          className="col-start-2 row-start-2 flex gap-1.5 flex-col text-xs"
         >
           {applicationFilter
             .filter((e) => species.applications[e] != null)

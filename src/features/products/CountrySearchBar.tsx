@@ -33,30 +33,23 @@ export default function CountrySearchBar() {
         val: value,
       }),
     );
-  }, [value]);
+  }, [value, dispatch]);
 
   useEffect(() => {
     const selectedCountries = filters.countries;
+    console.log('selectedCountries', selectedCountries);
+
     if (selectedCountries != null) {
       if (
         JSON.stringify(Object.keys(selectedCountries).sort()) !==
         JSON.stringify(Object.keys(value).sort())
       ) {
+        console.log('CHANGE IT!');
         setValue(selectedCountries);
       }
+    } else {
+      setValue({});
     }
-
-    // if (JSON.stringify(Object.keys(selectedCountries)) !== JSON.stringify(Object.keys(value))) {
-    //   if (selectedCountries != null) {
-    //     const toBeSelected = countryOptions.filter((e) =>
-    //       Object.keys(selectedCountries).includes(e.title),
-    //     );
-    //     console.log('COUNTRIES changed', selectedCountries, toBeSelected);
-    //     setValue(Object.fromEntries(toBeSelected.map((e) => [e.title, e])));
-    //   } else {
-    //     setValue({});
-    //   }
-    // }
   }, [filters.countries]);
 
   useEffect(() => {

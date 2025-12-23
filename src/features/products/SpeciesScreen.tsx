@@ -8,6 +8,7 @@ import { selectFilteredSpecies, setFilters } from '@/app/store/apb.slice';
 import NameSearchBar from './NameSearchBar';
 import { MicroIcon } from './MicroIcon';
 import { MacroIcon } from './MacroIcon';
+import { AlgaeIcon } from './AlgaeIcon';
 
 const tabs = [
   {
@@ -38,8 +39,7 @@ export default function SpeciesScreen(): JSX.Element {
         titleElement={
           <div className="flex items-center gap-1">
             <span className="font-bold">{filteredSpecies?.length}</span>
-            <MicroIcon size={20} />
-            <MacroIcon size={20} />
+            <AlgaeIcon size={20} />
             Selected Species
             <div
               onClick={() => {

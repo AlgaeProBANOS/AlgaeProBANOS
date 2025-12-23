@@ -115,6 +115,25 @@ export function useApplyFilters() {
     })
   }
   
+  //Hexagon filter
+  const hexagonFilter = filters.hexagon;
+
+  if(hexagonFilter != null ) {
+      fetch('/data/hex_counts_3.json')
+      .then((res) => res.json())
+      .then(function (json) {
+        const tmpFilteredSpecies = [];
+        for (const [key, value] of Object.entries(json)) {
+          if(Object.keys(value).includes(hexagonFilter.toString())) {
+            tmpFilteredSpecies.push(key);
+          }
+        }
+        console.log("TMP", currentSpecies, tmpFilteredSpecies);
+        
+        currentSpecies = currentSpecies.filter(e => tmpFilteredSpecies.includes(e));
+      });
+  }
+  
   //Product Keyword filter
   const keywordFilter = filters.keyword;
   if(keywordFilter != null) {

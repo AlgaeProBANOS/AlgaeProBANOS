@@ -42,6 +42,7 @@ export interface Filters {
   region: Region | null;
   certifications: Certifications;
   keyword: string | null;
+  hexagon: string | null;
 };
 
 //Declaration
@@ -55,7 +56,7 @@ export interface APBState {
   timeStamp: string | null;
 }
 
-export const EmptyFilters = {region: null, colors: {'green': true, 'brown': true, 'red': true, 'purple': true, 'unknown': true}, name: null, species: {'species': null, 'genus': null, 'type': null}, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'] as Array<ApplicationType>,
+export const EmptyFilters = {region: null, colors: {'green': true, 'brown': true, 'red': true, 'purple': true, 'unknown': true}, name: null, species: {'species': null, 'genus': null, 'type': null}, hexagon: null, applications: ['environmental', 'humanConsumption', 'medicinal', 'cosmetics', 'agriculture', 'industrial'] as Array<ApplicationType>,
   includeNonApplications: true, countries: null, certifications: {
   onMarket: false,
   novelFood: false,
@@ -199,6 +200,9 @@ export const slice = createSlice({
           break;
         case "keyword":
           state.filters.keyword = val;
+          break;
+        case "hexagon":
+          state.filters.hexagon = val;
           break;
         case "applications":
           state.filters.applications = val;

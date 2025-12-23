@@ -218,8 +218,8 @@ export function SpeciesTreeMap() {
   useEffect(() => {
     if (
       filters.species != null &&
-      filters.species.type === null &&
       selectedType !== null &&
+      filters.species.type === null &&
       filters.species.genus === null &&
       filters.species.species === null
     ) {
@@ -304,7 +304,7 @@ export function SpeciesTreeMap() {
           height={height}
           sel={selectedType}
           onClick={setSelectedType}
-          showDecendants={true}
+          showDecendants={false}
         />
         <TreeMapLevel
           rootNode={selectedType}
@@ -389,12 +389,27 @@ function TreeMapLevel(props) {
   }, [sel]);
 
   const getPhotoUrl = useCallback((entry) => {
-    if (entry.children != null) {
-      const found = entry.children.find((e) => e.data.photo != null);
-      return found != null ? found.data.photo : null;
-    } else {
-      return entry.data != null ? entry.data.photo : null;
-    }
+    const findPhoto = (node) => {
+      if (!node) return null;
+
+      // Prefer any direct child that already has a photo
+      if (node.children && node.children.length) {
+        const direct = node.children.find((c) => c?.data?.photo != null);
+        if (direct) return direct.data.photo;
+
+        // Otherwise, recursively search deeper descendants
+        for (const child of [...node.children].sort((a, b) => (b?.value ?? 0) - (a?.value ?? 0))) {
+          const found = findPhoto(child);
+          if (found) return found;
+        }
+        return null;
+      }
+
+      // Leaf node: return its own photo if present
+      return node.data?.photo ?? null;
+    };
+
+    return findPhoto(entry);
   }, []);
 
   const getZoomTransform = useCallback(
@@ -421,6 +436,15 @@ function TreeMapLevel(props) {
 
   const [isSelected, setIsSelected] = useState<boolean>(false);
 
+  // Sort children by decreasing value for rendering order (layout remains unchanged)
+  const childrenToRender = useMemo(() => {
+    if (!rootNode) return [];
+    if (rootNode.children && rootNode.children.length) {
+      return [...rootNode.children].sort((a, b) => (b?.value ?? 0) - (a?.value ?? 0));
+    }
+    return [rootNode];
+  }, [rootNode]);
+
   return rootNode != null ? (
     <div
       style={{
@@ -434,7 +458,7 @@ function TreeMapLevel(props) {
         transformOrigin: 'top left',
       }}
     >
-      {(rootNode.children != null ? rootNode.children : [rootNode]).map((entry, i) => {
+      {childrenToRender.map((entry, i) => {
         const photo = getPhotoUrl(entry);
 
         // if (photo == null) {
@@ -452,6 +476,7 @@ function TreeMapLevel(props) {
               width: x(entry.x1) - x(entry.x0),
               height: y(entry.y1) - y(entry.y0),
               overflow: 'hidden',
+              aspectRatio: '1',
               // cursor: rootNode.children ? 'pointer' : '',
               // border: preview ? 'none' : '2px solid white',
             }}
@@ -514,11 +539,12 @@ function TreeMapLevel(props) {
                   // console.log(entry.data.name);
                   e.target?.classList?.add('error');
                 }}
-                // width={100}
-                // height={100}
+                width={150}
+                height={150}
                 loading="lazy"
-                decoding="async" /*  */
-                className={entry.depth > 2 ? 'size-full object-cover' : 'size-full'}
+                decoding="async"
+                style={{ imageRendering: 'auto' }}
+                className="size-full object-cover"
               />
             )}
             {isSelected && singleSpecies && (
@@ -526,7 +552,7 @@ function TreeMapLevel(props) {
                 <SpeciesDetailsPanel species={singleSpecies} />
               </div>
             )}
-            {showDecendants && rootNode.children && (
+            {showDecendants && (
               <TreeMapLevel
                 rootNode={entry}
                 width={entry.x1 - entry.x0}
@@ -536,15 +562,23 @@ function TreeMapLevel(props) {
                 preview={true}
               />
             )}
-            {rootNode.children && preview == false && (
-              <p
-                className="flex gap-1 absolute px-1 top-[2px] left-0 bg-opacity-20 rounded-sm text-white text-shadow-md text-ellipsis overflow-hidden w-full text-sm italic"
+            {rootNode.children && preview === false && (
+              <div
+                className="absolute left-0 top-0 size-full"
                 style={{ textShadow: '1px 1px 2px black' }}
               >
-                {entry.data.name === 'Micro' && <MicroIcon size={20} fill={'white'} />}
-                {entry.data.name === 'Macro' && <MacroIcon size={20} fill={'white'} />}
-                <span className={entry.depth === 1 ? 'font-bold' : ''}>{entry.data.name}</span>
-              </p>
+                <div className="relative size-full flex gap-1 flex-col items-center justify-center px-1 top-[2px] left-0 bg-opacity-20 rounded-sm text-white text-shadow-md text-ellipsis overflow-hidden w-full text-sm italic size-full">
+                  {entry.data.name === 'Micro' && <MicroIcon size={30} fill={'white'} />}
+                  {entry.data.name === 'Macro' && <MacroIcon size={30} fill={'white'} />}
+                  <p
+                    className={
+                      entry.depth === 1 ? 'font-bold' : 'absolute top-0 left-0 w-full text-ellipsis'
+                    }
+                  >
+                    {entry.data.name}
+                  </p>
+                </div>
+              </div>
             )}
             {singleSpecies && (
               <Link

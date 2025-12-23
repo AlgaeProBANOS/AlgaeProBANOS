@@ -42,10 +42,11 @@ export function Sidepanel(props): JSX.Element {
               Welcome to the AlgaeProBANOS Farming and Product Dashboard
             </div>
             <div className="mb-4">
-              This dashboard gives an overview of algae farming in Europe. It lets you explore where
-              different species are cultivated, compare production methods, and look at potential
-              contributions to nutrient removal and carbon sequestration. You can filter by species,
-              products, and farm characteristics to find the information most relevant to your work.
+              The dashboard lets you explore algae cultivation and the products made from it. The
+              dashboard uses an interactive map and filters so you find companies by production
+              characteristics and the species they use. These matching species appear in a nested
+              tree map visualizations and a list view. All views are connected, helping you move
+              smoothly between farming activity and products.
             </div>
             <iframe
               width="100%"
@@ -118,7 +119,10 @@ export function AppBar(props: AppBarProps): JSX.Element {
       <div className="flex flex-row flex-nowrap justify-between h-full">
         <div className="flex flex-row items-center gap-4 text-white underline-offset-8">
           <div className="relative h-10 w-24">
-            <Link href="/" aria-current={currentPath === '/' ? 'page' : undefined}>
+            <Link
+              href="/dashboard"
+              aria-current={currentPath === '/dashboard' ? 'page' : undefined}
+            >
               <div className="relative size-full">
                 <span className="sr-only">Home</span>
                 <Image
@@ -165,14 +169,16 @@ export function AppBar(props: AppBarProps): JSX.Element {
           </div>
         )}
         <div className="flex flex-row items-center justify-center py-4 gap-2">
-          <button
-            className="rounded-md hover:bg-apb-aubergine bg-apb-aubergine/80 text-white px-3 h-7"
-            onClick={() => {
-              dispatch(resetAllFilters());
-            }}
-          >
-            Reset All
-          </button>
+          {currentPath === '/dashboard' && (
+            <button
+              className="rounded-md hover:bg-apb-aubergine bg-apb-aubergine/80 text-white px-3 h-7"
+              onClick={() => {
+                dispatch(resetAllFilters());
+              }}
+            >
+              Reset All
+            </button>
+          )}
           {/* <Popover className="relative flex items-center">
             <PopoverButton>
               <GlobeAltIcon className="size-7 text-white" />

@@ -17,6 +17,8 @@ import { algaeColors, applicationCategories } from './utils';
 import { ArrowTopRightOnSquareIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import SpeciesDetailsPanel from '../common/AlgaeDetailsPanel';
+import { MacroIcon } from './MacroIcon';
+import { MicroIcon } from './MicroIcon';
 
 export const getStaticProps = withDictionaries(['common']);
 
@@ -201,6 +203,7 @@ export default function SpeciesList(): JSX.Element {
                       );
                     })}
               </div>
+              {algae.microMacro === 'Macro' ? <MacroIcon size={14} /> : <MicroIcon size={14} />}
               {algae?.emodnet_points && <MapPinIcon className="size-4 text-apb-gray" />}
               {speciesWithOccurrences != null &&
                 speciesWithOccurrences.includes(algae.scientificName) && (

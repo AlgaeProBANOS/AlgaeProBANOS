@@ -1,6 +1,11 @@
 import { Species } from '@/api/apb.client';
 import { useAppDispatch, useAppSelector } from '@/app/store';
-import { selectFilteredSpecies, selectSpecies, setFilters } from '@/app/store/apb.slice';
+import {
+  selectFilteredSpecies,
+  selectFilters,
+  selectSpecies,
+  setFilters,
+} from '@/app/store/apb.slice';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useTooltipPosition } from '@visx/tooltip';
@@ -17,7 +22,7 @@ export default function NameSearchBar() {
   const [value, setValue] = useState<NameSearchEntry | null>(null);
   const species = useAppSelector(selectSpecies);
   const filteredSpecies = useAppSelector(selectFilteredSpecies);
-  const filters = useAppSelector(selectSpecies);
+  const filters = useAppSelector(selectFilters);
   const dispatch = useAppDispatch();
 
   const groupedGenusSpecies = useMemo(() => {
@@ -33,11 +38,13 @@ export default function NameSearchBar() {
       }
     }
     return genusSpecies;
-  }, [species]);
+  }, [species, filteredSpecies]);
 
   const sortedGenusKeys = Object.keys(groupedGenusSpecies).sort();
 
   useEffect(() => {
+    console.log('change', value);
+
     dispatch(
       setFilters({
         type: 'name',
@@ -45,9 +52,35 @@ export default function NameSearchBar() {
         val: value,
       }),
     );
+
+    if (value === null) {
+      dispatch(
+        setFilters({
+          type: 'species',
+          cat: 'genus',
+          val: null,
+        }),
+      );
+      dispatch(
+        setFilters({
+          type: 'species',
+          cat: 'species',
+          val: null,
+        }),
+      );
+      dispatch(
+        setFilters({
+          type: 'species',
+          cat: 'type',
+          val: null,
+        }),
+      );
+    }
   }, [value]);
 
   useEffect(() => {
+    console.log('filters.name', filters.name);
+
     if (value !== filters.name) {
       setValue(filters.name);
     }
@@ -93,10 +126,6 @@ export default function NameSearchBar() {
   }, [sortedGenusKeys, groupedGenusSpecies, filteredSpecies]);
 
   const label = 'Species Search';
-
-  useEffect(() => {
-    dispatch(setFilters({ type: 'name', cat: '', val: value !== '' ? value : null }));
-  }, [value]);
 
   const [currentValue, setCurrentValue] = useState<string | null>();
 
