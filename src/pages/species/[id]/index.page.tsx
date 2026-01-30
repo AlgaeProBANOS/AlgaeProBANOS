@@ -29,7 +29,7 @@ export default function SpeciesDetails(): JSX.Element {
   const { updateTooltip } = useTooltipState();
 
   useEffect(() => {
-    fetch('/data/species.json')
+    fetch('/data/species_with_local_paths.json')
       .then((res) => res.json())
       .then(function (json) {
         setExtraData(json);

@@ -15,14 +15,14 @@
       "onMarket": true
     },
     "color": "red",
-    "commonName": "landlady's wig, black scour weed",
+    "commonName": "Landlady's wig, black scour weed",
     "companiesAndProducts": null,
     "coordinates": null,
     "depthRange": "0 to 14 m",
     "division": "Rhodophyta",
     "genus": "Ahnfeltia",
-    "geographicPosition": "north atlantic ocean, common on the coasts of the british isles",
-    "habitat": "shallow sublittoral bedrock and in rockpools on the lower shore, often partly buried by sand",
+    "geographicPosition": "North Atlantic Ocean, common on the coasts of the British Isles",
+    "habitat": "Shallow sublittoral bedrock and in rockpools on the lower shore, often partly buried by sand",
     "invasive": "no",
     "microMacro": "Macro",
     "nutritionalProfile": null,
@@ -38,11 +38,11 @@
   {
     "applications": {
       "agriculture": null,
-      "cosmetics": "emulsifier (soaps...), extract used in anti-aging treatments",
+      "cosmetics": "Emulsifier (soaps, etc.), extract used in anti-aging treatments",
       "environmental": null,
-      "humanConsumption": "sweet, umami flavor; contains: E400 \u2013 alginic acid, E401 \u2013 sodium alginate, E402 \u2013 Potassium alginate, E403 \u2013 Ammonium alginate, E404 \u2013 Calcium alginate, E405- Propylene glycol alginate (PGA) for thickening/gel/stabilizing",
+      "humanConsumption": "Sweet, umami flavor; contains: E400 – alginic acid, E401 – sodium alginate, E402 – potassium alginate, E403 – ammonium alginate, E404 – calcium alginate, E405 – propylene glycol alginate (PGA) for thickening/gel/stabilizing",
       "industrial": null,
-      "medicinal": "boosts immune system, fights breast + colon cancer (fucoxanthin), improved cardiovascular health, New source: Rich in nutrients which assist metabolism, bone development, the growth of healthy blood cells. Chlorophyll has been shown to decrease pancreatitis. can decrease the severity of a herpes outbreak. Can also lower bloodpressure."
+      "medicinal": "Boosts immune system, fights breast and colon cancer (fucoxanthin), improves cardiovascular health. Rich in nutrients which assist metabolism, bone development, and the growth of healthy blood cells. Chlorophyll has been shown to decrease pancreatitis and can decrease the severity of a herpes outbreak. Can also lower blood pressure."
     },
     "certifications": {
       "canBeGrownInPolyculture": true,
@@ -357,7 +357,7 @@
     ],
     "genus": "Alaria",
     "geographicPosition": "Norway, Svalbard, Atlantic France, Channel Islands, Britain, Ireland, Netherlands, Heligoland, Baltic coasts, and Iceland",
-    "habitat": "Grown on European coasts where water is cold and there is severe wave exposure, exposed rocks",
+    "habitat": "Grows on European coasts where water is cold and there is severe wave exposure, on exposed rocks",
     "invasive": "no",
     "match_score": 100.0,
     "microMacro": "Macro",
@@ -393,8 +393,8 @@
     "depthRange": "Unknown",
     "division": "Phaeophyta",
     "genus": "Alaria",
-    "geographicPosition": "greenland, iceland",
-    "habitat": "rock in mid to low intertidal from semi-protected to exposed habitats",
+    "geographicPosition": "Greenland, Iceland",
+    "habitat": "Rock in mid to low intertidal zones, from semi-protected to exposed habitats",
     "invasive": "no",
     "microMacro": "Macro",
     "nutritionalProfile": null,
@@ -517,14 +517,14 @@
       "onMarket": true
     },
     "color": "red",
-    "commonName": "corsican moss",
+    "commonName": "Corsican moss",
     "companiesAndProducts": null,
     "coordinates": null,
     "depthRange": "0 to 10 m",
     "division": "Rhodophyta",
     "genus": "Alsidium",
     "geographicPosition": "Turkey, Croatia, France, Greece, Italy, Monaco, Slovenia, Spain",
-    "habitat": "grows on rock in sheltered areas",
+    "habitat": "Grows on rock in sheltered areas",
     "invasive": "No",
     "microMacro": "Macro",
     "nutritionalProfile": null,
@@ -559,8 +559,8 @@
     "depthRange": "Unknown",
     "division": "Cyanobacteria",
     "genus": "Aphanizomenon",
-    "geographicPosition": "Baltic sea",
-    "habitat": "Aphanizomenon flos-aquae filaments tend to clump and form rafts. Clumps of this alga can form crescent shaped flakes that may be visible at the water's surface. Habitat: Aphanizomenon is common in freshwater lakes and coastal estuarine rivers with low salinities.",
+    "geographicPosition": "Baltic Sea",
+    "habitat": "Aphanizomenon flos-aquae filaments tend to clump and form rafts. Clumps of this alga can form crescent-shaped flakes that may be visible at the water's surface. Common in freshwater lakes and coastal estuarine rivers with low salinities.",
     "invasive": "no",
     "microMacro": "Cyanobacterium/Spirulina",
     "nutritionalProfile": null,
@@ -593,7 +593,7 @@
       "onMarket": true
     },
     "color": "blue-green",
-    "commonName": "spirulina",
+    "commonName": "Spirulina",
     "companiesAndProducts": null,
     "coordinates": null,
     "depthRange": "Unknown",
@@ -688,7 +688,7 @@
   {
     "applications": {
       "agriculture": null,
-      "cosmetics": "ethanol extracts used for antityrosinase activity for skin whitening",
+      "cosmetics": "Ethanol extracts used for antityrosinase activity for skin whitening",
       "environmental": null,
       "humanConsumption": null,
       "industrial": "biofuels",
@@ -701,7 +701,7 @@
       "onMarket": true
     },
     "color": "blue-green",
-    "commonName": "spirulina",
+    "commonName": "Spirulina",
     "companiesAndProducts": "Pondtech extracts phycocyanin from A. platensis; Booster Juice includes spirulina in their wilderness booster add-on; IGV PlantTech uses as a food supplement, fine chemicals, and animal feed",
     "coordinates": null,
     "depthRange": "Unknown",
@@ -723,12 +723,12 @@
   },
   {
     "applications": {
-      "agriculture": "extract used to improve the growth of K. alvarezii and reduce the impact of diseases (epiphytes like Cladophora sp. and Ulva sp. disappeared after 2 weeks of bathing in solution with extract). New source: extract used as a biostimulant for the improvment of plant growth and deveopment for tomato cultivation under moderate water-deficit stress in study - showed promising results; also may make up to 5% of the diet of livestock (food additive)",
+      "agriculture": "Extract used to improve the growth of K. alvarezii and reduce the impact of diseases (epiphytes like Cladophora sp. and Ulva sp. disappeared after 2 weeks of bathing in solution with extract). Extract used as a biostimulant for the improvement of plant growth and development for tomato cultivation under moderate water-deficit stress in study - showed promising results; also may make up to 5% of the diet of livestock (food additive)",
       "cosmetics": null,
       "environmental": null,
       "humanConsumption": null,
       "industrial": null,
-      "medicinal": "limited research on direct effects on humans/animals but - there is some evidence suggesting that Ascophyllum nodosum supplementation in animal diets may reduce plaque and calculus accumulation in dogs and cats, supporting oral health; anti-coagulant, antithrombotic and antiinflammatory properties"
+      "medicinal": "Limited research on direct effects on humans/animals, but there is some evidence suggesting that Ascophyllum nodosum supplementation in animal diets may reduce plaque and calculus accumulation in dogs and cats, supporting oral health; anti-coagulant, antithrombotic and anti-inflammatory properties"
     },
     "certifications": {
       "canBeGrownInPolyculture": true,
@@ -1073,7 +1073,7 @@
       "onMarket": true
     },
     "color": "red",
-    "commonName": "harpoon weed, harpoon algae",
+    "commonName": "Harpoon weed, harpoon algae",
     "companiesAndProducts": null,
     "coordinates": null,
     "depthRange": "Unknown",
@@ -1195,7 +1195,7 @@
       "onMarket": true
     },
     "color": "brown",
-    "commonName": "thin sausage weed",
+    "commonName": "Thin sausage weed",
     "companiesAndProducts": null,
     "coordinates": null,
     "depthRange": "0 to 20 m",
@@ -1335,8 +1335,8 @@
       }
     ],
     "genus": "Bifurcaria",
-    "geographicPosition": "Atlantic coasts of France, Spain, Portugal, south and west costs of England and west coast of Ireland",
-    "habitat": "rock pools on the middle and lower shore, particularly on exposed beaches",
+    "geographicPosition": "Atlantic coasts of France, Spain, Portugal, south and west coasts of England and west coast of Ireland",
+    "habitat": "Rock pools on the middle and lower shore, particularly on exposed beaches",
     "invasive": "no",
     "match_score": 100.0,
     "microMacro": "Macro",
@@ -1366,14 +1366,14 @@
       "onMarket": true
     },
     "color": "red",
-    "commonName": "bonnemaison's asparagus weed",
+    "commonName": "Bonnemaison's asparagus weed",
     "companiesAndProducts": null,
     "coordinates": null,
     "depthRange": "0 to 20 m",
     "division": "Rhodophyta",
     "genus": "Bonnemaisonia",
     "geographicPosition": "Ireland and Britain",
-    "habitat": "rock, very low intertidal or subtidal, widely distributed, frequent in the subtidal",
+    "habitat": "Rock, very low intertidal or subtidal, widely distributed, frequent in the subtidal",
     "invasive": "no",
     "microMacro": "Macro",
     "nutritionalProfile": null,
@@ -1631,7 +1631,7 @@
     "depthRange": "2 to 8 m",
     "division": "Rhodophyta",
     "genus": "Ceramium",
-    "geographicPosition": "Found in the brackish Baltic Sea. New source: Found in waters all over the world, but more abundant in temperate waters.",
+    "geographicPosition": "Found in the brackish Baltic Sea. Found in waters all over the world, but more abundant in temperate waters.",
     "habitat": "Unknown",
     "invasive": "no",
     "microMacro": "Macro",
@@ -1983,8 +1983,8 @@
       "agriculture": "feed supplements",
       "cosmetics": "antioxidants for topical creams",
       "environmental": null,
-      "humanConsumption": "beverages, feed, food, emulsifiers, thickeners, stabilizers, etc, also have applications as a protein source",
-      "industrial": "silver nanoparticals",
+      "humanConsumption": "Beverages, feed, food, emulsifiers, thickeners, stabilizers, etc.; also have applications as a protein source",
+      "industrial": "silver nanoparticles",
       "medicinal": "Extracellular polysaccharides produced by Chlorella vulgaris caused significant antitussive effects, anti-inflammatory and bronchodilatory in test animals. Chlorella extracellular polysaccharide seems to be an effective agent to prevent chronic inflammation of the airway, which is the predominant symptom of certain respiratory diseases"
     },
     "certifications": {
@@ -2641,10 +2641,10 @@
     "applications": {
       "agriculture": "eco-nematicide for tomato plants infected by Meloidogyne javanica (it is an extract used for agricultural uses - MAYBE WRONG CATEGORY - should it go under industrial uses or extracts maybe?)",
       "cosmetics": null,
-      "environmental": "phycoremediation of industrial wastewater. New source: overgrowing in irrigation systems and drainage canals, clogging of water intakes leading to power outages, overgrowth and displacement of benificial aquatic plants, reductions in invertebrate densities and fish spawning, reduction in species biodiversity, anoxia from decaying mats resulting in kills of other aquatic life, retention of pathogenic microbes such as Escherichia coli Migula and enteroocci fecal bacteria as a potential human health hazard, negative effects on recreational use of affected shoreline and nearshore areas, and depressed property values of adjacent homes.",
+      "environmental": "Phycoremediation of industrial wastewater. Overgrowing in irrigation systems and drainage canals, clogging of water intakes leading to power outages, overgrowth and displacement of beneficial aquatic plants, reductions in invertebrate densities and fish spawning, reduction in species biodiversity, anoxia from decaying mats resulting in kills of other aquatic life, retention of pathogenic microbes such as Escherichia coli Migula and enterococci fecal bacteria as a potential human health hazard, negative effects on recreational use of affected shoreline and nearshore areas, and depressed property values of adjacent homes.",
       "humanConsumption": null,
-      "industrial": "production of hydrogen and syngas through catalytic gasification new source: can be converted into biochar for use as an anode electrode in lithium-ion batteries.",
-      "medicinal": "synthesis of silver nanoparticles with potential anti-cancer and anti-tumor activities. New source: consumed by humans in several Asian countries as part of traditional medicine preparations"
+      "industrial": "Production of hydrogen and syngas through catalytic gasification; can be converted into biochar for use as an anode electrode in lithium-ion batteries.",
+      "medicinal": "Synthesis of silver nanoparticles with potential anti-cancer and anti-tumor activities. Consumed by humans in several Asian countries as part of traditional medicine preparations"
     },
     "certifications": {
       "canBeGrownInPolyculture": true,
@@ -2945,7 +2945,7 @@
       "onMarket": true
     },
     "color": "green",
-    "commonName": "velvet fingers",
+    "commonName": "Velvet fingers",
     "companiesAndProducts": null,
     "coordinates": null,
     "depthRange": "0 to 15 m",
@@ -3286,7 +3286,7 @@
       "onMarket": true
     },
     "color": "brown",
-    "commonName": "clawed fork weed. New source: Golden sea hair",
+    "commonName": "Clawed fork weed, golden sea hair",
     "companiesAndProducts": null,
     "coordinates": null,
     "depthRange": "0 to 10 m",
@@ -3296,14 +3296,14 @@
     "habitat": "rock, epiphytically on other seaweeds, and in free-floating mats. It grows along protected shorelines and in estuaries.",
     "invasive": "no",
     "microMacro": "Macro",
-    "nutritionalProfile": "Calcium, Magnesium, Potassium, Sodium, Iron, Manganese, Zinc. New source: low lipid, carbohydrate, and protein content (relative to others in study)",
+    "nutritionalProfile": "Calcium, magnesium, potassium, sodium, iron, manganese, zinc. Low lipid, carbohydrate, and protein content (relative to others in study)",
     "optimalTemp": "-15 \u00b0C",
     "risks": null,
     "salinity": "16PSU, thrive in less saline waters: contained lightly sulphated fucoidans - less than others in the study. The study suggests that species which thrive in saline waters may contain more sulphated fucoidans as a means of mitigating osmotic stress",
     "scientificName": "Dictyosiphon foeniculaceus",
     "species": "foeniculaceus",
     "synonyms": null,
-    "waterTemp": "in a study focusing on life cycle of species in context of cultivation preferred temperatures for stages were given: the bialgal culture, 10 and 14\u2103-LD conditions were suitable for macrothallus formation, 18\u2103-SD, LD conditions were suitable for the growth of prostrate thalli, and 22\u2103-SD conditions were suitable for the formation of plurilocular sporangia. New source: samples were taken from wild populations with water of 6C",
+    "waterTemp": "In a study focusing on life cycle of species in context of cultivation, preferred temperatures for stages were given: the bialgal culture, 10 and 14°C-LD conditions were suitable for macrothallus formation, 18°C-SD, LD conditions were suitable for the growth of prostrate thalli, and 22°C-SD conditions were suitable for the formation of plurilocular sporangia. Samples were taken from wild populations with water of 6°C",
     "waterType": "marine, brackish"
   },
   {
@@ -4724,7 +4724,7 @@
       "environmental": null,
       "humanConsumption": "boiled broth health drink--used as an herbal remedy for thyroid issues",
       "industrial": "the algae from the Gulf of Riga is suggested for bioenergy use (instead of human consumption due to high heavy metal conc)",
-      "medicinal": "used for iodine deficiency, obesity, joint pain, aging skin, digestive issues, urinary tract infection, and thyroid dysfunction, including hyperthyroidism, hypothyroidism, and goiter development. New source: same effect as some anti biotics (contains a binding site for bacteria that affect humans-some), kelp tablets"
+      "medicinal": "Used for iodine deficiency, obesity, joint pain, aging skin, digestive issues, urinary tract infection, and thyroid dysfunction, including hyperthyroidism, hypothyroidism, and goiter development. Has the same effect as some antibiotics (contains a binding site for bacteria that affect humans), kelp tablets"
     },
     "certifications": {
       "canBeGrownInPolyculture": true,
@@ -4962,18 +4962,18 @@
     ],
     "genus": "Fucus",
     "geographicPosition": "grows along the coastlines of the Atlantic and Pacific Oceans, the North and Baltic Seas, and various waters in Canada and the United States",
-    "habitat": "rocky shores in the mid-intertida; exposed rocky; sheltered lagoons--very variable",
+    "habitat": "Rocky shores in the mid-intertidal; exposed rocky areas; sheltered lagoons - very variable",
     "invasive": "no",
     "match_score": 100.0,
     "microMacro": "Macro",
-    "nutritionalProfile": "calcium, iodine, magnesium, potassium, soidum, zinc, vitamins A and C, and high in phytochemicals which may help to reduce oxidative stress. High in fiber and high in alginic acid and fucoidans. New source: good sources of fucoidan, laminarin, protein and mannitol",
+    "nutritionalProfile": "Calcium, iodine, magnesium, potassium, sodium, zinc, vitamins A and C, and high in phytochemicals which may help to reduce oxidative stress. High in fiber and high in alginic acid and fucoidans. Good sources of fucoidan, laminarin, protein and mannitol",
     "optimalTemp": "Unknown",
     "risks": {
       "flavorDiet": null,
-      "medicinalHealth": "Though it has been consumed across cultures and the globe for centuries for beliefs in its medicinal and healthful properties, some of the claims are made ahead of the research/science supporting them which has had some impact on the species' credibility. In other senses, the fact that it has been used for generations has made the species more reliable in the eyes of some consumers. May cause skin rashes, need to be cautious not to eat too much due to high sodium, iodine and heavy metals levels.Unsafe for pregnant women.",
+      "medicinalHealth": "Though it has been consumed across cultures and the globe for centuries due to beliefs in its medicinal and healthful properties, some of the claims are made ahead of the research/science supporting them, which has had some impact on the species' credibility. On the other hand, the fact that it has been used for generations has made the species more reliable in the eyes of some consumers. May cause skin rashes; need to be cautious not to eat too much due to high sodium, iodine and heavy metal levels. Unsafe for pregnant women.",
       "other": null
     },
-    "salinity": "one of the few marine species that can survive in the low salinity of the Baltic Sea. New source: 6.5 psu in a study in the West Estonian Archipelago (brackish?)",
+    "salinity": "One of the few marine species that can survive in the low salinity of the Baltic Sea. 6.5 psu in a study in the West Estonian Archipelago (brackish?)",
     "scientificName": "Fucus vesiculosus",
     "species": "vesiculosus",
     "synonyms": null,
@@ -4985,8 +4985,8 @@
       "agriculture": null,
       "cosmetics": null,
       "environmental": null,
-      "humanConsumption": "in water + milk stabilizers (carrageenan), jams/jellies/marmalades made with this algae as a gelling agent",
-      "industrial": "red color (r-phycoerythrin), New source: used as a feedstock for hydrocolloid (carrageneen is a type of hydrocolloid) production (Estonia)",
+      "humanConsumption": "In water and milk stabilizers (carrageenan), jams/jellies/marmalades made with this algae as a gelling agent",
+      "industrial": "Red color (r-phycoerythrin), used as a feedstock for hydrocolloid (carrageenan is a type of hydrocolloid) production (Estonia)",
       "medicinal": null
     },
     "certifications": {
@@ -5037,8 +5037,8 @@
       }
     ],
     "genus": "Furcellaria",
-    "geographicPosition": "Europe (common in waters of northern Europe - Denmark and Norway) and North America(esp. Canada). New source: most areas of the Baltic sea. New Source: Estonia",
-    "habitat": "epilithic on stable hard substrates such as stony bottoms, boulder fields and rocks",
+    "geographicPosition": "Europe (common in waters of northern Europe - Denmark and Norway) and North America (esp. Canada). Most areas of the Baltic Sea. Estonia",
+    "habitat": "Epilithic on stable hard substrates such as stony bottoms, boulder fields and rocks",
     "invasive": "yes",
     "match_score": 100.0,
     "microMacro": "Macro",
@@ -6820,7 +6820,7 @@
     "division": "Rhodophyta",
     "genus": "Jania",
     "geographicPosition": "Ireland, Scotland, Wales, south-west England, Isle of Man, Channel Islands, Mediterranean, Azores, Portugal, Atlantic coast of Spain and France, Netherlands, Baltic Sea",
-    "habitat": "Epiphytic, only found growing epiphytically on older plants of the brown algae Cladostephus spongiosus and at the base of old, long-established Cystoseiraspecies in the lower intertidal",
+    "habitat": "Epiphytic, only found growing epiphytically on older plants of the brown algae Cladostephus spongiosus and at the base of old, long-established Cystoseira species in the lower intertidal",
     "invasive": "Unknown",
     "microMacro": "Macro",
     "nutritionalProfile": null,
@@ -7828,7 +7828,7 @@
     "applications": {
       "agriculture": null,
       "cosmetics": null,
-      "environmental": "important food source for small snails",
+      "environmental": "Serves as an important food source for small snails",
       "humanConsumption": null,
       "industrial": null,
       "medicinal": null

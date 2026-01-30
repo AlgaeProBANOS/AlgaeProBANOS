@@ -73,3 +73,6 @@ scripts/temp/
 scripts/querries/
 
 scripts/species_occs_*
+
+/downloaded_images
+/public/downloaded_images_compressed

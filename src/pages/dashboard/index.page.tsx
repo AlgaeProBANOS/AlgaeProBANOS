@@ -38,7 +38,7 @@ export default function HomePage(): JSX.Element {
   }, [filteredSpecies]);
 
   useEffect(() => {
-    fetch('/data/species.json')
+    fetch('/data/species_with_local_paths.json')
       .then((res) => res.json())
       .then(function (json) {
         const tmpPhotos: Record<Species['id'], string | null> = {};
