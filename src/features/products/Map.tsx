@@ -1,9 +1,20 @@
 // import 'maplibre-gl/dist/maplibre-gl.css'; // See notes below
 
+import { Checkbox, Field, Label } from '@headlessui/react';
+import { CheckIcon } from '@heroicons/react/16/solid';
+import { nanoid } from '@reduxjs/toolkit';
+// import type { MapRef } from '@vis.gl/react-maplibre';
+// import { Layer, Map, Source } from '@vis.gl/react-maplibre';
+import * as d3 from 'd3';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ReactMapGL, { Layer, Marker, Popup, Source } from 'react-map-gl';
+
 import { Species } from '@/api/apb.client';
 import { useAppDispatch, useAppSelector } from '@/app/store';
+import type {
+  Country
+} from '@/app/store/apb.slice';
 import {
-  Country,
   selectCategoryColors,
   selectFilteredSpecies,
   selectFilters,
@@ -12,18 +23,10 @@ import {
   setFilters,
   setProductMapMode,
 } from '@/app/store/apb.slice';
-import { Checkbox, Field, Label } from '@headlessui/react';
-import { CheckIcon } from '@heroicons/react/16/solid';
-// import type { MapRef } from '@vis.gl/react-maplibre';
-// import { Layer, Map, Source } from '@vis.gl/react-maplibre';
-import * as d3 from 'd3';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTooltipState } from '../common/tooltip/tooltip-provider';
+import { mapboxAPIKey } from '~/config/apb.config';
 
-import ReactMapGL, { AttributionControl, Layer, Marker, Popup, Source } from 'react-map-gl';
+import { useTooltipState } from '../common/tooltip/tooltip-provider';
 import { Switch } from './Switch';
-import { nanoid } from '@reduxjs/toolkit';
-import { purple } from '@mui/material/colors';
 
 const outerMapBounds: [number, number, number, number] = [
   -26.942848249874004, 31.43581990686755, 65.1077179732153, 73.33119246537285,
@@ -49,6 +52,23 @@ const rectangle = {
     ],
   },
 };
+
+const algaeHexColorRange = ['#f7fcb9', '#005a32'] as const;
+
+const bathymetryDepthColors = {
+  deepest: '#00527e',
+  abyssal: '#075a89',
+  lowerSlope: '#0f6294',
+  midSlope: '#166a9f',
+  upperSlope: '#1c72ab',
+  shelfBreak: '#237bb7',
+  outerShelf: '#2983c2',
+  midShelf: '#2f8cce',
+  innerShelf: '#3494da',
+  shallow: '#3a9de6',
+  coast: '#40a6f3',
+  nearshore: '#46afff',
+} as const;
 
 const lineStyle = {
   id: 'bbox-rect-outline',
@@ -85,20 +105,20 @@ const getBoundsForHexagons = (points, { width = 200, height = 500, padding = 0 }
   const pointsLong =
     points.length > 10
       ? points
-          .filter((point) => point.geometry.coordinates != null)
-          .map((point) => point.geometry.coordinates[0][0][0])
+        .filter((point) => point.geometry.coordinates != null)
+        .map((point) => point.geometry.coordinates[0][0][0])
       : points
-          .filter((point) => point.geometry.coordinates != null)
-          .flatMap((point) => point.geometry.coordinates[0].flatMap((e) => e[0]));
+        .filter((point) => point.geometry.coordinates != null)
+        .flatMap((point) => point.geometry.coordinates[0].flatMap((e) => e[0]));
 
   const pointsLat =
     points.length > 10
       ? points
-          .filter((point) => point.geometry.coordinates != null)
-          .map((point) => point.geometry.coordinates[0][0][1])
+        .filter((point) => point.geometry.coordinates != null)
+        .map((point) => point.geometry.coordinates[0][0][1])
       : points
-          .filter((point) => point.geometry.coordinates != null)
-          .flatMap((point) => point.geometry.coordinates[0].flatMap((e) => e[1]));
+        .filter((point) => point.geometry.coordinates != null)
+        .flatMap((point) => point.geometry.coordinates[0].flatMap((e) => e[1]));
 
   if (pointsLong.length === 0 || pointsLat.length === 0) {
     return null;
@@ -127,6 +147,45 @@ interface MapProps {
   focusSpecies?: Array<Species['id']>;
 }
 
+const productionMethodGroups = {
+  aquaculture: ['Aquaculture - At sea', 'Aquaculture - Land-based', 'Aquaculture - n/a'],
+  harvesting: [
+    'Harvesting - Manual',
+    'Harvesting - Manual and Mechanical',
+    'Harvesting - Mechanical',
+    'Harvesting - n/a',
+  ],
+  systems: ['Fermenters', 'Open ponds', 'Photobioreactors', 'Semi Open ponds'],
+} as const;
+
+const productionMethodGroupColors = {
+  aquaculture: '#2563eb',
+  harvesting: '#6a3d9a',
+  systems: '#e11d48',
+} as const;
+
+const productionMethodSubcategoryColors: Record<string, string> = {
+  'Aquaculture - At sea': '#1d4ed8',
+  'Aquaculture - Land-based': '#2563eb',
+  'Aquaculture - n/a': '#60a5fa',
+  'Harvesting - Manual': '#6a3d9a',
+  'Harvesting - Manual and Mechanical': '#762a83',
+  'Harvesting - Mechanical': '#cab2d6',
+  'Harvesting - n/a': '#e7d4e8',
+  'Open ponds': '#e11d48',
+  'Semi Open ponds': '#fb7185',
+  Fermenters: '#e08214',
+  Photobioreactors: '#fdb863',
+};
+
+const productionMethodToGroup = Object.fromEntries(
+  Object.entries(productionMethodGroups).flatMap(([group, methods]) =>
+    methods.map((method) => [method, group]),
+  ),
+) as Record<string, keyof typeof productionMethodGroupColors>;
+
+const prodMethods = Object.values(productionMethodGroups).flat();
+
 const setupHexagonJSON = (
   hexCounts: Record<string, number>,
   geojson: any,
@@ -154,7 +213,7 @@ const setupHexagonJSON = (
   const hexSumMax = focusSpecies ? Math.max(...Object.values(hexSums)) : Math.max(...vals);
 
   // Create a linear scale from 0 → 1
-  const colorScale = d3.scaleLinear().domain([0, hexSumMax]).range(['#e5f5f9', '#00441b']);
+  const colorScale = d3.scaleLinear().domain([0, hexSumMax]).range(algaeHexColorRange);
 
   const scaleLength = Math.min(hexSumMax, 10);
 
@@ -276,11 +335,9 @@ function donutSegment(start, end, r, r0, color, key) {
   return (
     <path
       key={key}
-      d={`M ${r + r0 * x0} ${r + r0 * y0} L ${r + r * x0} ${
-        r + r * y0
-      } A ${r} ${r} 0 ${largeArc} 1 ${r + r * x1} ${r + r * y1} L ${
-        r + r0 * x1
-      } ${r + r0 * y1} A ${r0} ${r0} 0 ${largeArc} 0 ${r + r0 * x0} ${r + r0 * y0}`}
+      d={`M ${r + r0 * x0} ${r + r0 * y0} L ${r + r * x0} ${r + r * y0
+        } A ${r} ${r} 0 ${largeArc} 1 ${r + r * x1} ${r + r * y1} L ${r + r0 * x1
+        } ${r + r0 * y1} A ${r0} ${r0} 0 ${largeArc} 0 ${r + r0 * x0} ${r + r0 * y0}`}
       fill={`${color}`}
     />
   );
@@ -334,8 +391,8 @@ export default function Map(props: MapProps): JSX.Element {
     } else {
       return filteredSpecies != null
         ? filteredSpecies.filter((item) =>
-            speciesFilter != null && speciesFilter.length > 0 ? speciesFilter.includes(item) : true,
-          )
+          speciesFilter != null && speciesFilter.length > 0 ? speciesFilter.includes(item) : true,
+        )
         : Object.keys(species);
     }
   }, [
@@ -348,13 +405,43 @@ export default function Map(props: MapProps): JSX.Element {
   ]);
 
   const [filteredProductionMethods, setFilteredProductionMethods] = useState<Array<string>>(
-    Object.keys(categoryColors ?? []),
+    Object.keys(categoryColors ?? {}).length > 0 ? Object.keys(categoryColors) : prodMethods,
   );
 
   useEffect(() => {
-    if (Object.keys(categoryColors).length !== filteredProductionMethods.length) {
-      setFilteredProductionMethods(Object.keys(categoryColors));
+    const nextMethods = Object.keys(categoryColors ?? {});
+    if (
+      nextMethods.length > 0 &&
+      (nextMethods.length !== filteredProductionMethods.length ||
+        !nextMethods.every((method) => filteredProductionMethods.includes(method)))
+    ) {
+      setFilteredProductionMethods(nextMethods);
     }
+  }, [categoryColors, filteredProductionMethods]);
+
+  const orderedProductionMethods = useMemo(() => {
+    const availableMethods = Object.keys(categoryColors ?? {});
+    const availableSet = new Set(availableMethods);
+    const orderedKnown = prodMethods.filter((method) => availableSet.has(method));
+    const remaining = availableMethods.filter((method) => !prodMethods.includes(method));
+
+    return [...orderedKnown, ...remaining];
+  }, [categoryColors]);
+
+  const productionMethodColors = useMemo(() => {
+    const colors = { ...(categoryColors ?? {}) };
+    for (const method of Object.keys(colors)) {
+      const methodColor = productionMethodSubcategoryColors[method];
+      if (methodColor != null) {
+        colors[method] = methodColor;
+        continue;
+      }
+      const group = productionMethodToGroup[method];
+      if (group != null) {
+        colors[method] = productionMethodGroupColors[group];
+      }
+    }
+    return colors;
   }, [categoryColors]);
 
   const updateFilteredProductionMethods = useCallback(
@@ -517,7 +604,18 @@ export default function Map(props: MapProps): JSX.Element {
   const [popupInfo, setPopupInfo] = useState(null);
 
   useEffect(() => {
-    setShowBathymetry(mapDataMode === 'EMOD' && combineBoth === false);
+    if (mapRef.current) {
+      if (showBathymetry) {
+        mapRef.current.getMap().setPaintProperty('water', 'fill-color', '#46afff');
+      }
+      else {
+        mapRef.current.getMap().setPaintProperty('water', 'fill-color', '#24356e');
+      }
+    }
+  }, [showBathymetry])
+
+  useEffect(() => {
+    setShowBathymetry(mapDataMode === 'EMOD' || combineBoth);
     /* if (mapRef.current) {
       mapRef.current
         .getMap()
@@ -588,7 +686,7 @@ export default function Map(props: MapProps): JSX.Element {
                       <div className="flex gap-1" key={`prodmethod-tooltip-${i}`}>
                         <div
                           className="size-2 rounded-md self-center"
-                          style={{ backgroundColor: categoryColors[e] }}
+                          style={{ backgroundColor: productionMethodColors[e] }}
                         />
                         <>
                           {e}: {feat.properties[e]}
@@ -637,7 +735,7 @@ export default function Map(props: MapProps): JSX.Element {
               {createDonutChart(
                 feat.properties,
                 clusterPropertiesKey,
-                categoryColors,
+                productionMethodColors,
                 onMouseEnter,
                 onMouseLeave,
                 markerKey,
@@ -651,7 +749,7 @@ export default function Map(props: MapProps): JSX.Element {
     }
 
     setDonutClusterMarkers(newMarkers);
-  }, [categoryColors, mapRef.current]);
+  }, [categoryColors, productionMethodColors, mapRef.current]);
 
   /*   if (mapRef.current != null && mapRef.current.getStyle() != null) {
     console.log('ALL Layers', mapRef.current?.getStyle()?.layers);
@@ -746,12 +844,12 @@ export default function Map(props: MapProps): JSX.Element {
         style={{ width: '100%', height: '100%', position: 'relative' }}
         // mapStyle="https://api.maptiler.com/maps/019864da-bd1a-77a6-8cb4-b2fb2323302f/style.json?key=JryEbN305oNyHUvClr79"
         mapStyle={offline ? undefined : 'mapbox://styles/mapbox/light-v11?optimize=true'}
-        mapboxAccessToken="pk.eyJ1IjoiamFrb2JrdXNuaWNrIiwiYSI6ImNsYTAzYjQ2NjBrdnQzcWx0d2EyajFzbHQifQ.LQN-NvTn6PbHEbXHJO0CTw"
+        mapboxAccessToken={mapboxAPIKey}
         // mapStyle={myMapStyle}
         onLoad={() => {
           console.log('----- Map and Layers loaded! ----- ', mapRef.current?.getStyle().layers);
           if (mapRef.current) {
-            mapRef.current.getMap().setPaintProperty('water', 'fill-color', '#92cefc');
+            mapRef.current.getMap().setPaintProperty('water', 'fill-color', '#46afff');
           }
         }}
         onRender={() => {
@@ -808,30 +906,33 @@ export default function Map(props: MapProps): JSX.Element {
               'fill-color': [
                 'step',
                 ['get', 'depth'],
-                '#00527e', // 11
+                bathymetryDepthColors.deepest,
                 -6000,
-                '#075a89', // 10
+                bathymetryDepthColors.abyssal,
                 -4000,
-                '#0f6294', // 9
+                bathymetryDepthColors.lowerSlope,
                 -2000,
-                '#166a9f', // 8
+                bathymetryDepthColors.midSlope,
                 -1000,
-                '#1c72ab', // 7
+                bathymetryDepthColors.upperSlope,
                 -500,
-                '#237bb7', // 6
+                bathymetryDepthColors.shelfBreak,
                 -300,
-                '#2983c2', // 5
+                bathymetryDepthColors.outerShelf,
                 -200,
-                '#2f8cce', // 4
+                bathymetryDepthColors.midShelf,
                 -150,
-                '#3494da', // 3
+                bathymetryDepthColors.innerShelf,
                 -100,
-                '#3a9de6', // 2
+                bathymetryDepthColors.shallow,
                 -50,
-                '#40a6f3', // 1
+                bathymetryDepthColors.coast,
                 -10,
-                '#46afff',
+                bathymetryDepthColors.nearshore,
               ],
+              'fill-opacity': 0.88,
+              'fill-outline-color': 'transparent',
+              'fill-antialias': false,
             }}
             layout={{ visibility: showBathymetry ? 'visible' : 'none' }}
             beforeId={offline ? undefined : 'land-structure-polygon'}
@@ -892,7 +993,7 @@ export default function Map(props: MapProps): JSX.Element {
                       'case',
                       ['==', ['get', 'HexagonID'], highlightedHexagon],
                       'purple',
-                      'transparent',
+                      'rgba(255, 255, 255, 0.45)',
                     ],
                   },
                   type: 'fill',
@@ -925,7 +1026,7 @@ export default function Map(props: MapProps): JSX.Element {
                       'case',
                       ['==', ['get', 'HexagonID'], highlightedHexagon],
                       'purple',
-                      'transparent',
+                      'rgba(255, 255, 255, 0.45)',
                     ],
                   },
                   type: 'fill',
@@ -1078,7 +1179,7 @@ export default function Map(props: MapProps): JSX.Element {
           >
             <div
               onClick={() => {
-                updateFilteredProductionMethods('', Object.keys(categoryColors));
+                updateFilteredProductionMethods('', orderedProductionMethods);
               }}
               className="font-bold flex flex-row justify-between group cursor-pointer border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none gap-1"
             >
@@ -1086,24 +1187,26 @@ export default function Map(props: MapProps): JSX.Element {
               <span className="font-normal hidden group-hover:block">(Add all)</span>
             </div>
             {categoryColors &&
-              Object.keys(clusterProperties).map((e, i) => (
-                <div
-                  key={`productionLegendEntry-${i}`}
-                  onClick={() => {
-                    updateFilteredProductionMethods(e, filteredProductionMethods);
-                  }}
-                  onDoubleClick={() => {
-                    updateFilteredProductionMethods(e, []);
-                  }}
-                  className={`flex flex-row gap-1 cursor-pointer ${filteredProductionMethods.includes(e) ? 'opacity-100' : 'opacity-30'} border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none`}
-                >
+              orderedProductionMethods
+                .filter((method) => Object.keys(clusterProperties).includes(method))
+                .map((e, i) => (
                   <div
-                    className="size-2 rounded-md self-center"
-                    style={{ backgroundColor: categoryColors[e] }}
-                  />
-                  <div>{e}</div>
-                </div>
-              ))}
+                    key={`productionLegendEntry-${i}`}
+                    onClick={() => {
+                      updateFilteredProductionMethods(e, filteredProductionMethods);
+                    }}
+                    onDoubleClick={() => {
+                      updateFilteredProductionMethods(e, []);
+                    }}
+                    className={`flex flex-row gap-1 cursor-pointer ${filteredProductionMethods.includes(e) ? 'opacity-100' : 'opacity-30'} border border-transparent hover:border-apb-gray hover:bg-white/50 px-1 rounded-md select-none`}
+                  >
+                    <div
+                      className="size-2 rounded-md self-center"
+                      style={{ backgroundColor: productionMethodColors[e] }}
+                    />
+                    <div>{e}</div>
+                  </div>
+                ))}
           </div>
         )}
         {popupInfo && (
@@ -1121,7 +1224,11 @@ export default function Map(props: MapProps): JSX.Element {
                   .filter((e) => popupInfo.properties[e] > 0)
                   .map((e, i) => {
                     return (
-                      <div key={`popup-method-${i}`}>
+                      <div key={`popup-method-${i}`} className="flex gap-1">
+                        <div
+                          className="size-2 rounded-md self-center"
+                          style={{ backgroundColor: productionMethodColors[e] }}
+                        />
                         {e}: {popupInfo.properties[e]}
                       </div>
                     );

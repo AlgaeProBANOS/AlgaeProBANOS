@@ -35,7 +35,7 @@ export default function StartPage(): JSX.Element {
       id: 'card-bio-refinery',
       title: 'Algae Economist',
       text: 'The screening tool supports the techno-economic assessment of algal biorefinery concepts by integrating biomass characteristics, process configurations, and economic assumptions. It translates technical inputs into key economic indicators and levelized production costs, enabling rapid evaluation of. The results provide a transparent, decision-oriented basis for early-stage planning and scenario exploration.',
-      href: { pathname: '/' },
+      href: { pathname: '/bio/index.html' },
       icon: <FunnelIcon className="size-6" />,
       img: { src: '/assets/images/BioRefinery2.jpeg', alt: 'Visual Analytics Studio' },
       button: 'Customize',

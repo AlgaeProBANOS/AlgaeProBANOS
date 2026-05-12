@@ -2275,7 +2275,7 @@ function SearchSection() {
                                           });
                                           const applicationValue =
                                             result.applications?.[
-                                              selectedApplication as keyof Applications
+                                            selectedApplication as keyof Applications
                                             ];
                                           return (
                                             <Typography

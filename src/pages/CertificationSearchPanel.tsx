@@ -115,7 +115,7 @@ export default function CertificationSearchPanel(): JSX.Element {
           Listed in EU Novel Food Catalogue
         </Label>
       </Field>{' '}
-      <Field className="flex items-center gap-1 cursor-pointer group">
+      {/*  <Field className="flex items-center gap-1 cursor-pointer group">
         <Checkbox
           checked={foodList}
           onChange={(val) => {
@@ -131,7 +131,7 @@ export default function CertificationSearchPanel(): JSX.Element {
         >
           In Union Novel Food List
         </Label>
-      </Field>{' '}
+      </Field>{' '} */}
       <Field className="flex items-center gap-1 cursor-pointer group">
         <Checkbox
           checked={polyCulture}
